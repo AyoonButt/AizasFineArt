@@ -57,16 +57,18 @@
             
             <!-- Price and Status -->
             <div class="flex items-center justify-between mt-3">
-                {% if artwork.type == 'original' and artwork.original_price %}
+                {% if artwork.is_original_available %}
                     <div class="price-display text-mocha font-semibold">
                         ${{ artwork.original_price|floatformat:0 }}
                     </div>
-                {% endif %}
-                
-                {% if artwork.type == 'original' %}
                     <span class="status-available bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Available</span>
-                {% elif artwork.type == 'print' %}
+                {% elif artwork.prints_available %}
                     <span class="status-prints-only bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Prints Only</span>
+                {% else %}
+                    <div class="text-neutral-500 text-sm">
+                        <p class="mb-1">This original has been sold</p>
+                        <a href="/commissions/" class="text-mocha hover:underline">Request a Commission</a>
+                    </div>
                 {% endif %}
             </div>
         </div>

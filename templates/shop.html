@@ -96,7 +96,7 @@
                     {% for artwork in artworks %}
                         <!-- Only show Original and Print type artworks, exclude Gallery type -->
                         {% if artwork.type != 'gallery' %}
-                    <div class="artwork-item" 
+                    <div class="artwork-item{% if artwork.type != 'original' %} filter-hidden{% endif %}" 
                          data-medium="{{ artwork.medium }}"
                          data-title="{{ artwork.title }}"
                          data-price="{{ artwork.original_price|default:'0' }}"
@@ -446,6 +446,31 @@
 .gallery-grid-small .artwork-image-container {
     aspect-ratio: 4/5;
 }
+
+/* Smooth transitions for filter changes */
+.artwork-item {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Initially hide non-original items */
+.artwork-item.filter-hidden {
+    display: none;
+}
+
+/* Hide cards until images are loaded */
+.artwork-item {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.artwork-item.image-loaded {
+    opacity: 1;
+}
+
+/* Override for filtered items - they should stay hidden */
+.artwork-item.filter-hidden {
+    opacity: 0 !important;
+}
 </style>
 {% endblock %}
 
@@ -574,9 +599,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Show/hide the item
                 if (shouldShow) {
+                    item.classList.remove('filter-hidden');
                     item.style.display = 'block';
                     visibleCount++;
                 } else {
+                    item.classList.add('filter-hidden');
                     item.style.display = 'none';
                 }
             });
@@ -588,10 +615,36 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Initialize filtering with a slight delay to ensure DOM is ready
-        setTimeout(() => {
-            filterArtworks();
-        }, 100);
+        // Image loading detection for smooth card appearance
+        function setupImageLoading() {
+            artworkItems.forEach(item => {
+                const img = item.querySelector('.artwork-image');
+                if (img) {
+                    if (img.complete && img.naturalHeight !== 0) {
+                        // Image already loaded
+                        item.classList.add('image-loaded');
+                    } else {
+                        // Wait for image to load
+                        img.addEventListener('load', function() {
+                            item.classList.add('image-loaded');
+                        });
+                        img.addEventListener('error', function() {
+                            // Even on error, show the card to avoid infinite hiding
+                            item.classList.add('image-loaded');
+                        });
+                    }
+                } else {
+                    // No image, show card immediately
+                    item.classList.add('image-loaded');
+                }
+            });
+        }
+        
+        // Set up image loading detection
+        setupImageLoading();
+        
+        // Apply default filter immediately on page load
+        filterArtworks();
     }
     
     // Run setup functions

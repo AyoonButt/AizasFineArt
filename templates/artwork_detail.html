@@ -159,9 +159,17 @@
                 <div class="mb-6">
                     <h1 class="text-h1 font-playfair font-bold text-neutral-800 mb-2">{{ artwork.title }}</h1>
                     <div class="flex items-center space-x-4 mb-4">
-                        {% if artwork.original_available %}
+                        {% if artwork.is_original_available %}
                         <span class="bg-mocha text-white text-sm px-3 py-1 rounded-full font-medium">
-                            Original
+                            Original Available
+                        </span>
+                        {% elif artwork.type == 'original' and not artwork.original_available %}
+                        <span class="bg-red-100 text-red-800 text-sm px-3 py-1 rounded-full font-medium">
+                            Original Sold
+                        </span>
+                        {% elif artwork.prints_available %}
+                        <span class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full font-medium">
+                            Prints Only
                         </span>
                         {% endif %}
                         {% if artwork.is_featured %}
@@ -174,43 +182,61 @@
                 
                 <!-- Artwork Details -->
                 <div class="space-y-4 mb-8">
-                    <div class="grid grid-cols-2 gap-4">
+                    {% if artwork.type == 'original' %}
+                        <!-- Original artwork details -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <span class="text-sm font-medium text-neutral-500">Medium</span>
+                                <p class="text-neutral-800">{{ artwork.get_medium_display }}</p>
+                            </div>
+                            <div>
+                                <span class="text-sm font-medium text-neutral-500">Dimensions</span>
+                                <p class="text-neutral-800">{{ artwork.dimensions_display }}</p>
+                            </div>
+                        </div>
+                        
+                        {% if artwork.category %}
+                            <div>
+                                <span class="text-sm font-medium text-neutral-500">Category</span>
+                                <p class="text-neutral-800">{{ artwork.category.name }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        {% if artwork.year_created %}
+                            <div>
+                                <span class="text-sm font-medium text-neutral-500">Year Created</span>
+                                <p class="text-neutral-800">{{ artwork.year_created }}</p>
+                            </div>
+                        {% endif %}
+                    {% elif artwork.type == 'print' %}
+                        <!-- Print artwork details (minimal) -->
                         <div>
                             <span class="text-sm font-medium text-neutral-500">Medium</span>
-                            <p class="text-neutral-800">{{ artwork.get_medium_display }}</p>
+                            <p class="text-neutral-800">{{ artwork.get_medium_display }} Print</p>
                         </div>
-                        <div>
-                            <span class="text-sm font-medium text-neutral-500">Dimensions</span>
-                            <p class="text-neutral-800">{{ artwork.dimensions_display }}</p>
-                        </div>
-                    </div>
-                    
-                    {% if artwork.category %}
-                        <div>
-                            <span class="text-sm font-medium text-neutral-500">Category</span>
-                            <p class="text-neutral-800">{{ artwork.category.name }}</p>
-                        </div>
+                        
+                        {% if artwork.category %}
+                            <div>
+                                <span class="text-sm font-medium text-neutral-500">Category</span>
+                                <p class="text-neutral-800">{{ artwork.category.name }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        {% if artwork.year_created %}
+                            <div>
+                                <span class="text-sm font-medium text-neutral-500">Year Created</span>
+                                <p class="text-neutral-800">{{ artwork.year_created }}</p>
+                            </div>
+                        {% endif %}
                     {% endif %}
-                    
-                    {% if artwork.year_created %}
-                        <div>
-                            <span class="text-sm font-medium text-neutral-500">Year Created</span>
-                            <p class="text-neutral-800">{{ artwork.year_created }}</p>
-                        </div>
-                    {% endif %}
-                    
-                    <div>
-                        <span class="text-sm font-medium text-neutral-500">Views</span>
-                        <p class="text-neutral-800">{{ artwork.views }} view{{ artwork.views|pluralize }}</p>
-                    </div>
                 </div>
                 
                 <!-- Purchase Options -->
-                {% if artwork.type == 'original' and artwork.original_price or artwork.type == 'print' %}
+                {% if artwork.is_original_available or artwork.prints_available %}
                     <div class="space-y-6 mb-8">
                         <h3 class="text-h2 font-playfair font-semibold text-neutral-800">Purchase Options</h3>
                         
-                        {% if artwork.original_price and artwork.type == 'original' %}
+                        {% if artwork.is_original_available %}
                         <!-- Original Artwork Card -->
                         <div class="bg-white border-2 border-neutral-200 rounded-xl p-6">
                             <div class="flex items-center justify-between mb-6">
@@ -230,23 +256,27 @@
                             
                             <!-- Action Buttons for Original -->
                             <div class="space-y-3">
-                                <button onclick="addOriginalToCart()" 
-                                        class="w-full btn-primary">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
-                                    </svg>
-                                    Add to Cart
-                                </button>
+                                <!-- Compact side-by-side buttons with icon emphasis -->
+                                <div class="flex items-center justify-start gap-4">
+                                    <button onclick="addOriginalToCart()" 
+                                            class="btn-primary flex flex-col items-center justify-center px-3 py-2">
+                                        <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+                                        </svg>
+                                        <span class="text-xs">Cart</span>
+                                    </button>
+                                    
+                                    <button onclick="window.toggleWishlist({{ artwork.id }})" 
+                                            class="wishlist-btn btn-outline flex flex-col items-center justify-center px-3 py-2" 
+                                            data-artwork-id="{{ artwork.id }}">
+                                        <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                        </svg>
+                                        <span class="text-xs">Wishlist</span>
+                                    </button>
+                                </div>
                                 
-                                <button onclick="window.toggleWishlist({{ artwork.id }})" 
-                                        class="wishlist-btn w-full btn-outline" 
-                                        data-artwork-id="{{ artwork.id }}">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                    </svg>
-                                    Add to Wishlist
-                                </button>
-                                
+                                <!-- Buy Now button remains full width -->
                                 <button onclick="buyOriginalNow()" 
                                         class="w-full btn-primary">
                                     Buy Now
@@ -273,10 +303,13 @@
                                     <div class="text-lg font-bold text-primary mb-3">$45</div>
                                     <div class="flex items-center justify-center space-x-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-8x10', -1)" 
-                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">-</button>
-                                        <span id="qty-print-8x10" class="w-6 text-center font-medium">0</span>
+                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">−</button>
+                                        <input type="number" id="qty-print-8x10" value="0" min="0" max="10" 
+                                               onclick="event.stopPropagation()" 
+                                               oninput="event.stopPropagation(); updateQuantityFromInput('print-8x10', this.value)"
+                                               class="w-14 h-10 text-center font-medium border border-neutral-300 rounded text-base px-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-8x10', 1)" 
-                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">+</button>
+                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">+</button>
                                     </div>
                                 </div>
                                 
@@ -288,10 +321,13 @@
                                     <div class="text-lg font-bold text-primary mb-3">$65</div>
                                     <div class="flex items-center justify-center space-x-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-11x14', -1)" 
-                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">-</button>
-                                        <span id="qty-print-11x14" class="w-6 text-center font-medium">0</span>
+                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">−</button>
+                                        <input type="number" id="qty-print-11x14" value="0" min="0" max="10" 
+                                               onclick="event.stopPropagation()" 
+                                               oninput="event.stopPropagation(); updateQuantityFromInput('print-11x14', this.value)"
+                                               class="w-14 h-10 text-center font-medium border border-neutral-300 rounded text-base px-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-11x14', 1)" 
-                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">+</button>
+                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">+</button>
                                     </div>
                                 </div>
                                 
@@ -303,10 +339,13 @@
                                     <div class="text-lg font-bold text-primary mb-3">$95</div>
                                     <div class="flex items-center justify-center space-x-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-16x20', -1)" 
-                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">-</button>
-                                        <span id="qty-print-16x20" class="w-6 text-center font-medium">0</span>
+                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">−</button>
+                                        <input type="number" id="qty-print-16x20" value="0" min="0" max="10" 
+                                               onclick="event.stopPropagation()" 
+                                               oninput="event.stopPropagation(); updateQuantityFromInput('print-16x20', this.value)"
+                                               class="w-14 h-10 text-center font-medium border border-neutral-300 rounded text-base px-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-16x20', 1)" 
-                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">+</button>
+                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">+</button>
                                     </div>
                                 </div>
                                 
@@ -318,10 +357,13 @@
                                     <div class="text-lg font-bold text-primary mb-3">$155</div>
                                     <div class="flex items-center justify-center space-x-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-24x30', -1)" 
-                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">-</button>
-                                        <span id="qty-print-24x30" class="w-6 text-center font-medium">0</span>
+                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">−</button>
+                                        <input type="number" id="qty-print-24x30" value="0" min="0" max="10" 
+                                               onclick="event.stopPropagation()" 
+                                               oninput="event.stopPropagation(); updateQuantityFromInput('print-24x30', this.value)"
+                                               class="w-14 h-10 text-center font-medium border border-neutral-300 rounded text-base px-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-24x30', 1)" 
-                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">+</button>
+                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">+</button>
                                     </div>
                                 </div>
                             </div>
@@ -339,25 +381,29 @@
                             
                             <!-- Action Buttons -->
                             <div class="space-y-3">
-                                <button id="add-to-cart-btn" 
-                                        onclick="addSelectedToCart()" 
-                                        disabled 
-                                        class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
-                                    </svg>
-                                    Add to Cart
-                                </button>
+                                <!-- Compact side-by-side buttons for Cart and Wishlist -->
+                                <div class="flex items-center justify-start gap-4">
+                                    <button id="add-to-cart-btn" 
+                                            onclick="addSelectedToCart()" 
+                                            disabled 
+                                            class="btn-primary flex flex-col items-center justify-center px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+                                        </svg>
+                                        <span class="text-xs">Cart</span>
+                                    </button>
+                                    
+                                    <button onclick="window.toggleWishlist({{ artwork.id }})" 
+                                            class="wishlist-btn btn-outline flex flex-col items-center justify-center px-3 py-2" 
+                                            data-artwork-id="{{ artwork.id }}">
+                                        <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                        </svg>
+                                        <span class="text-xs">Wishlist</span>
+                                    </button>
+                                </div>
                                 
-                                <button onclick="window.toggleWishlist({{ artwork.id }})" 
-                                        class="wishlist-btn w-full btn-outline" 
-                                        data-artwork-id="{{ artwork.id }}">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                    </svg>
-                                    Add to Wishlist
-                                </button>
-                                
+                                <!-- Buy Now button remains full width -->
                                 <button id="buy-now-btn" 
                                         onclick="buyNowSelected()" 
                                         disabled
@@ -386,6 +432,22 @@
                         <a href="{% url 'contact' %}" class="btn-outline">
                             Commission Similar Work
                         </a>
+                    </div>
+                {% else %}
+                    <!-- Neither original nor prints available -->
+                    <div class="bg-neutral-100 rounded-xl p-6 mb-8">
+                        <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-2">Original Sold</h3>
+                        <p class="text-neutral-600 mb-4">
+                            This original artwork has found its forever home. I'd be delighted to create something similar for you or discuss a custom commission that captures the same spirit.
+                        </p>
+                        <div class="flex space-x-4">
+                            <a href="/commissions/" class="btn-primary">
+                                Request Commission
+                            </a>
+                            <a href="{% url 'portfolio' %}" class="btn-outline">
+                                View Similar Works
+                            </a>
+                        </div>
                     </div>
                 {% endif %}
                 
@@ -646,7 +708,7 @@ function selectOption(itemId, price) {
     }
     
     const card = document.getElementById(`${itemId}-card`);
-    const qtySpan = document.getElementById(`qty-${itemId}`);
+    const qtyInput = document.getElementById(`qty-${itemId}`);
     
     if (cartState.items[itemId]) {
         // Already selected, deselect it
@@ -655,8 +717,8 @@ function selectOption(itemId, price) {
         card.classList.add('border-neutral-200');
         
         // Reset quantity to 0 for prints
-        if (qtySpan && itemId !== 'original') {
-            qtySpan.textContent = '0';
+        if (qtyInput && itemId !== 'original') {
+            qtyInput.value = '0';
         }
     } else {
         // Select the item
@@ -665,8 +727,8 @@ function selectOption(itemId, price) {
         } else {
             // For prints, set quantity to 1
             cartState.items[itemId] = { quantity: 1, price: price };
-            if (qtySpan) {
-                qtySpan.textContent = '1';
+            if (qtyInput) {
+                qtyInput.value = '1';
             }
         }
         
@@ -680,16 +742,49 @@ function selectOption(itemId, price) {
 
 // Update quantity (+ or - buttons)
 function updateQuantity(itemId, change) {
-    const qtySpan = document.getElementById(`qty-${itemId}`);
+    const qtyInput = document.getElementById(`qty-${itemId}`);
     const card = document.getElementById(`${itemId}-card`);
     
-    if (!qtySpan) return;
+    if (!qtyInput) return;
     
-    let newQuantity = Math.max(0, parseInt(qtySpan.textContent) + change);
+    let newQuantity = Math.max(0, parseInt(qtyInput.value) + change);
     const maxQuantity = 10; // Default max for all print sizes
     newQuantity = Math.min(newQuantity, maxQuantity);
     
-    qtySpan.textContent = newQuantity;
+    qtyInput.value = newQuantity;
+    
+    // Update card selection and cart state
+    if (newQuantity > 0) {
+        // Select the card and add to cart state
+        cartState.items[itemId] = { 
+            quantity: newQuantity, 
+            price: ITEM_PRICES[itemId] 
+        };
+        card.classList.remove('border-neutral-200');
+        card.classList.add('border-primary', 'bg-primary-50');
+    } else {
+        // Deselect the card and remove from cart state
+        delete cartState.items[itemId];
+        card.classList.remove('border-primary', 'bg-primary-50');
+        card.classList.add('border-neutral-200');
+    }
+    
+    updateOrderSummary();
+}
+
+// Update quantity from direct input
+function updateQuantityFromInput(itemId, value) {
+    const qtyInput = document.getElementById(`qty-${itemId}`);
+    const card = document.getElementById(`${itemId}-card`);
+    
+    if (!qtyInput) return;
+    
+    let newQuantity = Math.max(0, parseInt(value) || 0);
+    const maxQuantity = 10; // Default max for all print sizes
+    newQuantity = Math.min(newQuantity, maxQuantity);
+    
+    // Update input with validated value
+    qtyInput.value = newQuantity;
     
     // Update card selection and cart state
     if (newQuantity > 0) {

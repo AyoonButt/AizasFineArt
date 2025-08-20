@@ -128,6 +128,7 @@ class Artwork(models.Model):
     
     # Pricing and availability
     original_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Price for original artwork (required when type is 'original')")
+    original_available = models.BooleanField(default=True, help_text="Whether the original artwork is available for purchase")
     type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='original', help_text="Artwork type - Original, Print, or Gallery")
     edition_info = models.CharField(max_length=200, blank=True, help_text="Edition information (limited edition, etc.)")
     
@@ -424,10 +425,9 @@ class Artwork(models.Model):
     def dimensions_display(self):
         return f"{self.dimensions_width}\" × {self.dimensions_height}\""
 
-    @property
-    def original_available(self):
+    def is_original_available(self):
         """Check if original artwork is available for purchase"""
-        return self.type == 'original' and self.original_price is not None
+        return self.type == 'original' and self.original_price is not None and self.original_available
 
     @property
     def prints_available(self):
@@ -437,7 +437,7 @@ class Artwork(models.Model):
 
     @property
     def is_available(self):
-        return self.original_available or self.prints_available
+        return self.is_original_available() or self.prints_available
 
     @property
     def price_display(self):

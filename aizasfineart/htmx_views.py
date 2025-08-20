@@ -277,11 +277,23 @@ def shop_artwork_list(request):
     
     if availability:
         if 'originals' in availability and 'prints' not in availability:
-            artworks = artworks.filter(type='original')
+            # Show only originals that are available for purchase
+            artworks = artworks.filter(type='original', original_available=True)
         elif 'prints' in availability and 'originals' not in availability:
-            artworks = artworks.filter(type='print')
+            # Show artworks where prints are available (either print type OR originals with prints)
+            artworks = artworks.filter(
+                Q(type='print') | 
+                Q(type='original', original_available=False, print_options__is_available=True) |
+                Q(type='original', original_available=False, lumaprints_product_id__isnull=False, lumaprints_product_id__gt='')
+            ).distinct()
         elif 'originals' in availability and 'prints' in availability:
-            artworks = artworks.filter(type__in=['original', 'print'])
+            # Show all available artworks
+            artworks = artworks.filter(
+                Q(type='original', original_available=True) |
+                Q(type='print') |
+                Q(type='original', original_available=False, print_options__is_available=True) |
+                Q(type='original', original_available=False, lumaprints_product_id__isnull=False, lumaprints_product_id__gt='')
+            ).distinct()
     
     if tag_slug:
         artworks = artworks.filter(tags__slug=tag_slug)
@@ -408,7 +420,7 @@ def add_to_cart(request):
         artwork = Artwork.objects.get(id=artwork_id, is_active=True)
         
         if item_type == 'original':
-            if artwork.type != 'original':
+            if not artwork.is_original_available():
                 return JsonResponse({
                     'success': False,
                     'message': 'Original artwork is not available'
