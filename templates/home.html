@@ -1,0 +1,405 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Aiza's Fine Art - Original Watercolor & Oil Paintings from Fort Worth, TX{% endblock %}
+
+{% block meta_description %}Discover beautiful original watercolor and oil paintings by Aiza, a talented artist from Fort Worth, Texas. Unique artworks, custom commissions, and fine art prints available.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section relative min-h-screen flex items-center justify-center overflow-hidden">
+    <!-- Hero Background Image -->
+    <div class="absolute inset-0">
+        <img src="{% static 'dist/images/seascape blurred.jpg' %}" 
+             alt="Seascape artwork background" 
+             class="w-full h-full object-cover opacity-70">
+        <div class="absolute inset-0 bg-gradient-to-br from-white/20 via-white/10 to-transparent"></div>
+    </div>
+    
+    <div class="relative z-10 container mx-auto px-4 text-center">
+        <div class="hero-title max-w-4xl mx-auto">
+            <div class="animate-fade-in">
+                <h1 class="text-display font-playfair font-bold text-neutral-800 mb-6 leading-tight">
+                    <span class="text-gradient">Welcome to</span><br>
+                    <span>Aiza's Fine Art</span>
+                </h1>
+            </div>
+            
+            <div class="animate-fade-in">
+                <p class="text-body-lg text-neutral-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+                    Discover unique watercolor and oil paintings that capture life's precious moments 
+                    through the eyes of Fort Worth artist, Aiza. Each piece tells a story of color, 
+                    light, and emotion.
+                </p>
+            </div>
+            
+            <div class="animate-fade-in flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="{% url 'shop' %}" class="btn-primary text-lg px-8 py-4 hover:scale-105 transform transition-all duration-200">
+                    Shop Artworks
+                </a>
+                <a href="{% url 'portfolio' %}" class="btn-outline text-lg px-8 py-4 bg-purple-800 text-white hover:bg-purple-900 hover:text-white transition-all duration-200">
+                    View Portfolio
+                </a>
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+<!-- Featured Artworks Section -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16 reveal-on-scroll">
+            <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-4">Featured Artworks</h2>
+            <p class="text-body-lg text-neutral-600 max-w-2xl mx-auto">
+                A curated selection of recent paintings showcasing the beauty and versatility 
+                of watercolor and oil mediums.
+            </p>
+        </div>
+        
+        <!-- Featured Gallery Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <!-- Placeholder for featured artworks -->
+            {% comment %}
+            <!-- This will be populated with actual artwork data -->
+            {% for artwork in featured_artworks %}
+                <div class="artwork-card card overflow-hidden reveal-on-scroll">
+                    <a href="{{ artwork.get_absolute_url }}" class="block">
+                        <div class="relative overflow-hidden">
+                            <img src="{{ artwork.primary_image.url }}" 
+                                 alt="{{ artwork.alt_text }}" 
+                                 class="artwork-image w-full h-80 object-cover">
+                            <div class="artwork-overlay">
+                                <div class="absolute bottom-6 left-6 text-white">
+                                    <h3 class="font-playfair font-semibold text-xl mb-2">{{ artwork.title }}</h3>
+                                    <p class="text-sm opacity-90">{{ artwork.medium }} • {{ artwork.dimensions_display }}</p>
+                                </div>
+                                <div class="absolute top-6 right-6 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
+                                    <span class="text-white font-medium">{{ artwork.price_display }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+            {% endcomment %}
+            
+            <!-- Featured Artworks with Real Images -->
+            <div class="artwork-card overflow-hidden reveal-on-scroll">
+                <div class="relative overflow-hidden">
+                    <img src="{% static 'dist/images/Shop/Magnolias/magnolias_lowres.jpg' %}" 
+                         alt="Magnolias watercolor painting" 
+                         class="w-full h-80 object-cover artwork-image">
+                    <div class="artwork-overlay">
+                        <div class="absolute bottom-6 left-6 text-white">
+                            <h3 class="font-playfair font-semibold text-xl mb-2">Magnolias</h3>
+                            <p class="text-sm opacity-90">Watercolor • Various Sizes Available</p>
+                        </div>
+                        <div class="absolute top-6 right-6">
+                            <button class="wishlist-btn">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="artwork-card overflow-hidden reveal-on-scroll">
+                <div class="relative overflow-hidden">
+                    <img src="{% static 'dist/images/Shop/The Quiet Coast/thequietcoast_mockup_nb.jpg' %}" 
+                         alt="The Quiet Coast landscape painting" 
+                         class="w-full h-80 object-cover artwork-image">
+                    <div class="artwork-overlay">
+                        <div class="absolute bottom-6 left-6 text-white">
+                            <h3 class="font-playfair font-semibold text-xl mb-2">The Quiet Coast</h3>
+                            <p class="text-sm opacity-90">Landscape • Print Available</p>
+                        </div>
+                        <div class="absolute top-6 right-6">
+                            <button class="wishlist-btn">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="artwork-card overflow-hidden reveal-on-scroll">
+                <div class="relative overflow-hidden">
+                    <img src="{% static 'dist/images/Shop/Snowdrops/snowdrops_lowres.jpg' %}" 
+                         alt="Snowdrops floral painting" 
+                         class="w-full h-80 object-cover artwork-image">
+                    <div class="artwork-overlay">
+                        <div class="absolute bottom-6 left-6 text-white">
+                            <h3 class="font-playfair font-semibold text-xl mb-2">Snowdrops</h3>
+                            <p class="text-sm opacity-90">Watercolor • Limited Edition Print</p>
+                        </div>
+                        <div class="absolute top-6 right-6">
+                            <button class="wishlist-btn">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="artwork-card overflow-hidden reveal-on-scroll">
+                <div class="relative overflow-hidden">
+                    <img src="{% static 'dist/images/Shop/Hibiscus/hibiscus_mockup_nb.jpg' %}" 
+                         alt="Hibiscus botanical painting" 
+                         class="w-full h-80 object-cover artwork-image">
+                    <div class="artwork-overlay">
+                        <div class="absolute bottom-6 left-6 text-white">
+                            <h3 class="font-playfair font-semibold text-xl mb-2">Hibiscus</h3>
+                            <p class="text-sm opacity-90">Botanical • Multiple Sizes</p>
+                        </div>
+                        <div class="absolute top-6 right-6">
+                            <button class="wishlist-btn">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="artwork-card overflow-hidden reveal-on-scroll">
+                <div class="relative overflow-hidden">
+                    <img src="{% static 'dist/images/Shop/Kingfisher/kingfisher_mockup_nb.jpg' %}" 
+                         alt="Kingfisher bird painting" 
+                         class="w-full h-80 object-cover artwork-image">
+                    <div class="artwork-overlay">
+                        <div class="absolute bottom-6 left-6 text-white">
+                            <h3 class="font-playfair font-semibold text-xl mb-2">Kingfisher</h3>
+                            <p class="text-sm opacity-90">Wildlife • Fine Art Print</p>
+                        </div>
+                        <div class="absolute top-6 right-6">
+                            <button class="wishlist-btn">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="artwork-card overflow-hidden reveal-on-scroll">
+                <div class="relative overflow-hidden">
+                    <img src="{% static 'dist/images/Shop/Velka Fatra/velkafatra_mockup.jpg' %}" 
+                         alt="Velka Fatra mountain landscape" 
+                         class="w-full h-80 object-cover artwork-image">
+                    <div class="artwork-overlay">
+                        <div class="absolute bottom-6 left-6 text-white">
+                            <h3 class="font-playfair font-semibold text-xl mb-2">Velka Fatra</h3>
+                            <p class="text-sm opacity-90">Landscape • Mountain Series</p>
+                        </div>
+                        <div class="absolute top-6 right-6">
+                            <button class="wishlist-btn">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center reveal-on-scroll">
+            <a href="{% url 'shop' %}" class="btn-primary">Shop All Artworks</a>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="py-20 bg-neutral-50">
+    <div class="container mx-auto px-4">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <div class="reveal-on-scroll">
+                <div class="relative">
+                    <!-- Artist photo -->
+                    <div class="w-full max-w-md mx-auto lg:mx-0 aspect-square rounded-2xl overflow-hidden shadow-soft">
+                        <img src="{% static 'dist/images/profile pic_square_less contrast.png' %}" 
+                             alt="Aiza - Artist Portrait" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    
+                    <!-- Decorative elements -->
+                    <div class="absolute -top-4 -right-4 w-24 h-24 bg-accent/20 rounded-full blur-xl"></div>
+                    <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-secondary/15 rounded-full blur-2xl"></div>
+                </div>
+            </div>
+            
+            <div class="reveal-on-scroll">
+                <div class="accent-font text-primary-600 text-sm mb-4">Meet the Artist</div>
+                <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-6">
+                    Painting Life's Beautiful Moments
+                </h2>
+                
+                <p class="text-body-lg text-neutral-600 mb-6 leading-relaxed">
+                    Based in Fort Worth, Texas, I'm Aiza, and I believe that art has the power to 
+                    capture emotions, tell stories, and bring beauty into everyday life. My work 
+                    focuses on the delicate interplay of light and color, whether through the 
+                    flowing transparency of watercolors or the rich depth of oils.
+                </p>
+                
+                <p class="text-body text-neutral-600 mb-8 leading-relaxed">
+                    Each painting begins with a moment that moves me—a quiet morning scene, 
+                    the gentle curve of a flower petal, or the warm glow of evening light. 
+                    I strive to translate these fleeting moments into lasting works of art 
+                    that speak to the heart and soul.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="{% url 'shop' %}" class="btn-primary">Shop Artworks</a>
+                    <a href="{% url 'about' %}" class="btn-outline">Learn More About Aiza</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16 reveal-on-scroll">
+            <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-4">What I Offer</h2>
+            <p class="text-body-lg text-neutral-600 max-w-2xl mx-auto">
+                From original paintings to custom commissions, I create art that speaks to your heart 
+                and complements your space perfectly.
+            </p>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Original Artworks -->
+            <div class="text-center reveal-on-scroll">
+                <div class="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-soft">
+                    <svg class="w-10 h-10 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"></path>
+                    </svg>
+                </div>
+                <h3 class="font-playfair font-semibold text-xl text-neutral-800 mb-4">Original Paintings</h3>
+                <p class="text-neutral-600 leading-relaxed">
+                    One-of-a-kind watercolor and oil paintings, each with its own unique story 
+                    and character. Ready to hang and bring beauty to your space.
+                </p>
+            </div>
+            
+            <!-- Art Prints -->
+            <div class="text-center reveal-on-scroll">
+                <div class="w-20 h-20 bg-accent-100 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-soft">
+                    <svg class="w-10 h-10 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="font-playfair font-semibold text-xl text-neutral-800 mb-4">Fine Art Prints</h3>
+                <p class="text-neutral-600 leading-relaxed">
+                    High-quality reproduction prints of popular artworks, available in various 
+                    sizes and finishes to fit your budget and space.
+                </p>
+            </div>
+
+            <!-- Custom Commissions -->
+            <div class="text-center reveal-on-scroll">
+                <div class="w-20 h-20 bg-secondary-100 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-soft">
+                    <svg class="w-10 h-10 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+                <h3 class="font-playfair font-semibold text-xl text-neutral-800 mb-4">Custom Commissions</h3>
+                <p class="text-neutral-600 leading-relaxed">
+                    Whether you're looking for a unique gift, a custom piece for your home, 
+                    or a special commission, I'm here to bring your vision to life. 
+                    Let's collaborate to create something truly personal and beautiful.
+                </p>
+            </div>
+        </div>
+        
+        <div class="text-center mt-12 reveal-on-scroll">
+            <a href="{% url 'shop' %}" class="btn-primary">Shop Original Art</a>
+        </div>
+    </div>
+</section>
+
+
+<!-- Medium Comparison Component -->
+{% include 'components/medium_comparison.html' %}
+
+<!-- Newsletter Section -->
+<section class="py-20 bg-gradient-to-br from-primary-50 to-secondary-50">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <!-- Section Header -->
+            <div class="mb-12 reveal-on-scroll">
+                <h2 class="text-3xl md:text-4xl font-playfair font-bold text-neutral-800 mb-4">
+                    Stay Connected with My Art Journey
+                </h2>
+                <p class="text-lg text-neutral-600 max-w-2xl mx-auto leading-relaxed">
+                    Be the first to see new paintings, get exclusive insights into my creative process, 
+                    and receive updates about exhibitions and special collections.
+                </p>
+            </div>
+            
+            <!-- Newsletter Component -->
+            <div class="reveal-on-scroll">
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-neutral-200 max-w-2xl mx-auto">
+                    {% include 'components/newsletter.html' %}
+                </div>
+            </div>
+            
+            <!-- Trust Indicators -->
+            <div class="mt-8 reveal-on-scroll">
+                <div class="flex flex-wrap justify-center items-center space-x-8 text-sm text-neutral-500">
+                    <div class="flex items-center space-x-2 mb-2">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <span>No spam, ever</span>
+                    </div>
+                    <div class="flex items-center space-x-2 mb-2">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Unsubscribe anytime</span>
+                    </div>
+                    <div class="flex items-center space-x-2 mb-2">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Monthly updates</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call-to-Action Section -->
+<section class="py-20 bg-neutral-900 text-white">
+    <div class="container mx-auto px-4 text-center">
+        <div class="max-w-3xl mx-auto reveal-on-scroll">
+            <h2 class="text-h1 font-playfair font-semibold mb-6">Ready to Find Your Perfect Artwork?</h2>
+            <p class="text-body-lg text-neutral-300 mb-8 leading-relaxed">
+                Browse our collection of original paintings and high-quality prints. 
+                Each piece is ready to transform your space with beauty and inspiration.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'shop' %}" class="btn-primary hover:scale-105 transform transition-all duration-200">
+                    Shop Artworks
+                </a>
+                <a href="{% url 'portfolio' %}" class="border-2 border-white text-white hover:bg-white hover:text-neutral-900 px-8 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105 transform">
+                    View Portfolio
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

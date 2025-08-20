@@ -1,0 +1,73 @@
+<!-- Original Artwork Card Component -->
+<div class="artwork-card card group relative overflow-hidden border-l-4 border-mocha cursor-pointer hover:shadow-lg transition-all duration-300" data-gsap="scaleIn" onclick="window.location.href='{% if artwork.get_absolute_url %}{{ artwork.get_absolute_url }}{% else %}#{% endif %}'">
+    <!-- Image Container -->
+        <div class="relative overflow-hidden aspect-square">
+            {% if artwork.gallery_url %}
+                <img src="{{ artwork.gallery_url }}" 
+                     alt="{{ artwork.alt_text|default:artwork.title }}"
+                     class="artwork-image w-full h-full object-cover"
+                     loading="lazy">
+            {% else %}
+                <!-- Placeholder Image -->
+                <div class="w-full h-full bg-neutral-200 flex items-center justify-center">
+                    <svg class="w-16 h-16 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+            {% endif %}
+            
+            <!-- Original Badge -->
+            <div class="absolute top-3 left-3">
+                <span class="bg-mocha text-white text-xs font-semibold px-2 py-1 rounded-full">
+                    Original
+                </span>
+            </div>
+            
+            <!-- Overlay -->
+            <div class="artwork-overlay">
+                <div class="absolute bottom-4 left-4 right-4">
+                    <div class="flex items-center justify-between text-white">
+                        <span class="text-sm font-medium">View Original</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card Content -->
+        <div class="p-4">
+            <!-- Title and Medium -->
+            <div class="mb-2">
+                <h3 class="font-playfair font-semibold text-lg text-neutral-800 group-hover:text-mocha transition-colors">
+                    {{ artwork.title }}
+                </h3>
+                {% if artwork.medium %}
+                    <p class="text-sm text-neutral-600">{{ artwork.get_medium_display|default:artwork.medium }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Dimensions -->
+            {% if artwork.dimensions_width and artwork.dimensions_height %}
+                <p class="text-sm text-neutral-500 mb-2">
+                    {{ artwork.dimensions_width }}" × {{ artwork.dimensions_height }}"
+                </p>
+            {% endif %}
+            
+            <!-- Price and Status -->
+            <div class="flex items-center justify-between mt-3">
+                {% if artwork.type == 'original' and artwork.original_price %}
+                    <div class="price-display text-mocha font-semibold">
+                        ${{ artwork.original_price|floatformat:0 }}
+                    </div>
+                {% endif %}
+                
+                {% if artwork.type == 'original' %}
+                    <span class="status-available bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Available</span>
+                {% elif artwork.type == 'print' %}
+                    <span class="status-prints-only bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Prints Only</span>
+                {% endif %}
+            </div>
+        </div>
+</div>

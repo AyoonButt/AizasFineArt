@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load webpack_loader %}
+
+{% block title %}Shop - Multi-Image Artwork Gallery{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Shop-specific styles */
+.shop-container {
+    min-height: 60vh;
+}
+
+.status-available {
+    @apply bg-green-100 text-green-800 px-3 py-1 text-xs rounded-full font-medium;
+}
+
+.status-sold {
+    @apply bg-red-100 text-red-800 px-3 py-1 text-xs rounded-full font-medium;
+}
+
+.status-reserved {
+    @apply bg-yellow-100 text-yellow-800 px-3 py-1 text-xs rounded-full font-medium;
+}
+
+.price-display {
+    @apply text-lg font-bold text-mocha;
+}
+
+.artwork-card-shop {
+    @apply transition-all duration-300 hover:shadow-xl;
+}
+
+/* Custom scrollbar for thumbnail sidebar */
+.thumbnail-sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.thumbnail-sidebar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 2px;
+}
+
+.thumbnail-sidebar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+.thumbnail-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Shop Header -->
+    <section class="py-16 bg-gradient-to-br from-mocha-50 via-white to-lavender-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center max-w-4xl mx-auto">
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                    Shop Original Artworks
+                </h1>
+                <p class="text-lg text-gray-600 leading-relaxed mb-8">
+                    Browse available original paintings and prints. Click the small thumbnail images to view different frames and angles of each artwork.
+                </p>
+                
+                <!-- Feature Highlights */}
+                <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-600">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-mocha" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <span>Multiple Views</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-mocha" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Secure Checkout</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-mocha" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                        <span>Worldwide Shipping</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- React Shop Grid Mount Point -->
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <div id="react-shop" 
+                 data-react-component="shop-grid"
+                 data-react-props='{"showFilters": true, "endpoint": "/api/artworks/"}'>
+                
+                <!-- Loading State -->
+                <div class="shop-container flex items-center justify-center">
+                    <div class="text-center">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-mocha mx-auto mb-4"></div>
+                        <p class="text-gray-600">Loading shop...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section */}
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold text-gray-900 mb-12 text-center">How to View Multiple Images</h2>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="bg-mocha-100 rounded-2xl w-20 h-20 flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-10 h-10 text-mocha" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">1. Look for Thumbnails</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            Artworks with multiple images show small thumbnail squares on the left side of the main image.
+                        </p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="bg-lavender-100 rounded-2xl w-20 h-20 flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-10 h-10 text-lavender" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 4v10a2 2 0 002 2h6a2 2 0 002-2V8M7 8H5a2 2 0 00-2 2v8a2 2 0 002 2h2m0-12h10m-5 4v4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">2. Click to Switch</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            Click any thumbnail to instantly switch the main image. See different frames, angles, and views.
+                        </p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="bg-terracotta-100 rounded-2xl w-20 h-20 flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-10 h-10 text-terracotta" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">3. Add to Cart</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            Once you've viewed all angles, add the artwork to your cart or wishlist with confidence.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Demo Card Preview */}
+                <div class="mt-16 p-8 bg-gray-50 rounded-2xl">
+                    <h3 class="text-xl font-semibold text-center mb-6">Example: Multi-Image Artwork Card</h3>
+                    <div class="max-w-md mx-auto">
+                        <div class="bg-white rounded-lg p-4 shadow-sm">
+                            <div class="flex gap-3">
+                                <!-- Demo thumbnails -->
+                                <div class="space-y-2">
+                                    <div class="w-12 h-12 bg-mocha rounded border-2 border-mocha flex items-center justify-center">
+                                        <span class="text-white text-xs font-medium">1</span>
+                                    </div>
+                                    <div class="w-12 h-12 bg-gray-200 rounded border-2 border-gray-200 flex items-center justify-center">
+                                        <span class="text-gray-500 text-xs">2</span>
+                                    </div>
+                                    <div class="w-12 h-12 bg-gray-200 rounded border-2 border-gray-200 flex items-center justify-center">
+                                        <span class="text-gray-500 text-xs">3</span>
+                                    </div>
+                                </div>
+                                <!-- Demo main image -->
+                                <div class="flex-1 aspect-square bg-gradient-to-br from-mocha-100 to-lavender-100 rounded flex items-center justify-center">
+                                    <span class="text-gray-600">Main Image Area</span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-3 text-center">
+                                ← Click thumbnails to switch main image
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Load React bundles -->
+{% render_bundle 'main' 'js' %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mount the React shop component
+    const shopMount = document.getElementById('react-shop');
+    
+    if (shopMount && window.ReactComponents && window.ReactComponents.mountAll) {
+        // Let the auto-mount system handle it
+        window.ReactComponents.mountAll();
+    } else {
+        console.error('React components not available');
+        shopMount.innerHTML = `
+            <div class="text-center py-12">
+                <p class="text-red-600">Failed to load shop gallery. Please check console for errors.</p>
+            </div>
+        `;
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stripe Debug - Card Element</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 40px; 
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #card-element { 
+            padding: 12px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            margin: 20px 0;
+            background: white;
+            min-height: 40px;
+        }
+        #card-errors { 
+            color: red; 
+            margin-top: 10px; 
+            font-size: 14px;
+        }
+        .debug-info { 
+            background: #f0f0f0; 
+            padding: 15px; 
+            margin: 20px 0; 
+            border-radius: 4px; 
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .status { margin: 5px 0; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+        .test-card {
+            background: #e8f4fd;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            border-left: 4px solid #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stripe Element Debug Page</h1>
+        
+        <div class="debug-info">
+            <h3>Debug Information:</h3>
+            <div class="status" id="stripe-key-status">Checking Stripe key...</div>
+            <div class="status" id="stripe-init-status">Initializing Stripe...</div>
+            <div class="status" id="elements-status">Creating Elements...</div>
+            <div class="status" id="card-status">Creating Card Element...</div>
+            <div class="status" id="mount-status">Mounting Card Element...</div>
+        </div>
+        
+        <div class="test-card">
+            <h3>Test Card Numbers:</h3>
+            <p><strong>Visa:</strong> 4242 4242 4242 4242</p>
+            <p><strong>Visa (Debit):</strong> 4000 0566 5566 5556</p>
+            <p><strong>Mastercard:</strong> 5555 5555 5555 4444</p>
+            <p><strong>Expiry:</strong> Any future date (e.g., 12/34)</p>
+            <p><strong>CVC:</strong> Any 3 digits (e.g., 123)</p>
+        </div>
+        
+        <h2>Payment Information</h2>
+        <div id="card-element">
+            <!-- Stripe Card Element will be inserted here -->
+        </div>
+        <div id="card-errors" role="alert"></div>
+        
+        <div class="debug-info">
+            <h3>Card Element Events:</h3>
+            <div id="event-log">No events yet...</div>
+        </div>
+    </div>
+
+    <script>
+        const stripePublicKey = '{{ stripe_public_key }}';
+        let stripe, elements, cardElement;
+        
+        function log(message, type = 'info') {
+            console.log(message);
+            const eventLog = document.getElementById('event-log');
+            const div = document.createElement('div');
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            div.className = type;
+            eventLog.appendChild(div);
+        }
+        
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${type}`;
+        }
+        
+        async function initializeStripe() {
+            try {
+                // Check Stripe key
+                if (!stripePublicKey || stripePublicKey.trim() === '') {
+                    updateStatus('stripe-key-status', '❌ No Stripe public key provided', 'error');
+                    return;
+                }
+                updateStatus('stripe-key-status', `✅ Stripe key: ${stripePublicKey.substring(0, 20)}...`, 'success');
+                
+                // Initialize Stripe
+                updateStatus('stripe-init-status', '🔄 Initializing Stripe...', 'warning');
+                stripe = Stripe(stripePublicKey);
+                updateStatus('stripe-init-status', '✅ Stripe initialized successfully', 'success');
+                log('Stripe initialized successfully');
+                
+                // Create Elements
+                updateStatus('elements-status', '🔄 Creating Stripe Elements...', 'warning');
+                elements = stripe.elements();
+                updateStatus('elements-status', '✅ Stripe Elements created', 'success');
+                log('Stripe Elements created');
+                
+                // Create Card Element
+                updateStatus('card-status', '🔄 Creating Card Element...', 'warning');
+                const style = {
+                    base: {
+                        color: '#32325d',
+                        fontFamily: '"Inter", system-ui, -apple-system, sans-serif',
+                        fontSmoothing: 'antialiased',
+                        fontSize: '16px',
+                        '::placeholder': {
+                            color: '#aab7c4'
+                        }
+                    },
+                    invalid: {
+                        color: '#fa755a',
+                        iconColor: '#fa755a'
+                    }
+                };
+                
+                cardElement = elements.create('card', { style: style });
+                updateStatus('card-status', '✅ Card Element created', 'success');
+                log('Card Element created with style configuration');
+                
+                // Mount Card Element
+                updateStatus('mount-status', '🔄 Mounting Card Element...', 'warning');
+                cardElement.mount('#card-element');
+                updateStatus('mount-status', '✅ Card Element mounted successfully', 'success');
+                log('Card Element mounted to #card-element');
+                
+                // Add event listeners
+                cardElement.on('ready', () => {
+                    log('Card Element is ready for input', 'success');
+                });
+                
+                cardElement.on('change', ({ error, complete, brand }) => {
+                    const displayError = document.getElementById('card-errors');
+                    if (error) {
+                        displayError.textContent = error.message;
+                        log(`Validation error: ${error.message}`, 'error');
+                    } else {
+                        displayError.textContent = '';
+                        log(`Card state - Complete: ${complete}, Brand: ${brand}`, 'info');
+                    }
+                });
+                
+                cardElement.on('focus', () => {
+                    log('Card Element focused', 'info');
+                });
+                
+                cardElement.on('blur', () => {
+                    log('Card Element blurred', 'info');
+                });
+                
+                log('All event listeners attached successfully', 'success');
+                
+            } catch (error) {
+                const errorMessage = `Stripe initialization failed: ${error.message}`;
+                updateStatus('stripe-init-status', `❌ ${errorMessage}`, 'error');
+                log(errorMessage, 'error');
+                console.error('Stripe Error:', error);
+            }
+        }
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', initializeStripe);
+    </script>
+</body>
+</html>

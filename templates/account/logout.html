@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Out - Aiza's Fine Art{% endblock %}
+
+{% block content %}
+<section class="py-16 bg-gradient-to-br from-neutral-50 to-primary-50 min-h-screen flex items-center">
+    <div class="container mx-auto px-4">
+        <div class="max-w-md mx-auto text-center">
+            <!-- Header -->
+            <div class="mb-8">
+                <div class="w-16 h-16 bg-primary-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-white font-playfair font-bold text-2xl">A</span>
+                </div>
+                <h1 class="text-h2 font-playfair font-bold text-neutral-800 mb-2">Sign Out</h1>
+                <p class="text-neutral-600">Are you sure you want to sign out of your account?</p>
+            </div>
+
+            <!-- Logout Form Card -->
+            <div class="bg-white rounded-2xl shadow-soft p-8">
+                <form method="post" action="{% url 'account_logout' %}">
+                    {% csrf_token %}
+                    
+                    <div class="mb-6">
+                        <div class="flex items-center justify-center mb-4">
+                            <svg class="w-12 h-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                        </div>
+                        <p class="text-neutral-600 text-center">
+                            You will be signed out of your account and returned to the homepage. 
+                            Your saved items and preferences will be available when you sign back in.
+                        </p>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <button type="submit" 
+                                class="flex-1 bg-neutral-600 hover:bg-neutral-700 text-white font-medium py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2">
+                            Yes, Sign Out
+                        </button>
+                        <a href="{% url 'home' %}" 
+                           class="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 text-center">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="mt-6 text-center">
+                <p class="text-sm text-neutral-600 mb-4">Before you go, check out:</p>
+                <div class="flex justify-center space-x-4 text-sm">
+                    <a href="{% url 'gallery' %}" class="text-primary-600 hover:text-primary-500 transition-colors">Latest Artwork</a>
+                    <span class="text-neutral-300">•</span>
+                    <a href="{% url 'shop' %}" class="text-primary-600 hover:text-primary-500 transition-colors">Shop</a>
+                    <span class="text-neutral-300">•</span>
+                    <a href="{% url 'contact' %}" class="text-primary-600 hover:text-primary-500 transition-colors">Commission Art</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Portfolio - Watercolor & Oil Paintings by Aiza{% endblock %}
+
+{% block meta_description %}Explore Aiza's complete portfolio of watercolor and oil paintings. Browse by medium, subject, or availability. Original artworks and fine art prints from Fort Worth, Texas.{% endblock %}
+
+{% block content %}
+<!-- Portfolio Hero Section -->
+<section class="hero-section relative py-20 bg-gradient-to-br from-neutral-50 to-primary-50 overflow-hidden">
+    <div class="container mx-auto px-4 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-display font-playfair font-bold text-neutral-800 mb-6">
+                <span class="text-gradient">Portfolio</span>
+            </h1>
+            <p class="text-body-lg text-neutral-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+                Discover the complete collection of my watercolor and oil paintings. Each piece captures 
+                a unique moment through the interplay of light, color, and emotion.
+            </p>
+            
+            <!-- Filter Section -->
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-soft">
+                <div class="flex flex-wrap gap-4 items-center justify-center">
+                    <div class="flex items-center space-x-2">
+                        <label class="text-sm font-medium text-neutral-700">Medium:</label>
+                        <select id="medium-filter" class="px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            <option value="">All Media</option>
+                            {% for value, label in medium_choices %}
+                                <option value="{{ value }}" {% if current_filters.medium == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <label class="text-sm font-medium text-neutral-700">Status:</label>
+                        <select id="status-filter" class="px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            <option value="">All Works</option>
+                            <option value="available" {% if current_filters.status == 'available' %}selected{% endif %}>Available</option>
+                            <option value="sold" {% if current_filters.status == 'sold' %}selected{% endif %}>Sold</option>
+                        </select>
+                    </div>
+                    
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" id="featured-filter" {% if current_filters.featured == 'true' %}checked{% endif %} 
+                               class="rounded border-neutral-300 text-primary-600 focus:ring-primary-500">
+                        <span class="text-sm font-medium text-neutral-700">Featured Only</span>
+                    </label>
+                    
+                    <button onclick="applyFilters()" class="btn-primary">
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Section -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <!-- Portfolio Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {% for artwork in artworks %}
+            <div class="group relative overflow-hidden rounded-lg bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
+                <a href="{{ artwork.get_absolute_url }}" class="block">
+                    <div class="aspect-square overflow-hidden">
+                        <img src="{{ artwork.image_url }}" 
+                             alt="{{ artwork.alt_text|default:artwork.title }}"
+                             class="artwork-image w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                             data-lazy="true"
+                             data-aspect-ratio="1/1"
+                             data-priority="{% if forloop.counter <= 6 %}high{% else %}normal{% endif %}"
+                             loading="lazy">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-gray-900 mb-1">{{ artwork.title }}</h3>
+                        <p class="text-sm text-gray-600 mb-2">{{ artwork.get_medium_display }}</p>
+                        <p class="text-sm text-gray-500">{{ artwork.dimensions_display }}</p>
+                        {% if artwork.original_price %}
+                        <p class="text-lg font-bold text-gray-900 mt-2">${{ artwork.original_price }}</p>
+                        {% endif %}
+                        <div class="flex items-center justify-between mt-3">
+                            {% if artwork.original_available %}
+                            <span class="bg-mocha text-white text-xs px-2 py-1 rounded-full font-medium">
+                                Original
+                            </span>
+                            {% endif %}
+                            {% if artwork.is_featured %}
+                            <span class="text-xs text-gold-600 font-semibold">Featured</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                
+                <!-- Wishlist Button -->
+                <button class="absolute top-3 right-3 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-sm transition-colors opacity-0 group-hover:opacity-100"
+                        hx-put="{% url 'toggle_wishlist' artwork.id %}"
+                        hx-target="this"
+                        hx-swap="outerHTML"
+                        title="Add to Wishlist">
+                    <svg class="w-4 h-4 text-gray-600 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                </button>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-12">
+                <p class="text-gray-500 text-lg">No artworks found.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="flex justify-center mt-12">
+            <nav class="flex space-x-2">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                   class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Previous</a>
+                {% endif %}
+                
+                <span class="px-4 py-2 bg-primary-600 text-white rounded-lg">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+                
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                   class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Next</a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-16 bg-gradient-to-br from-primary-50 to-secondary-50">
+    <div class="container mx-auto px-4 text-center">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-6">
+                Love What You See?
+            </h2>
+            <p class="text-body-lg text-neutral-600 mb-8">
+                Interested in purchasing an original piece or commissioning custom artwork? 
+                I'd love to help you find the perfect piece for your space.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'shop' %}" class="btn-primary">
+                    Shop Available Works
+                </a>
+                <a href="{% url 'contact' %}" class="btn-outline">
+                    Commission Custom Art
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function applyFilters() {
+    const medium = document.getElementById('medium-filter').value;
+    const status = document.getElementById('status-filter').value;
+    const featured = document.getElementById('featured-filter').checked;
+    
+    const params = new URLSearchParams();
+    if (medium) params.append('medium', medium);
+    if (status) params.append('status', status);
+    if (featured) params.append('featured', 'true');
+    
+    window.location.href = `{% url 'portfolio' %}?${params.toString()}`;
+}
+
+// Wishlist functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const wishlistBtns = document.querySelectorAll('.wishlist-btn');
+    
+    wishlistBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const artworkId = this.dataset.artworkId;
+            toggleWishlist(artworkId, this);
+        });
+    });
+});
+
+function toggleWishlist(artworkId, button) {
+    fetch(`/api/wishlist/toggle/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': window.csrfToken
+        },
+        body: JSON.stringify({ artwork_id: artworkId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.added) {
+            button.classList.add('active');
+        } else {
+            button.classList.remove('active');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
+{% endblock %}

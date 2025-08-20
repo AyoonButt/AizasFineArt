@@ -1,0 +1,24 @@
+{% if show_story and artwork.story %}
+<div id="artist-story-{{ artwork.id }}" class="product-info__story">
+  <h4>Artist's Story</h4>
+  <p>{{ artwork.story }}</p>
+</div>
+<button 
+  class="product-info__details-toggle"
+  hx-get="{% url 'toggle_story_partial' artwork.id %}?show=false"
+  hx-target="#artist-story-{{ artwork.id }}"
+  hx-swap="outerHTML"
+>
+  Less Details
+</button>
+{% else %}
+<div id="artist-story-{{ artwork.id }}" class="product-info__story" style="display: none;"></div>
+<button 
+  class="product-info__details-toggle"
+  hx-get="{% url 'toggle_story_partial' artwork.id %}?show=true"
+  hx-target="#artist-story-{{ artwork.id }}"
+  hx-swap="outerHTML"
+>
+  Read Artist's Story
+</button>
+{% endif %}

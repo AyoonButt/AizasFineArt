@@ -1,0 +1,736 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shop - Original Art & Fine Prints by Aiza{% endblock %}
+
+{% block meta_description %}Shop original watercolor and oil paintings, plus high-quality fine art prints. Secure online purchasing with worldwide shipping from Fort Worth, Texas.{% endblock %}
+
+
+{% block content %}
+<!-- Gallery Header -->
+<section class="py-16 bg-gradient-subtle from-primary-50 to-secondary-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center max-w-4xl mx-auto">
+            <h1 class="text-h1 font-playfair font-bold text-neutral-800 mb-4">Shop Artworks</h1>
+            <p class="text-body-lg text-neutral-600 leading-relaxed mb-8">
+                Browse available original paintings and high-quality fine art prints. 
+                Each purchase supports an independent artist and brings beauty into your space.
+            </p>
+            
+            <!-- Shop Filter Component -->
+            <div class="shop-filter-component bg-white rounded-lg shadow-sm border border-neutral-200 p-6 max-w-2xl mx-auto">
+                <!-- Original vs Prints Toggle -->
+                <div class="flex items-center justify-center mb-6">
+                    <div class="bg-neutral-100 rounded-lg p-1 inline-flex relative">
+                        <button class="shop-type-toggle active px-6 py-2 rounded-md text-sm font-medium transition-all" data-type="original">
+                            Originals
+                        </button>
+                        <button class="shop-type-toggle px-6 py-2 rounded-md text-sm font-medium transition-all" data-type="print">
+                            Prints
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Medium Filters (only shown for prints) -->
+                <div class="medium-filters" style="display: none;">
+                    <div class="flex items-center justify-center space-x-4">
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" class="medium-filter sr-only" value="watercolor">
+                            <span class="medium-tag px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800 cursor-pointer transition-all hover:bg-blue-200">
+                                Watercolor
+                            </span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" class="medium-filter sr-only" value="oil">
+                            <span class="medium-tag px-4 py-2 rounded-full text-sm font-medium bg-amber-100 text-amber-800 cursor-pointer transition-all hover:bg-amber-200">
+                                Oil
+                            </span>
+                        </label>
+                    </div>
+                    <p class="text-xs text-neutral-500 mt-2">Select medium types to filter prints (no selection shows all prints)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Content -->
+<section class="py-12">
+    <div class="container mx-auto px-4">
+        <!-- Main Gallery -->
+        <main class="max-w-7xl mx-auto">
+                <!-- Sort and Results Header -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+                    <div class="text-sm text-neutral-600">
+                        Showing {{ artworks|length }} of {{ paginator.count }} artworks
+                    </div>
+                    
+                    <div class="flex items-center gap-4">
+                        <!-- View Toggle -->
+                        <div class="flex items-center bg-neutral-100 rounded-lg p-1">
+                            <button class="view-toggle active px-3 py-1 rounded text-sm font-medium" data-view="large" title="Large Cards">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                </svg>
+                            </button>
+                            <button class="view-toggle px-3 py-1 rounded text-sm font-medium" data-view="small" title="Small Cards">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Sort Dropdown -->
+                        <select class="sort-select form-select text-sm">
+                            <option value="newest" {% if current_filters.sort == 'newest' %}selected{% endif %}>Newest First</option>
+                            <option value="oldest" {% if current_filters.sort == 'oldest' %}selected{% endif %}>Oldest First</option>
+                            <option value="price_low" {% if current_filters.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_high" {% if current_filters.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="title" {% if current_filters.sort == 'title' %}selected{% endif %}>Title A-Z</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Artworks Grid -->
+                <div id="shop-gallery-container" class="gallery-grid-large">
+                    {% for artwork in artworks %}
+                        <!-- Only show Original and Print type artworks, exclude Gallery type -->
+                        {% if artwork.type != 'gallery' %}
+                    <div class="artwork-item" 
+                         data-medium="{{ artwork.medium }}"
+                         data-title="{{ artwork.title }}"
+                         data-price="{{ artwork.original_price|default:'0' }}"
+                         data-created="{{ artwork.created_at|date:'c' }}"
+                         data-type="{{ artwork.type }}">
+                            
+                            <!-- Use different card templates based on artwork type -->
+                            {% if artwork.type == 'original' %}
+                                {% include 'components/gallery/artwork_card_original.html' %}
+                            {% elif artwork.type == 'print' %}
+                                {% include 'components/gallery/artwork_card_print.html' %}
+                            {% endif %}
+                    </div>
+                        {% endif %}
+                    {% empty %}
+                    <div class="col-span-full text-center py-12">
+                        <div class="text-6xl mb-4">🎨</div>
+                        <h3 class="text-xl font-playfair font-semibold mb-2">No artworks found</h3>
+                        <p class="text-neutral-600 mb-6">Try adjusting your filters or search terms</p>
+                        <button class="clear-filters btn-primary">Clear Filters</button>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Load More / Pagination -->
+                {% if page_obj.has_next %}
+                <div class="text-center mt-12">
+                    <div class="load-more inline-block">
+                        <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" 
+                           class="btn-primary">
+                            Load More Artworks
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Traditional Pagination (fallback) -->
+                {% if paginator.num_pages > 1 %}
+                <nav class="pagination mt-12 flex justify-center">
+                    <div class="flex items-center space-x-2">
+                        {% if page_obj.has_previous %}
+                            <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}" 
+                               class="px-3 py-2 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors">Previous</a>
+                        {% endif %}
+
+                        {% for page_num in paginator.page_range %}
+                            {% if page_num == page_obj.number %}
+                                <span class="px-3 py-2 bg-primary-500 text-white rounded-lg">{{ page_num }}</span>
+                            {% else %}
+                                <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_num }}" 
+                                   class="px-3 py-2 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors">{{ page_num }}</a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" 
+                               class="px-3 py-2 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors">Next</a>
+                        {% endif %}
+                    </div>
+                </nav>
+                {% endif %}
+        </main>
+    </div>
+</section>
+
+
+<!-- Shopping Information -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Shipping Info -->
+            <div class="text-center">
+                <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                </div>
+                <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-2">Secure Shipping</h3>
+                <p class="text-neutral-600 text-sm">
+                    Free shipping on orders over $75. Professional packaging ensures your artwork arrives safely.
+                </p>
+            </div>
+            
+            <!-- Quality Guarantee -->
+            <div class="text-center">
+                <div class="w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-2">Quality Guarantee</h3>
+                <p class="text-neutral-600 text-sm">
+                    30-day return policy. Each piece is inspected and certified before shipping.
+                </p>
+            </div>
+            
+            <!-- Customer Support -->
+            <div class="text-center">
+                <div class="w-16 h-16 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                </div>
+                <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-2">Personal Service</h3>
+                <p class="text-neutral-600 text-sm">
+                    Direct communication with the artist. Questions about sizing, custom work, or commissions welcome.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-16 bg-gradient-to-br from-primary-50 to-accent-50">
+    <div class="container mx-auto px-4 text-center">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-6">
+                Ready to Start Your Collection?
+            </h2>
+            <p class="text-body-lg text-neutral-600 mb-8">
+                Can't find exactly what you're looking for? I'd love to create a custom piece just for you.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'contact' %}" class="btn-primary">
+                    Commission Custom Art
+                </a>
+                <a href="{% url 'portfolio' %}" class="btn-outline">
+                    View Full Portfolio
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Shop Filter Component */
+.shop-filter-component {
+    transition: all 0.3s ease;
+}
+
+.shop-type-toggle {
+    @apply text-neutral-600 hover:text-neutral-800 transition-all duration-200;
+    position: relative;
+}
+
+.shop-type-toggle.active {
+    @apply bg-white text-primary-600 shadow-md font-semibold;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+}
+
+.medium-tag {
+    transition: all 0.2s ease;
+    user-select: none;
+    border: 2px solid transparent;
+}
+
+.medium-tag.active {
+    transform: scale(1.05);
+    border-color: currentColor;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+}
+
+.medium-tag:not(.active) {
+    @apply bg-neutral-100 text-neutral-500 opacity-60;
+}
+
+.medium-tag:hover:not(.active) {
+    @apply opacity-80 bg-neutral-200;
+}
+
+.medium-filters {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Status badges */
+.status-available {
+    @apply bg-green-100 text-green-800;
+}
+
+.status-sold {
+    @apply bg-red-100 text-red-800;
+}
+
+.status-commission {
+    @apply bg-blue-100 text-blue-800;
+}
+
+.status-badge {
+    @apply text-xs px-2 py-1 rounded-full font-medium;
+}
+
+/* View toggle buttons */
+.view-toggle {
+    @apply text-neutral-500 hover:text-neutral-700 transition-all duration-200;
+    border: 1px solid transparent;
+}
+
+.view-toggle.active {
+    @apply bg-white text-primary-600 shadow-md;
+    border-color: rgba(139, 92, 246, 0.2);
+    transform: translateY(-1px);
+}
+
+/* Gallery Layout Systems - Amazon Style */
+.gallery-grid-large {
+    display: grid !important;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+    width: 100%;
+}
+
+.gallery-grid-small {
+    display: grid !important;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+    width: 100%;
+}
+
+/* Ensure grid items don't have flex or width constraints */
+.gallery-grid-large .artwork-item,
+.gallery-grid-small .artwork-item {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* Only force display block when not filtered */
+.gallery-grid-large .artwork-item:not([style*="display: none"]),
+.gallery-grid-small .artwork-item:not([style*="display: none"]) {
+    display: block !important;
+}
+
+/* Responsive adjustments - Amazon Style */
+@media (max-width: 640px) {
+    .gallery-grid-large {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
+        gap: 1rem;
+    }
+    
+    .gallery-grid-small {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+        gap: 0.5rem;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+    .gallery-grid-large {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    }
+    
+    .gallery-grid-small {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+    }
+}
+
+@media (min-width: 1280px) {
+    .gallery-grid-large {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+    }
+    
+    .gallery-grid-small {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+    }
+}
+
+/* Default aspect ratio for all image containers */
+.artwork-image-container {
+    aspect-ratio: 4/5;
+}
+
+/* Card styling adjustments for SMALL view - Amazon Style */
+.gallery-grid-small .artwork-card {
+    @apply text-sm;
+}
+
+.gallery-grid-small .artwork-info {
+    @apply p-3;
+}
+
+.gallery-grid-small .artwork-image-container {
+    aspect-ratio: 4/5;
+}
+
+.gallery-grid-small h3 {
+    @apply text-sm font-medium leading-tight;
+}
+
+.gallery-grid-small .price-display span {
+    @apply text-sm font-semibold;
+}
+
+.gallery-grid-small .status-badge {
+    @apply text-xs px-2 py-1;
+}
+
+.gallery-grid-small .btn-primary {
+    @apply text-sm px-3 py-2;
+}
+
+/* Keep all info visible in small view - Amazon style shows details */
+.gallery-grid-small .artwork-info p {
+    @apply block text-xs text-neutral-500 truncate;
+}
+
+.gallery-grid-small .price-display div {
+    @apply block;
+}
+
+/* Card styling adjustments for LARGE view */
+.gallery-grid-large .artwork-item {
+    width: 100%;
+}
+
+.gallery-grid-large .artwork-card {
+    width: 100%;
+}
+
+.gallery-grid-large .artwork-info {
+    @apply p-4;
+}
+
+.gallery-grid-large h3 {
+    @apply text-lg;
+}
+
+.gallery-grid-large .price-display span {
+    @apply text-lg;
+}
+
+/* Default aspect ratio for all image containers */
+.artwork-image-container {
+    aspect-ratio: 4/5;
+}
+
+.gallery-grid-large .artwork-image-container {
+    aspect-ratio: 4/5;
+}
+
+.gallery-grid-small .artwork-image-container {
+    aspect-ratio: 4/5;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Enhanced shop loading animations and new filtering system
+document.addEventListener('DOMContentLoaded', function() {
+    // Apply randomized loading to shop cards
+    function setupShopAnimations() {
+        const shopCards = document.querySelectorAll('.artwork-card.image-reveal');
+        
+        // Create wave-like reveal pattern
+        shopCards.forEach((card, index) => {
+            // Calculate position in grid (assuming 3-4 columns typically)
+            const columns = window.innerWidth >= 1024 ? 4 : (window.innerWidth >= 768 ? 3 : 2);
+            const row = Math.floor(index / columns);
+            const col = index % columns;
+            
+            // Create diagonal wave pattern instead of top-to-bottom
+            const waveDelay = (row * 0.1) + (col * 0.15) + (Math.random() * 0.2);
+            
+            card.style.animationDelay = `${waveDelay}s`;
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px) scale(0.95)';
+            
+            // Trigger reveal when in viewport
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.add('animate-in');
+                        }, waveDelay * 1000);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '50px' });
+            
+            observer.observe(card);
+        });
+    }
+    
+    // Shop Filter System
+    function setupShopFiltering() {
+        const typeToggles = document.querySelectorAll('.shop-type-toggle');
+        const mediumFilters = document.querySelector('.medium-filters');
+        const mediumTags = document.querySelectorAll('.medium-tag');
+        const artworkItems = document.querySelectorAll('.artwork-item');
+        
+        let currentType = 'original';
+        let selectedMediums = [];
+        
+        // Type toggle functionality
+        typeToggles.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                currentType = this.dataset.type;
+                
+                // Update active states
+                typeToggles.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show/hide medium filters for prints
+                if (currentType === 'print') {
+                    mediumFilters.style.display = 'block';
+                } else {
+                    mediumFilters.style.display = 'none';
+                    // Reset medium filters when switching to originals
+                    selectedMediums = [];
+                    mediumTags.forEach(tag => tag.classList.remove('active'));
+                    document.querySelectorAll('.medium-filter').forEach(cb => cb.checked = false);
+                }
+                
+                // Filter artworks
+                filterArtworks();
+            });
+        });
+        
+        // Medium filter functionality
+        mediumTags.forEach(tag => {
+            tag.addEventListener('click', function() {
+                const checkbox = this.parentElement.querySelector('.medium-filter');
+                const medium = checkbox.value;
+                
+                // Toggle checkbox state
+                checkbox.checked = !checkbox.checked;
+                
+                // Update visual state
+                if (checkbox.checked) {
+                    this.classList.add('active');
+                    if (!selectedMediums.includes(medium)) {
+                        selectedMediums.push(medium);
+                    }
+                } else {
+                    this.classList.remove('active');
+                    selectedMediums = selectedMediums.filter(m => m !== medium);
+                }
+                
+                // Filter artworks
+                filterArtworks();
+            });
+        });
+        
+        // Filter artwork function
+        function filterArtworks() {
+            let visibleCount = 0;
+            
+            artworkItems.forEach(item => {
+                let shouldShow = false;
+                const artworkType = item.dataset.type;
+                const artworkMedium = item.dataset.medium;
+                
+                if (currentType === 'original') {
+                    // Show only original artworks
+                    shouldShow = artworkType === 'original';
+                } else if (currentType === 'print') {
+                    // Show print artworks and filter by medium
+                    if (artworkType === 'print') {
+                        // If no mediums selected, show all prints
+                        if (selectedMediums.length === 0) {
+                            shouldShow = true;
+                        } else {
+                            // Only show if artwork medium matches selected mediums
+                            shouldShow = selectedMediums.includes(artworkMedium);
+                        }
+                    }
+                }
+                
+                // Show/hide the item
+                if (shouldShow) {
+                    item.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Update results count if element exists
+            const resultsText = document.querySelector('.text-sm.text-neutral-600');
+            if (resultsText && resultsText.textContent.includes('Showing')) {
+                resultsText.textContent = `Showing ${visibleCount} artworks`;
+            }
+        }
+        
+        // Initialize filtering with a slight delay to ensure DOM is ready
+        setTimeout(() => {
+            filterArtworks();
+        }, 100);
+    }
+    
+    // Run setup functions
+    setupShopAnimations();
+    setupShopFiltering();
+    
+    // Re-run on view toggle
+    window.addEventListener('resize', () => {
+        setTimeout(setupShopAnimations, 100);
+    });
+
+// View toggle functionality for shop
+    const viewToggles = document.querySelectorAll('.view-toggle');
+    const galleryContainer = document.getElementById('shop-gallery-container');
+    
+    viewToggles.forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const view = this.dataset.view;
+            
+            // Update active state for all view toggles (both sidebar and header)
+            document.querySelectorAll('.view-toggle').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll(`[data-view="${view}"]`).forEach(t => t.classList.add('active'));
+            
+            // Update gallery layout
+            if (view === 'small') {
+                galleryContainer.classList.remove('gallery-grid-large');
+                galleryContainer.classList.add('gallery-grid-small');
+            } else {
+                galleryContainer.classList.remove('gallery-grid-small');
+                galleryContainer.classList.add('gallery-grid-large');
+            }
+            
+            // Store user preference
+            localStorage.setItem('shop-gallery-view', view);
+        });
+    });
+    
+    // Restore user preference
+    const savedView = localStorage.getItem('shop-gallery-view');
+    if (savedView) {
+        const targetToggle = document.querySelector(`[data-view="${savedView}"]`);
+        if (targetToggle) {
+            targetToggle.click();
+        }
+    }
+    
+    // Wishlist functionality
+    document.querySelectorAll('.wishlist-toggle').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const artworkId = this.dataset.artworkId;
+            toggleWishlist(artworkId);
+        });
+    });
+});
+
+// Wishlist functionality
+function toggleWishlist(artworkId) {
+    const button = document.querySelector(`[data-artwork-id="${artworkId}"]`);
+    if (!button) return;
+    
+    // Add loading state
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<div class="animate-spin w-5 h-5 border-2 border-current border-t-transparent rounded-full"></div>';
+    button.disabled = true;
+    
+    fetch(`/api/wishlist/toggle/${artworkId}/`, {
+        method: 'PUT',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        button.disabled = false;
+        
+        // Update wishlist button state based on API response
+        if (data.added) {
+            button.classList.add('text-red-500');
+            button.classList.remove('text-neutral-600');
+            button.innerHTML = `<svg class="w-5 h-5" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>`;
+            button.title = 'Remove from Wishlist';
+        } else {
+            button.classList.remove('text-red-500');
+            button.classList.add('text-neutral-600');
+            button.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>`;
+            button.title = 'Add to Wishlist';
+        }
+        
+        // Show notification
+        showNotification(data.message, 'success');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        button.disabled = false;
+        button.innerHTML = originalHTML;
+        showNotification('Failed to update wishlist', 'error');
+    });
+}
+
+
+// Utility functions
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 ${
+        type === 'success' ? 'bg-green-500 text-white' : 
+        type === 'error' ? 'bg-red-500 text-white' : 
+        'bg-blue-500 text-white'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('opacity-0', 'translate-x-full');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+</script>
+{% endblock %}

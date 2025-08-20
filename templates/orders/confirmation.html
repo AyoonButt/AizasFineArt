@@ -1,0 +1,272 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Confirmation - {{ order.order_number }}{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-neutral-50 min-h-screen">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Success Header -->
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <h1 class="text-h1 font-playfair font-semibold text-neutral-800 mb-2">Order Confirmed!</h1>
+                <p class="text-body-lg text-neutral-600 mb-2">Thank you for your purchase</p>
+                <p class="text-body text-neutral-500">Order {{ order.order_number }} • {{ order.created_at|date:"F j, Y" }}</p>
+                
+                <div class="inline-flex items-center bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium mt-4">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                    Payment Successful
+                </div>
+            </div>
+
+            <!-- Order Details -->
+            <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden mb-8">
+                <div class="bg-neutral-50 px-6 py-4 border-b border-neutral-200">
+                    <h2 class="text-h3 font-playfair font-semibold text-neutral-800">Order Details</h2>
+                </div>
+                
+                <div class="p-6">
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <h3 class="font-medium text-neutral-800 mb-3">Customer Information</h3>
+                            <div class="text-sm text-neutral-600 space-y-1">
+                                <p><strong>Name:</strong> {{ order.billing_name }}</p>
+                                <p><strong>Email:</strong> {{ order.billing_email }}</p>
+                                {% if order.billing_phone %}
+                                <p><strong>Phone:</strong> {{ order.billing_phone }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium text-neutral-800 mb-3">Order Status</h3>
+                            <div class="text-sm text-neutral-600 space-y-1">
+                                <p><strong>Status:</strong> 
+                                    <span class="inline-flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">
+                                        {{ order.get_status_display }}
+                                    </span>
+                                </p>
+                                <p><strong>Payment:</strong> 
+                                    <span class="inline-flex items-center bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">
+                                        {{ order.get_payment_status_display }}
+                                    </span>
+                                </p>
+                                <p><strong>Confirmation:</strong> {{ order.confirmed_at|date:"F j, Y g:i A" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Items Ordered -->
+                    <div class="border-t border-neutral-200 pt-6">
+                        <h3 class="font-medium text-neutral-800 mb-4">Items Ordered</h3>
+                        <div class="space-y-4">
+                            {% for item in order.items.all %}
+                            <div class="flex items-start space-x-4 pb-4 {% if not forloop.last %}border-b border-neutral-100{% endif %}">
+                                <img src="{{ item.artwork.gallery_image }}" alt="{{ item.artwork.title }}" class="w-20 h-20 object-cover rounded-lg flex-shrink-0">
+                                <div class="flex-grow min-w-0">
+                                    <h4 class="font-medium text-neutral-800 truncate">{{ item.title }}</h4>
+                                    <p class="text-sm text-neutral-600">{{ item.description }}</p>
+                                    <div class="flex items-center space-x-4 mt-2 text-sm text-neutral-500">
+                                        <span>Qty: {{ item.quantity }}</span>
+                                        <span>•</span>
+                                        <span>{{ item.get_item_type_display }}</span>
+                                        {% if item.print_size %}
+                                        <span>•</span>
+                                        <span>{{ item.print_size }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="text-right flex-shrink-0">
+                                    <p class="font-medium text-neutral-800">${{ item.total_price }}</p>
+                                    {% if item.quantity > 1 %}
+                                    <p class="text-sm text-neutral-500">${{ item.unit_price }} each</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="grid lg:grid-cols-3 gap-8 mb-8">
+                <!-- Addresses -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+                        <h3 class="font-medium text-neutral-800 mb-4">Shipping Address</h3>
+                        <div class="text-sm text-neutral-600">
+                            <p class="font-medium text-neutral-800">
+                                {% if order.shipping_name %}{{ order.shipping_name }}{% else %}{{ order.billing_name }}{% endif %}
+                            </p>
+                            <div class="mt-2">{{ order.shipping_address_display|linebreaks }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+                        <h3 class="font-medium text-neutral-800 mb-4">Billing Address</h3>
+                        <div class="text-sm text-neutral-600">
+                            <p class="font-medium text-neutral-800">{{ order.billing_name }}</p>
+                            <div class="mt-2">{{ order.billing_address_display|linebreaks }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Order Totals -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+                        <h3 class="font-medium text-neutral-800 mb-4">Order Summary</h3>
+                        
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-neutral-600">Subtotal:</span>
+                                <span class="text-neutral-800">${{ order.subtotal }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-neutral-600">Shipping:</span>
+                                <span class="text-neutral-800">
+                                    {% if order.shipping_amount > 0 %}
+                                        ${{ order.shipping_amount }}
+                                    {% else %}
+                                        <span class="text-green-600">Free</span>
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-neutral-600">Tax:</span>
+                                <span class="text-neutral-800">${{ order.tax_amount }}</span>
+                            </div>
+                            <div class="flex justify-between text-base font-semibold border-t border-neutral-200 pt-3 mt-4">
+                                <span class="text-neutral-800">Total:</span>
+                                <span class="text-neutral-800">${{ order.total_amount }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 p-4 bg-neutral-50 rounded-lg">
+                            <div class="flex items-start space-x-3">
+                                <svg class="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                </svg>
+                                <div class="text-sm text-neutral-600">
+                                    <p class="font-medium text-neutral-800">Payment Method</p>
+                                    <p>Credit Card ending in ****</p>
+                                    <p class="text-xs text-neutral-500 mt-1">Processed securely via Stripe</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Special Instructions -->
+            {% if order.notes %}
+            <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-6 mb-8">
+                <h3 class="font-medium text-neutral-800 mb-3">Special Instructions</h3>
+                <p class="text-sm text-neutral-600 italic">"{{ order.notes }}"</p>
+            </div>
+            {% endif %}
+
+            <!-- What's Next -->
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-8">
+                <h3 class="text-lg font-playfair font-semibold text-blue-900 mb-4">What Happens Next?</h3>
+                <div class="grid md:grid-cols-3 gap-6 text-sm">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-medium">1</div>
+                        <div>
+                            <h4 class="font-medium text-blue-900 mb-1">Processing</h4>
+                            <p class="text-blue-700">Your order is being prepared for shipment. Original artworks are carefully packaged.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-medium">2</div>
+                        <div>
+                            <h4 class="font-medium text-blue-900 mb-1">Shipping</h4>
+                            <p class="text-blue-700">You'll receive tracking information once your order ships. Usually within 3-5 business days.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-medium">3</div>
+                        <div>
+                            <h4 class="font-medium text-blue-900 mb-1">Delivery</h4>
+                            <p class="text-blue-700">Standard shipping takes 5-7 business days. Your art will arrive safely!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="text-center space-x-4">
+                <a href="{% url 'shop' %}" class="inline-flex items-center bg-neutral-100 hover:bg-neutral-200 text-neutral-800 px-6 py-3 rounded-lg transition-colors">
+                    Continue Shopping
+                </a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'orders:history' %}" class="inline-flex items-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg transition-colors">
+                    View Order History
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Contact Info -->
+            <div class="text-center mt-12 p-6 bg-white rounded-xl shadow-sm border border-neutral-200">
+                <h3 class="font-medium text-neutral-800 mb-3">Questions about your order?</h3>
+                <p class="text-sm text-neutral-600 mb-4">
+                    We're here to help! Contact us with any questions or concerns.
+                </p>
+                <div class="flex items-center justify-center space-x-6 text-sm text-neutral-600">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                        </svg>
+                        hello@aizasfineart.com
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                        </svg>
+                        (555) 123-4567
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Email Confirmation Sent -->
+<div class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg hidden" id="email-confirmation">
+    <div class="flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+        </svg>
+        Confirmation email sent!
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Show email confirmation notification
+    setTimeout(function() {
+        const notification = document.getElementById('email-confirmation');
+        if (notification) {
+            notification.classList.remove('hidden');
+            
+            // Hide after 5 seconds
+            setTimeout(function() {
+                notification.classList.add('hidden');
+            }, 5000);
+        }
+    }, 2000);
+});
+</script>
+{% endblock %}

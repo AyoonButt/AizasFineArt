@@ -1,0 +1,140 @@
+<!-- Navbar Component -->
+<nav class="navbar fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-sm border-b border-neutral-200 transition-all duration-300" 
+     data-component="navbar" 
+     data-gsap="fadeInUp">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+            
+            <!-- Logo -->
+            <div class="flex-shrink-0">
+                <a href="{% url 'home' %}" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center">
+                        <span class="text-white font-playfair font-bold text-lg">A</span>
+                    </div>
+                    <div class="hidden sm:block">
+                        <h1 class="font-playfair font-semibold text-xl text-neutral-800">Aiza's Fine Art</h1>
+                        <p class="text-xs text-neutral-600 -mt-1">Fort Worth, Texas</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex items-center space-x-8">
+                {% for item in nav_items %}
+                    <a href="{% url item.url_name %}" 
+                       class="nav-link {% if current_page == item.url_name %}nav-link-active{% endif %}">
+                        {{ item.name }}
+                    </a>
+                {% endfor %}
+            </div>
+
+            <!-- User Actions -->
+            <div class="flex items-center space-x-4">
+                
+                <!-- Search (Desktop) -->
+                <div class="hidden lg:block">
+                    <form action="/art/search/" method="get" class="relative">
+                        <input type="search" 
+                               name="q" 
+                               placeholder="Search artworks..." 
+                               class="w-48 pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm">
+                        <svg class="absolute left-3 top-2.5 w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </form>
+                </div>
+
+                <!-- User Menu -->
+                {% if user.is_authenticated %}
+                    <div class="relative group">
+                        <button class="flex items-center space-x-2 text-neutral-700 hover:text-primary-500 transition-colors">
+                            <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                                <span class="text-primary-600 text-sm font-medium">{{ user.first_name|first|default:user.username|first }}</span>
+                            </div>
+                            <span class="hidden sm:block">{{ user.first_name|default:user.username }}</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Dropdown Menu -->
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                            <div class="py-1">
+                                <a href="{% url 'dashboard' %}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">Dashboard</a>
+                                <a href="{% url 'dashboard' %}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">Profile</a>
+                                <a href="{% url 'orders:history' %}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">Orders</a>
+                                <a href="{% url 'wishlist' %}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">Wishlist</a>
+                                <div class="border-t border-neutral-100 mt-1 pt-1">
+                                    <form method="post" action="{% url 'account_logout' %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">Logout</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-neutral-700 hover:text-primary-500 transition-colors">Login</a>
+                    <a href="{% url 'signup' %}" class="btn-primary">Sign Up</a>
+                {% endif %}
+
+                <!-- Cart/Wishlist Icons -->
+                <div class="flex items-center space-x-2">
+                    <a href="{% url 'wishlist' %}" class="p-2 text-neutral-700 hover:text-primary-500 transition-colors" title="Wishlist">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                        </svg>
+                    </a>
+                    <a href="{% url 'cart' %}" class="relative p-2 text-neutral-700 hover:text-primary-500 transition-colors" title="Shopping Cart">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                        </svg>
+                        <span class="cart-count absolute -top-1 -right-1 hidden bg-primary-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">0</span>
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden p-2 text-neutral-700 hover:text-primary-500 transition-colors"
+                        onclick="toggleMobileMenu()"
+                        aria-label="Toggle mobile menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden py-4 border-t border-neutral-200">
+            <div class="flex flex-col space-y-2">
+                {% for item in nav_items %}
+                    <a href="{% url item.url_name %}" 
+                       class="block px-4 py-2 text-neutral-700 hover:text-primary-500 hover:bg-neutral-50 rounded-lg transition-colors
+                              {% if current_page == item.url_name %}text-primary-500 bg-primary-50{% endif %}">
+                        {{ item.name }}
+                    </a>
+                {% endfor %}
+                
+                <!-- Mobile Search -->
+                <div class="px-4 py-2">
+                    <form action="/art/search/" method="get" class="relative">
+                        <input type="search" 
+                               name="q" 
+                               placeholder="Search artworks..." 
+                               class="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm">
+                        <svg class="absolute left-3 top-2.5 w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenu.classList.toggle('hidden');
+}
+</script>

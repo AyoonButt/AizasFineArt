@@ -1,0 +1,89 @@
+<!-- Gallery Grid Component -->
+<div class="gallery-container htmx-animate" 
+     hx-target="this" 
+     hx-swap="outerHTML"
+     data-component="gallery-grid"
+     data-gsap="staggerChildren">
+    
+    <!-- Gallery Filters -->
+    {% if show_filters %}
+        {% component "gallery_filters" current_medium=medium current_category=category %}{% endcomponent %}
+    {% endif %}
+    
+    <!-- Gallery Stats -->
+    <div class="flex justify-between items-center mb-6">
+        <p class="text-neutral-600">
+            Showing {{ total_count }} artwork{{ total_count|pluralize }}
+            {% if medium != "all" %}in {{ medium|title }}{% endif %}
+            {% if category != "all" %} - {{ category|title }}{% endif %}
+        </p>
+        
+        <!-- View Toggle -->
+        <div class="flex space-x-2">
+            <button class="p-2 text-neutral-600 hover:text-primary-500 transition-colors" 
+                    title="Grid View">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                </svg>
+            </button>
+            <button class="p-2 text-neutral-600 hover:text-primary-500 transition-colors" 
+                    title="List View">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Gallery Grid -->
+    {% if artworks %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" 
+             id="gallery-grid">
+            {% for artwork in artworks %}
+                {% component "artwork_card" artwork=artwork %}{% endcomponent %}
+            {% endfor %}
+        </div>
+        
+        <!-- Load More Button (for pagination) -->
+        {% if artworks.has_next %}
+            <div class="text-center mt-8">
+                <button class="btn-primary htmx-loading-animate"
+                        hx-get="{% url 'htmx_load_more' %}?page={{ artworks.next_page_number }}&medium={{ medium }}&category={{ category }}"
+                        hx-target="#gallery-grid"
+                        hx-swap="beforeend">
+                    <span class="htmx-indicator">
+                        <span class="htmx-indicator"></span>
+                        <span class="htmx-indicator"></span>
+                        <span class="htmx-indicator"></span>
+                    </span>
+                    Load More Artworks
+                </button>
+            </div>
+        {% endif %}
+    {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-12">
+            <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-neutral-100 flex items-center justify-center">
+                <svg class="w-12 h-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-playfair font-semibold text-neutral-800 mb-2">No Artworks Found</h3>
+            <p class="text-neutral-600 mb-4">
+                {% if medium != "all" or category != "all" %}
+                    Try adjusting your filters to see more artworks.
+                {% else %}
+                    Check back later for new artworks.
+                {% endif %}
+            </p>
+            {% if medium != "all" or category != "all" %}
+                <button class="btn-outline"
+                        hx-get="{% url 'htmx_gallery_filter' %}?medium=all&category=all"
+                        hx-target=".gallery-container"
+                        hx-swap="outerHTML">
+                    Clear Filters
+                </button>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>

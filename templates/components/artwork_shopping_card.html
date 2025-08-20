@@ -1,0 +1,261 @@
+{% load static %}
+
+<article class="artwork-shopping-card" data-artwork-id="{{ artwork.id }}">
+  <div class="artwork-shopping-card__container">
+    <!-- Image Viewer Section -->
+    <div class="image-viewer">
+      <div class="image-viewer__main">
+        <img 
+          id="main-artwork-image-{{ artwork.id }}"
+          src="{{ artwork.gallery_url }}" 
+          alt="{{ artwork.alt_text|default:artwork.title }} by {{ artwork.artist_name }}"
+          class="image-viewer__main-image"
+          onclick="openImageZoom(this)"
+        />
+        
+        {% if artwork.all_images|length > 1 %}
+        <div class="image-viewer__thumbnails">
+          {% for image in artwork.all_images %}
+          <button 
+            class="image-viewer__thumbnail {% if forloop.first %}active{% endif %}"
+            hx-get="{% url 'artwork_image_partial' artwork.id %}?image_index={{ forloop.counter0 }}"
+            hx-target="#main-artwork-image-{{ artwork.id }}"
+            hx-swap="outerHTML"
+            aria-label="View image {{ forloop.counter }}"
+          >
+            <img src="{{ image }}" alt="{{ artwork.title }} view {{ forloop.counter }}" />
+          </button>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Product Information Section -->
+    <div class="artwork-shopping-card__info">
+      <div class="product-info">
+        <div class="product-info__header">
+          <h1 class="product-info__title">{{ artwork.title }}</h1>
+          <p class="product-info__artist">by {{ artwork.artist_name }}</p>
+        </div>
+
+        <div class="product-info__specs">
+          <span class="product-info__medium">{{ artwork.medium }}</span>
+          <span class="product-info__dimensions">
+            {{ artwork.dimensions.width }}" × {{ artwork.dimensions.height }}"
+          </span>
+          <span class="product-info__year">{{ artwork.year_created }}</span>
+        </div>
+
+        <div class="product-info__description">
+          <p>{{ artwork.description }}</p>
+          
+          {% if artwork.story %}
+          <div class="product-info__story-container">
+            <div id="artist-story-{{ artwork.id }}" class="product-info__story" style="display: none;">
+              <h4>Artist's Story</h4>
+              <p>{{ artwork.story }}</p>
+            </div>
+            <button 
+              class="product-info__details-toggle"
+              hx-get="{% url 'toggle_story_partial' artwork.id %}"
+              hx-target="#artist-story-{{ artwork.id }}"
+              hx-swap="outerHTML"
+            >
+              Read Artist's Story
+            </button>
+          </div>
+          {% endif %}
+        </div>
+
+        {% if artwork.tags.all %}
+        <div class="product-info__tags">
+          {% for tag in artwork.tags.all %}
+          <a href="{% url 'shop' %}?tag={{ tag.slug }}" class="product-info__tag">
+            {{ tag.name }}
+          </a>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Pricing Section -->
+      <div class="pricing-selector" id="pricing-section-{{ artwork.id }}">
+        {% include 'components/artwork_pricing.html' with artwork=artwork selected_print_option=artwork.print_options.first %}
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons" id="action-buttons-{{ artwork.id }}">
+        <div class="action-buttons__primary">
+          {% if artwork.type == 'original' and artwork.original_price %}
+          <form 
+            class="action-buttons__form"
+            hx-post="{% url 'add_to_cart' %}"
+            hx-target="#cart-status"
+            hx-swap="innerHTML"
+            hx-include="[name='csrfmiddlewaretoken']"
+          >
+            {% csrf_token %}
+            <input type="hidden" name="artwork_id" value="{{ artwork.id }}">
+            <input type="hidden" name="type" value="original">
+            <input type="hidden" name="price" value="{{ artwork.original_price }}">
+            <button 
+              type="submit"
+              class="action-buttons__buy-original"
+              hx-indicator="#loading-indicator-{{ artwork.id }}"
+            >
+              Buy Original
+            </button>
+          </form>
+          {% endif %}
+
+          {% if artwork.type == 'print' and artwork.print_options.exists %}
+          <form 
+            class="action-buttons__form"
+            hx-post="{% url 'add_to_cart' %}"
+            hx-target="#cart-status"
+            hx-swap="innerHTML"
+            hx-include="[name='csrfmiddlewaretoken'], [name='print_option']"
+          >
+            {% csrf_token %}
+            <input type="hidden" name="artwork_id" value="{{ artwork.id }}">
+            <input type="hidden" name="type" value="print">
+            <button 
+              type="submit"
+              class="action-buttons__add-print"
+              hx-indicator="#loading-indicator-{{ artwork.id }}"
+            >
+              Add Print to Cart
+            </button>
+          </form>
+          {% endif %}
+        </div>
+
+        <div class="action-buttons__secondary">
+          <button 
+            class="action-buttons__wishlist {% if artwork.id in user.wishlist %}active{% endif %}"
+            hx-put="{% url 'toggle_wishlist' artwork.id %}"
+            hx-target="this"
+            hx-swap="outerHTML"
+          >
+            <span class="heart-icon">♥</span>
+            {% if artwork.id in user.wishlist %}In Wishlist{% else %}Add to Wishlist{% endif %}
+          </button>
+
+          <button class="action-buttons__share" onclick="shareArtwork('{{ artwork.get_absolute_url }}', '{{ artwork.title }}')">
+            Share
+          </button>
+
+          <a href="{% url 'contact' %}?artwork={{ artwork.id }}" class="action-buttons__inquire">
+            Inquire
+          </a>
+        </div>
+
+        <div id="loading-indicator-{{ artwork.id }}" class="htmx-indicator">
+          <div class="loading-spinner"></div>
+        </div>
+      </div>
+
+      <!-- Trust Indicators -->
+      <div class="trust-indicators">
+        <div class="trust-indicators__item">
+          <span class="trust-indicators__icon">🎨</span>
+          <span>Certificate of Authenticity</span>
+        </div>
+        <div class="trust-indicators__item">
+          <span class="trust-indicators__icon">🔄</span>
+          <span>30-Day Return Policy</span>
+        </div>
+        <div class="trust-indicators__item">
+          <span class="trust-indicators__icon">🚚</span>
+          <span>Free Shipping Over $100</span>
+        </div>
+        <div class="trust-indicators__item">
+          <span class="trust-indicators__icon">🔒</span>
+          <span>Secure Payment</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback Messages -->
+  <div id="action-feedback-{{ artwork.id }}" class="action-feedback"></div>
+</article>
+
+<!-- Image Zoom Modal -->
+<div id="image-zoom-modal" class="image-viewer__zoom-modal" onclick="closeImageZoom()">
+  <img id="zoom-image" class="image-viewer__zoom-image" src="" alt="" />
+</div>
+
+<script>
+// HTMX event handlers and JavaScript fallbacks
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle print option changes
+  document.addEventListener('change', function(e) {
+    if (e.target.name === 'print_option') {
+      const artworkId = e.target.closest('.artwork-shopping-card').dataset.artworkId;
+      htmx.ajax('GET', `/artwork/${artworkId}/pricing/?print_option=${e.target.value}`, {
+        target: `#pricing-section-${artworkId}`,
+        swap: 'innerHTML'
+      });
+    }
+  });
+
+  // Handle successful cart additions
+  document.body.addEventListener('htmx:afterRequest', function(e) {
+    if (e.detail.xhr.status === 200 && e.detail.requestConfig.verb === 'post') {
+      const response = JSON.parse(e.detail.xhr.response);
+      if (response.success) {
+        showFeedback(response.artwork_id, 'success', response.message);
+      } else {
+        showFeedback(response.artwork_id, 'error', response.message);
+      }
+    }
+  });
+});
+
+// Image zoom functionality
+function openImageZoom(img) {
+  const modal = document.getElementById('image-zoom-modal');
+  const zoomImg = document.getElementById('zoom-image');
+  zoomImg.src = img.src;
+  zoomImg.alt = img.alt;
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeImageZoom() {
+  const modal = document.getElementById('image-zoom-modal');
+  modal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+// Share functionality
+function shareArtwork(url, title) {
+  if (navigator.share) {
+    navigator.share({
+      title: title,
+      url: window.location.origin + url
+    });
+  } else {
+    // Fallback: copy to clipboard
+    navigator.clipboard.writeText(window.location.origin + url).then(() => {
+      alert('Link copied to clipboard!');
+    });
+  }
+}
+
+// Feedback display
+function showFeedback(artworkId, type, message) {
+  const feedbackEl = document.getElementById(`action-feedback-${artworkId}`);
+  feedbackEl.innerHTML = `<div class="action-feedback__message ${type}">${message}</div>`;
+  feedbackEl.classList.add('show');
+  
+  setTimeout(() => {
+    feedbackEl.classList.remove('show');
+    setTimeout(() => {
+      feedbackEl.innerHTML = '';
+    }, 300);
+  }, 3000);
+}
+</script>

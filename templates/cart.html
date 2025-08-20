@@ -1,0 +1,770 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart - Aiza's Fine Art{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<section class="py-20 bg-white min-h-screen">
+    <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+            <!-- Page Header -->
+            <div class="text-center mb-12">
+                <h1 class="text-h1 font-playfair font-semibold text-neutral-800 mb-4">Shopping Cart</h1>
+                <p class="text-body-lg text-neutral-600">Review and modify your selected items</p>
+            </div>
+
+            <div id="cart-content">
+                <!-- Cart Items Section -->
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <!-- Cart Items Column -->
+                    <div class="lg:col-span-2">
+                        <div id="cart-items" class="space-y-6">
+                            <!-- Cart items will be loaded here dynamically -->
+                        </div>
+                        
+                        <!-- Empty Cart State -->
+                        <div id="empty-cart" class="text-center py-16 hidden">
+                            <div class="w-24 h-24 mx-auto mb-6 bg-neutral-100 rounded-full flex items-center justify-center">
+                                <svg class="w-12 h-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-playfair font-semibold text-neutral-800 mb-2">Your cart is empty</h3>
+                            <p class="text-neutral-600 mb-6">Add some beautiful artwork to get started</p>
+                            <a href="{% url 'shop' %}" class="btn-primary">
+                                Continue Shopping
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary Column -->
+                    <div class="lg:col-span-1">
+                        <div id="cart-summary" class="bg-neutral-50 rounded-xl p-6 sticky top-24">
+                            <h3 class="text-lg font-playfair font-semibold text-neutral-800 mb-4">Order Summary</h3>
+                            
+                            <div class="space-y-3 mb-6">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-neutral-600">Subtotal</span>
+                                    <span id="cart-subtotal" class="font-medium">$0.00</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-neutral-600">Shipping</span>
+                                    <span id="cart-shipping" class="font-medium text-green-600">FREE (US)</span>
+                                </div>
+                                <div class="text-xs text-neutral-500 italic mb-2">
+                                    Free shipping for US buyers, $12 for international
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-neutral-600">Tax</span>
+                                    <span id="cart-tax" class="font-medium">Calculated at checkout</span>
+                                </div>
+                                <div class="border-t border-neutral-200 pt-3">
+                                    <div class="flex justify-between">
+                                        <span class="font-semibold text-neutral-800">Total</span>
+                                        <span id="cart-total" class="font-bold text-xl text-primary">$0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button id="checkout-btn" onclick="proceedToCheckout()" disabled class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed mb-4">
+                                Proceed to Checkout
+                            </button>
+                            
+                            <a href="{% url 'shop' %}" class="w-full btn-outline block text-center">
+                                Continue Shopping
+                            </a>
+                            
+                            <!-- Shipping Info -->
+                            <div class="mt-6 text-xs text-neutral-500 space-y-1">
+                                <p>✓ Free shipping on orders over $75</p>
+                                <p>✓ 30-day return policy</p>
+                                <p>✓ Secure checkout</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Toast Notification -->
+<div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-full transition-transform duration-300 ease-in-out">
+    <div class="bg-neutral-800 text-white px-6 py-3 rounded-lg shadow-lg max-w-sm">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span id="toast-message">Action completed</span>
+        </div>
+    </div>
+</div>
+
+<script>
+// Cart state management
+let cartState = {
+    items: {},
+    subtotal: 0,
+    shipping: 0,
+    tax: 0,
+    total: 0
+};
+
+// Initialize cart on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Cart page loaded, loading cart data...');
+    loadCart();
+    
+    // Add click event test after 2 seconds
+    setTimeout(() => {
+        console.log('Testing button clicks...');
+        const buttons = document.querySelectorAll('button[onclick*="updateCartQuantity"]');
+        console.log('Found', buttons.length, 'quantity buttons on page');
+        buttons.forEach((btn, i) => {
+            console.log(`Button ${i}:`, {
+                disabled: btn.disabled,
+                onclick: btn.getAttribute('onclick'),
+                classes: btn.className,
+                style: btn.style.cssText
+            });
+        });
+    }, 2000);
+});
+
+// Make functions available globally for onclick handlers
+window.updateCartQuantity = updateCartQuantity;
+window.removeFromCart = removeFromCart;
+window.proceedToCheckout = proceedToCheckout;
+
+// Load cart items from server
+function loadCart() {
+    console.log('Loading cart from API...');
+    fetch('/api/cart/', {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': getCsrfToken(),
+        }
+    })
+    .then(response => {
+        console.log('Cart API response status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Cart API response data:', data);
+        if (data.success) {
+            cartState = {
+                subtotal: data.subtotal || 0,
+                shipping: data.shipping || 0,
+                tax: data.tax || 0,
+                total: data.total || 0,
+                items: {}
+            };
+            
+            // Populate cartState.items for individual updates
+            if (data.items && data.items.length > 0) {
+                console.log('Found', data.items.length, 'cart items');
+                data.items.forEach(item => {
+                    cartState.items[item.id] = {
+                        quantity: item.quantity,
+                        unit_price: item.unit_price,
+                        total_price: item.total_price,
+                        item_type: item.item_type,
+                        artwork: item.artwork
+                    };
+                });
+                displayCartItems(data.items);
+            } else {
+                console.log('Cart has no items');
+                showEmptyCart();
+            }
+            updateCartSummary();
+        } else {
+            console.log('API returned success=false:', data);
+            showEmptyCart();
+        }
+    })
+    .catch(error => {
+        console.error('Error loading cart:', error);
+        showEmptyCart();
+    });
+}
+
+// Display cart items
+function displayCartItems(items) {
+    const cartItemsContainer = document.getElementById('cart-items');
+    const emptyCart = document.getElementById('empty-cart');
+    
+    if (!items || items.length === 0) {
+        showEmptyCart();
+        return;
+    }
+    
+    emptyCart.classList.add('hidden');
+    cartItemsContainer.innerHTML = '';
+    
+    items.forEach(item => {
+        const itemElement = createCartItemElement(item);
+        cartItemsContainer.appendChild(itemElement);
+        
+        // Initialize button states after element is added to DOM
+        if (item.item_type !== 'original') {
+            setTimeout(() => initializeButtonStates(item.id, item.quantity), 10);
+        }
+    });
+}
+
+// Create cart item element
+function createCartItemElement(item) {
+    const itemDiv = document.createElement('div');
+    itemDiv.className = 'bg-white border border-neutral-200 rounded-xl p-6 hover:shadow-md transition-shadow';
+    itemDiv.dataset.itemId = item.id;
+    
+    itemDiv.innerHTML = `
+        <div class="flex gap-6">
+            <!-- Item Image -->
+            <div class="flex-shrink-0">
+                <img src="${item.artwork.thumbnail_url || item.artwork.gallery_url || '/static/images/placeholder.jpg'}" 
+                     alt="${item.artwork.title}" 
+                     class="w-24 h-24 object-cover rounded-lg">
+            </div>
+            
+            <!-- Item Details -->
+            <div class="flex-1">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-playfair font-semibold text-lg text-neutral-800">
+                        <a href="/art/${item.artwork.slug}/" class="hover:text-primary transition-colors">
+                            ${item.artwork.title}
+                        </a>
+                    </h3>
+                    <button onclick="removeFromCart('${item.id}')" 
+                            class="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Remove from cart">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <p class="text-sm text-neutral-600 mb-3">${item.item_type_display}</p>
+                
+                <div class="flex items-center justify-between">
+                    <!-- Quantity Controls -->
+                    <div class="flex items-center space-x-3">
+                        <label class="text-sm text-neutral-600">Quantity:</label>
+                        <div class="flex items-center border border-neutral-300 rounded">
+                            ${item.item_type === 'original' ? `
+                                <!-- Original artworks: quantity locked at 1 -->
+                                <div class="px-3 py-1 text-neutral-400 cursor-not-allowed opacity-50">-</div>
+                                <input type="number" 
+                                       value="1" 
+                                       min="1" 
+                                       max="1" 
+                                       readonly
+                                       class="w-16 px-2 py-1 text-center border-0 bg-neutral-50 text-neutral-600 cursor-not-allowed" 
+                                       title="Original artworks are limited to quantity 1">
+                                <div class="px-3 py-1 text-neutral-400 cursor-not-allowed opacity-50">+</div>
+                            ` : `
+                                <!-- Prints: normal quantity controls -->
+                                <button type="button" onclick="updateCartQuantity('${item.id}', ${item.quantity - 1})" 
+                                        class="px-3 py-1 text-neutral-600 hover:bg-neutral-100 transition-colors ${item.quantity <= 1 ? 'opacity-50 cursor-not-allowed' : ''}"
+                                        ${item.quantity <= 1 ? 'disabled' : ''}>
+                                    -
+                                </button>
+                                <input type="number" 
+                                       value="${item.quantity}" 
+                                       min="1" 
+                                       max="10" 
+                                       class="w-24 px-3 py-1 text-center border-0 focus:ring-2 focus:ring-primary-200 focus:outline-none" 
+                                       onchange="updateCartQuantity('${item.id}', Math.min(10, Math.max(1, parseInt(this.value) || 1)))"
+                                       oninput="this.value = Math.min(10, Math.max(1, parseInt(this.value) || 1))">
+                                <button type="button" onclick="updateCartQuantity('${item.id}', ${item.quantity + 1})" 
+                                        class="px-3 py-1 text-neutral-600 hover:bg-neutral-100 transition-colors ${item.quantity >= 10 ? 'opacity-50 cursor-not-allowed' : ''}"
+                                        ${item.quantity >= 10 ? 'disabled' : ''}>
+                                    +
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                    
+                    <!-- Price -->
+                    <div class="text-right">
+                        <div class="text-lg font-semibold text-primary">$${item.total_price.toFixed(2)}</div>
+                        ${item.quantity > 1 ? `<div class="text-sm text-neutral-600">$${item.unit_price.toFixed(2)} each</div>` : ''}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    return itemDiv;
+}
+
+// Update cart quantity
+function updateCartQuantity(itemId, newQuantity) {
+    console.log('=== updateCartQuantity called ===');
+    console.log('Item ID:', itemId, 'New Quantity:', newQuantity);
+    
+    // Check if this is an original artwork
+    const cartItem = cartState.items[itemId];
+    console.log('Cart item:', cartItem);
+    
+    if (!cartItem) {
+        console.error('Cart item not found in cartState!');
+        return;
+    }
+    
+    if (cartItem.item_type === 'original') {
+        console.log('Cannot update quantity for original artwork - quantity locked at 1');
+        showToast('Original artworks are limited to quantity 1', 'error');
+        return;
+    }
+    
+    console.log('Item type:', cartItem.item_type, '- proceeding with update');
+    
+    const quantity = Math.max(1, Math.min(10, parseInt(newQuantity) || 1));
+    console.log('Normalized quantity:', quantity);
+    
+    // Add loading state to the specific item
+    const itemElement = document.querySelector(`[data-item-id="${itemId}"]`);
+    if (itemElement) {
+        itemElement.style.opacity = '0.6';
+        itemElement.style.pointerEvents = 'none';
+    }
+    
+    fetch('/api/cart/update/', {
+        method: 'PUT',
+        headers: {
+            'X-CSRFToken': getCsrfToken(),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            item_id: itemId,
+            quantity: quantity
+        })
+    })
+    .then(response => {
+        console.log('Update cart response status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Update cart response data:', data);
+        if (data.success) {
+            // Update only the specific item instead of reloading entire cart
+            updateSingleCartItem(itemId, quantity, data);
+            updateCartTotals();
+            showToast('Cart updated successfully');
+        } else {
+            showToast(data.message || 'Error updating cart', 'error');
+        }
+        
+        // Remove loading state
+        if (itemElement) {
+            itemElement.style.opacity = '1';
+            itemElement.style.pointerEvents = 'auto';
+        }
+    })
+    .catch(error => {
+        console.error('Error updating cart:', error);
+        showToast('Error updating cart', 'error');
+        
+        // Remove loading state and reset quantity on error
+        if (itemElement) {
+            itemElement.style.opacity = '1';
+            itemElement.style.pointerEvents = 'auto';
+            // Reset quantity input to previous value
+            const quantityInput = itemElement.querySelector('input[type="number"]');
+            if (quantityInput && cartState.items[itemId]) {
+                quantityInput.value = cartState.items[itemId].quantity;
+            }
+        }
+    });
+}
+
+// Initialize button states for a cart item
+function initializeButtonStates(itemId, quantity) {
+    console.log('Initializing button states for item', itemId, 'quantity', quantity);
+    const itemElement = document.querySelector(`[data-item-id="${itemId}"]`);
+    if (!itemElement) return;
+    
+    const buttons = itemElement.querySelectorAll('button[onclick*="updateCartQuantity"]');
+    const minusBtn = buttons[0]; // First button is minus
+    const plusBtn = buttons[1]; // Second button is plus
+    
+    console.log('Found buttons during initialization:', buttons.length);
+    
+    if (minusBtn) {
+        const shouldDisable = quantity <= 1;
+        console.log('Initial minus button - quantity:', quantity, 'should disable:', shouldDisable);
+        
+        minusBtn.disabled = shouldDisable;
+        if (shouldDisable) {
+            minusBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            minusBtn.style.pointerEvents = 'none';
+        } else {
+            minusBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            minusBtn.style.pointerEvents = 'auto';
+        }
+    }
+    
+    if (plusBtn) {
+        const shouldDisable = quantity >= 10;
+        console.log('Initial plus button - quantity:', quantity, 'should disable:', shouldDisable);
+        
+        plusBtn.disabled = shouldDisable;
+        if (shouldDisable) {
+            plusBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            plusBtn.style.pointerEvents = 'none';
+        } else {
+            plusBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            plusBtn.style.pointerEvents = 'auto';
+        }
+    }
+}
+
+// Update a single cart item without reloading entire cart
+function updateSingleCartItem(itemId, newQuantity, apiResponse) {
+    const itemElement = document.querySelector(`[data-item-id="${itemId}"]`);
+    if (!itemElement) return;
+    
+    // Update cartState
+    if (cartState.items[itemId]) {
+        cartState.items[itemId].quantity = newQuantity;
+        cartState.items[itemId].total_price = cartState.items[itemId].unit_price * newQuantity;
+    }
+    
+    // Update quantity input
+    const quantityInput = itemElement.querySelector('input[type="number"]');
+    if (quantityInput) {
+        quantityInput.value = newQuantity;
+    }
+    
+    // Update +/- button states (only for prints, originals don't have functional buttons)
+    if (cartState.items[itemId] && cartState.items[itemId].item_type !== 'original') {
+        // Use more reliable selectors
+        const buttons = itemElement.querySelectorAll('button[onclick*="updateCartQuantity"]');
+        const minusBtn = buttons[0]; // First button is minus
+        const plusBtn = buttons[1]; // Second button is plus
+        
+        console.log('Updating buttons for item', itemId, 'quantity', newQuantity, 'found buttons:', buttons.length);
+        console.log('Item type:', cartState.items[itemId].item_type);
+        console.log('Plus button should be enabled?', newQuantity < 10);
+        console.log('Minus button should be enabled?', newQuantity > 1);
+        
+        if (minusBtn) {
+            const shouldDisable = newQuantity <= 1;
+            console.log('Minus button - current quantity:', newQuantity, 'should disable:', shouldDisable);
+            
+            minusBtn.disabled = shouldDisable;
+            if (shouldDisable) {
+                minusBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                minusBtn.style.pointerEvents = 'none';
+            } else {
+                minusBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                minusBtn.style.pointerEvents = 'auto';
+            }
+            
+            // Update onclick to use current quantity
+            minusBtn.setAttribute('onclick', `updateCartQuantity('${itemId}', ${newQuantity - 1})`);
+        }
+        
+        if (plusBtn) {
+            const shouldDisable = newQuantity >= 10;
+            console.log('Plus button - current quantity:', newQuantity, 'should disable:', shouldDisable);
+            
+            plusBtn.disabled = shouldDisable;
+            if (shouldDisable) {
+                plusBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                plusBtn.style.pointerEvents = 'none';
+            } else {
+                plusBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                plusBtn.style.pointerEvents = 'auto';
+            }
+            
+            // Update onclick to use current quantity
+            plusBtn.setAttribute('onclick', `updateCartQuantity('${itemId}', ${newQuantity + 1})`);
+        }
+    }
+    
+    // Update price display
+    const priceElement = itemElement.querySelector('.text-lg.font-semibold.text-primary');
+    const unitPriceElements = itemElement.querySelectorAll('.text-sm.text-neutral-600');
+    // Find the unit price element (not the item type display)
+    const unitPriceElement = Array.from(unitPriceElements).find(el => 
+        el.textContent.includes('$') || el.textContent.includes('each')
+    );
+    
+    if (cartState.items[itemId]) {
+        const unitPrice = cartState.items[itemId].unit_price;
+        const totalPrice = unitPrice * newQuantity;
+        
+        if (priceElement) {
+            priceElement.textContent = `$${totalPrice.toFixed(2)}`;
+        }
+        
+        // Create or update unit price display without affecting item type display
+        let unitPriceDisplay = unitPriceElement;
+        if (!unitPriceDisplay && newQuantity > 1) {
+            // Create unit price display element
+            unitPriceDisplay = document.createElement('div');
+            unitPriceDisplay.className = 'text-sm text-neutral-600';
+            priceElement.parentNode.appendChild(unitPriceDisplay);
+        }
+        
+        if (unitPriceDisplay) {
+            if (newQuantity > 1) {
+                unitPriceDisplay.textContent = `$${unitPrice.toFixed(2)} each`;
+                unitPriceDisplay.style.display = 'block';
+            } else {
+                unitPriceDisplay.style.display = 'none';
+            }
+        }
+    }
+}
+
+// Update cart totals without reloading items
+function updateCartTotals() {
+    // Fetch updated totals from server
+    fetch('/api/cart/', {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': getCsrfToken(),
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update cartState totals
+            cartState.subtotal = data.subtotal || 0;
+            cartState.shipping = data.shipping || 0;
+            cartState.tax = data.tax || 0;
+            cartState.total = data.total || 0;
+            
+            // Update summary display
+            updateCartSummary();
+            
+            // Update nav cart counter
+            updateCartCounter(data.item_count || 0);
+        }
+    })
+    .catch(error => {
+        console.error('Error updating totals:', error);
+    });
+}
+
+// Remove item from cart
+function removeFromCart(itemId) {
+    console.log('removeFromCart called with:', itemId);
+    if (!confirm('Are you sure you want to remove this item from your cart?')) {
+        return;
+    }
+    
+    // Add loading state to the specific item
+    const itemElement = document.querySelector(`[data-item-id="${itemId}"]`);
+    if (itemElement) {
+        itemElement.style.opacity = '0.6';
+        itemElement.style.pointerEvents = 'none';
+    }
+    
+    fetch('/api/cart/remove/', {
+        method: 'DELETE',
+        headers: {
+            'X-CSRFToken': getCsrfToken(),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            item_id: itemId
+        })
+    })
+    .then(response => {
+        console.log('Remove cart response status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Remove cart response data:', data);
+        if (data.success) {
+            // Remove item from DOM and update totals
+            removeSingleCartItem(itemId);
+            updateCartTotals();
+            showToast('Item removed from cart');
+        } else {
+            showToast(data.message || 'Error removing item', 'error');
+            
+            // Remove loading state on error
+            if (itemElement) {
+                itemElement.style.opacity = '1';
+                itemElement.style.pointerEvents = 'auto';
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error removing from cart:', error);
+        showToast('Error removing item', 'error');
+        
+        // Remove loading state on error
+        if (itemElement) {
+            itemElement.style.opacity = '1';
+            itemElement.style.pointerEvents = 'auto';
+        }
+    });
+}
+
+// Remove a single item from DOM and check if cart is empty
+function removeSingleCartItem(itemId) {
+    const itemElement = document.querySelector(`[data-item-id="${itemId}"]`);
+    if (itemElement) {
+        itemElement.remove();
+    }
+    
+    // Remove from cartState
+    delete cartState.items[itemId];
+    
+    // Check if cart is now empty
+    const cartItemsContainer = document.getElementById('cart-items');
+    if (cartItemsContainer && cartItemsContainer.children.length === 0) {
+        showEmptyCart();
+    }
+}
+
+// Update cart summary
+function updateCartSummary() {
+    const subtotal = cartState.subtotal || 0;
+    const shipping = cartState.shipping || 0;
+    const tax = cartState.tax || 0;
+    const total = cartState.total || 0;
+    
+    document.getElementById('cart-subtotal').textContent = `$${subtotal.toFixed(2)}`;
+    
+    // Update shipping display based on new logic
+    const shippingElement = document.getElementById('cart-shipping');
+    if (shipping === 0) {
+        shippingElement.innerHTML = '<span class="text-green-600">FREE (US)</span>';
+    } else {
+        shippingElement.innerHTML = `$${shipping.toFixed(2)} (International)`;
+    }
+    
+    // Tax is calculated by Stripe at checkout
+    document.getElementById('cart-tax').textContent = 'Calculated at checkout';
+    
+    // Total before tax (Stripe will add tax at checkout)
+    document.getElementById('cart-total').textContent = `$${(subtotal + shipping).toFixed(2)}`;
+    
+    // Enable/disable checkout button
+    const checkoutBtn = document.getElementById('checkout-btn');
+    checkoutBtn.disabled = subtotal === 0;
+}
+
+// Show empty cart state
+function showEmptyCart() {
+    document.getElementById('cart-items').innerHTML = '';
+    document.getElementById('empty-cart').classList.remove('hidden');
+    updateCartSummary();
+}
+
+// Update cart counter in navigation
+function updateCartCounter(count) {
+    const cartCount = document.querySelector('.cart-count');
+    if (cartCount) {
+        if (count > 0) {
+            cartCount.textContent = count;
+            cartCount.classList.remove('hidden');
+        } else {
+            cartCount.classList.add('hidden');
+        }
+    }
+}
+
+// Proceed to checkout
+function proceedToCheckout() {
+    window.location.href = '/orders/checkout/';
+}
+
+// Utility functions
+function getCsrfToken() {
+    // Try multiple ways to get CSRF token
+    let token = null;
+    
+    // Method 1: From meta tag
+    const metaTag = document.querySelector('meta[name="csrf-token"]');
+    if (metaTag) {
+        token = metaTag.getAttribute('content');
+        console.log('CSRF from meta tag:', token);
+    }
+    
+    // Method 2: From form input
+    if (!token) {
+        const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+        if (csrfInput) {
+            token = csrfInput.value;
+            console.log('CSRF from form input:', token);
+        }
+    }
+    
+    // Method 3: From cookie
+    if (!token) {
+        token = getCookie('csrftoken');
+        console.log('CSRF from cookie:', token);
+    }
+    
+    console.log('Final CSRF token:', token, 'Length:', token ? token.length : 0);
+    return token;
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    
+    if (!toast || !toastMessage) {
+        console.log('Toast notification:', message);
+        return;
+    }
+    
+    const toastIcon = toast.querySelector('svg path');
+    
+    toastMessage.textContent = message;
+    
+    // Update icon and color based on type
+    if (type === 'error') {
+        const bgElement = toast.querySelector('.bg-neutral-800');
+        if (bgElement) {
+            bgElement.classList.remove('bg-neutral-800');
+            bgElement.classList.add('bg-red-600');
+        }
+        if (toastIcon) {
+            toastIcon.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+        }
+    } else {
+        const bgElement = toast.querySelector('div > div');
+        if (bgElement) {
+            bgElement.className = 'bg-neutral-800 text-white px-6 py-3 rounded-lg shadow-lg max-w-sm';
+        }
+        if (toastIcon) {
+            toastIcon.setAttribute('d', 'M5 13l4 4L19 7');
+        }
+    }
+    
+    // Show toast
+    toast.classList.remove('translate-y-full');
+    
+    // Hide toast after 3 seconds
+    setTimeout(() => {
+        toast.classList.add('translate-y-full');
+    }, 3000);
+}
+</script>
+{% endblock %}

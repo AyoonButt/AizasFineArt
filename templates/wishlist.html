@@ -1,0 +1,313 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Wishlist - Aiza's Fine Art{% endblock %}
+
+<!-- CSRF Token for AJAX requests -->
+{% csrf_token %}
+
+{% block content %}
+<section class="py-20 bg-white min-h-screen">
+    <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+            <!-- Page Header -->
+            <div class="text-center mb-12">
+                <h1 class="text-h1 font-playfair font-semibold text-neutral-800 mb-4">My Wishlist</h1>
+                <p class="text-body-lg text-neutral-600">Your saved artwork collection</p>
+            </div>
+
+            <div id="wishlist-content">
+                <!-- Loading State -->
+                <div id="wishlist-loading" class="text-center py-16">
+                    <div class="animate-spin w-12 h-12 border-4 border-primary-200 border-t-primary-600 rounded-full mx-auto mb-4"></div>
+                    <p class="text-neutral-600">Loading your wishlist...</p>
+                </div>
+                
+                <!-- Wishlist Items Section -->
+                <div id="wishlist-items" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 hidden">
+                    <!-- Wishlist items will be loaded here dynamically -->
+                </div>
+                
+                <!-- Empty Wishlist State -->
+                <div id="empty-wishlist" class="text-center py-16 hidden">
+                    <div class="w-24 h-24 mx-auto mb-6 bg-neutral-100 rounded-full flex items-center justify-center">
+                        <svg class="w-12 h-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-playfair font-semibold text-neutral-800 mb-2">Your wishlist is empty</h3>
+                    <p class="text-neutral-600 mb-6">Save artwork you love for later</p>
+                    <a href="{% url 'gallery' %}" class="btn-primary">
+                        Browse Gallery
+                    </a>
+                </div>
+                
+                <!-- Wishlist Actions -->
+                <div id="wishlist-actions" class="mt-12 text-center hidden">
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button onclick="clearWishlist()" class="btn-outline text-red-600 border-red-600 hover:bg-red-600 hover:text-white">
+                            Clear All
+                        </button>
+                        <button onclick="addAllToCart()" class="btn-primary">
+                            Open All Items
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Toast Notification -->
+<div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-full transition-transform duration-300 ease-in-out">
+    <div class="bg-neutral-800 text-white px-6 py-3 rounded-lg shadow-lg max-w-sm">
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span id="toast-message">Action completed</span>
+        </div>
+    </div>
+</div>
+
+<script>
+// Wishlist state management
+let wishlistState = {
+    items: []
+};
+
+// Initialize wishlist on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadWishlist();
+});
+
+// Load wishlist items from backend API (authenticated users only)
+function loadWishlist() {
+    fetch('/api/wishlist/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        }
+    })
+    .then(response => {
+        if (response.status === 401 || response.status === 403) {
+            // User not authenticated, show empty state
+            showEmptyWishlist();
+            return;
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (!data) return;
+        
+        if (data.success && data.items && data.items.length > 0) {
+            wishlistState.items = data.items;
+            displayWishlistItems(data.items);
+        } else if (data.success) {
+            // Empty wishlist
+            showEmptyWishlist();
+        } else {
+            showEmptyWishlist();
+        }
+    })
+    .catch(error => {
+        console.error('Error loading wishlist:', error);
+        showEmptyWishlist();
+    });
+}
+
+
+// Display wishlist items
+function displayWishlistItems(items) {
+    const wishlistItemsContainer = document.getElementById('wishlist-items');
+    const emptyWishlist = document.getElementById('empty-wishlist');
+    const wishlistActions = document.getElementById('wishlist-actions');
+    const wishlistLoading = document.getElementById('wishlist-loading');
+    
+    // Hide loading state
+    wishlistLoading.classList.add('hidden');
+    
+    if (!items || items.length === 0) {
+        showEmptyWishlist();
+        return;
+    }
+    
+    emptyWishlist.classList.add('hidden');
+    wishlistActions.classList.remove('hidden');
+    wishlistItemsContainer.classList.remove('hidden');
+    wishlistItemsContainer.innerHTML = '';
+    
+    items.forEach((item, index) => {
+        const itemElement = createWishlistItemElement(item, index);
+        wishlistItemsContainer.appendChild(itemElement);
+    });
+}
+
+// Create wishlist item element
+function createWishlistItemElement(item, index) {
+    const itemDiv = document.createElement('div');
+    itemDiv.className = 'bg-white border border-neutral-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow group cursor-pointer';
+    itemDiv.dataset.itemId = item.id;
+    
+    const artwork = item.artwork;
+    
+    // Make entire card clickable
+    itemDiv.onclick = () => {
+        window.location.href = `/art/${artwork.slug}/`;
+    };
+    
+    itemDiv.innerHTML = `
+        <div class="artwork-image-container relative overflow-hidden" style="aspect-ratio: 4/5;">
+            <img src="${artwork.image_gallery || artwork.image_thumbnail || artwork.main_image_url || '/static/images/placeholder.jpg'}" 
+                 alt="${artwork.title}" 
+                 class="artwork-image w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+                 data-lazy="true"
+                 data-aspect-ratio="4/5"
+                 data-priority="${index < 6 ? 'high' : 'normal'}"
+                 loading="${index < 6 ? 'eager' : 'lazy'}">
+            
+            <!-- Remove Button (hover only) -->
+            <button onclick="event.stopPropagation(); removeFromWishlist('${item.id}');" 
+                    class="absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-all duration-300 opacity-0 group-hover:opacity-100 z-10"
+                    title="Remove from wishlist">
+                <svg class="w-5 h-5 text-neutral-600 hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="p-4">
+            <h3 class="font-playfair font-semibold text-lg text-neutral-800 group-hover:text-primary transition-colors">
+                ${artwork.title}
+            </h3>
+        </div>
+    `;
+    
+    return itemDiv;
+}
+
+// Remove item from wishlist
+function removeFromWishlist(itemId) {
+    fetch('/wishlist/remove/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            item_id: itemId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadWishlist(); // Reload wishlist to reflect changes
+            showToast('Item removed from wishlist');
+        } else {
+            showToast(data.message || 'Error removing item', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error removing from wishlist:', error);
+        showToast('Error removing item', 'error');
+    });
+}
+
+
+// Clear entire wishlist
+function clearWishlist() {
+    if (!confirm('Are you sure you want to clear your entire wishlist? This action cannot be undone.')) {
+        return;
+    }
+    
+    fetch('/wishlist/clear/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadWishlist(); // Reload wishlist to reflect changes
+            showToast('Wishlist cleared');
+        } else {
+            showToast(data.message || 'Error clearing wishlist', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error clearing wishlist:', error);
+        showToast('Error clearing wishlist', 'error');
+    });
+}
+
+// Open all wishlist items in new tabs
+function addAllToCart() {
+    if (wishlistState.items.length === 0) {
+        showToast('No items in wishlist', 'error');
+        return;
+    }
+    
+    showToast('Opening all artwork pages...');
+    
+    // Open each artwork detail page in new tabs
+    wishlistState.items.forEach((item, index) => {
+        setTimeout(() => {
+            window.open(`/art/${item.artwork.slug}/`, '_blank');
+        }, index * 100); // Stagger openings by 100ms
+    });
+}
+
+// Show empty wishlist state
+function showEmptyWishlist() {
+    document.getElementById('wishlist-loading').classList.add('hidden');
+    document.getElementById('wishlist-items').classList.add('hidden');
+    document.getElementById('wishlist-items').innerHTML = '';
+    document.getElementById('empty-wishlist').classList.remove('hidden');
+    document.getElementById('wishlist-actions').classList.add('hidden');
+}
+
+// Utility functions
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    const toastIcon = toast.querySelector('svg path');
+    
+    toastMessage.textContent = message;
+    
+    // Update icon and color based on type
+    if (type === 'error') {
+        toast.querySelector('.bg-neutral-800').classList.remove('bg-neutral-800');
+        toast.querySelector('div > div').classList.add('bg-red-600');
+        toastIcon.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+    } else {
+        toast.querySelector('div > div').className = 'bg-neutral-800 text-white px-6 py-3 rounded-lg shadow-lg max-w-sm';
+        toastIcon.setAttribute('d', 'M5 13l4 4L19 7');
+    }
+    
+    // Show toast
+    toast.classList.remove('translate-y-full');
+    
+    // Hide toast after 3 seconds
+    setTimeout(() => {
+        toast.classList.add('translate-y-full');
+    }, 3000);
+}
+</script>
+{% endblock %}

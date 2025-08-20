@@ -1,0 +1,112 @@
+<!-- Contact Form Component -->
+<div class="contact-form-container form-container htmx-animate" 
+     data-component="contact-form" 
+     data-gsap="fadeInUp">
+    
+    <!-- Success/Error Messages -->
+    {% if success_message %}
+        <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div class="flex items-start">
+                <svg class="w-6 h-6 text-green-500 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <div class="flex-1">
+                    <h4 class="text-green-800 font-semibold mb-1">Message Sent!</h4>
+                    <p class="text-green-700">{{ success_message }}</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+    {% if error_message %}
+        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div class="flex items-start">
+                <svg class="w-6 h-6 text-red-500 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                </svg>
+                <div class="flex-1">
+                    <h4 class="text-red-800 font-semibold mb-1">Error</h4>
+                    <p class="text-red-700">{{ error_message }}</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+    <!-- Contact Form -->
+    <form hx-post="{% url 'htmx_contact' %}"
+          hx-target=".contact-form-container"
+          hx-swap="outerHTML"
+          hx-indicator=".contact-form-loading"
+          class="htmx-loading-animate space-y-6">
+        
+        {% csrf_token %}
+        
+        <!-- Name Field -->
+        <div>
+            <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                Full Name *
+            </label>
+            {{ form.name }}
+            {% if form.name.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.name.errors.0 }}</p>
+            {% endif %}
+        </div>
+        
+        <!-- Email Field -->
+        <div>
+            <label for="{{ form.email.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                Email Address *
+            </label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+            {% endif %}
+        </div>
+        
+        <!-- Subject Field -->
+        <div>
+            <label for="{{ form.subject.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                Subject *
+            </label>
+            {{ form.subject }}
+            {% if form.subject.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.subject.errors.0 }}</p>
+            {% endif %}
+        </div>
+        
+        <!-- Message Field -->
+        <div>
+            <label for="{{ form.message.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                Message *
+            </label>
+            {{ form.message }}
+            {% if form.message.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ form.message.errors.0 }}</p>
+            {% endif %}
+            <p class="mt-1 text-xs text-neutral-500">
+                Tell me about your project, budget, timeline, or any questions you have.
+            </p>
+        </div>
+        
+        <!-- Submit Button -->
+        <div>
+            <button type="submit" 
+                    class="btn-primary w-full sm:w-auto contact-form-loading">
+                <span class="htmx-indicator mr-2">
+                    <span class="htmx-indicator"></span>
+                    <span class="htmx-indicator"></span>
+                    <span class="htmx-indicator"></span>
+                </span>
+                Send Message
+            </button>
+        </div>
+        
+        <!-- Privacy Notice -->
+        <div class="pt-4 border-t border-neutral-200">
+            <p class="text-xs text-neutral-500">
+                Your information is secure and will only be used to respond to your inquiry. 
+                See our <a href="/privacy/" class="text-primary-600 hover:underline">Privacy Policy</a> for details.
+            </p>
+        </div>
+    </form>
+</div>

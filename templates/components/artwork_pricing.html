@@ -1,0 +1,109 @@
+{% load static %}
+
+<div class="pricing-selector__content">
+  {% if artwork.type == 'original' and artwork.original_price %}
+    <!-- Both Original and Prints Available -->
+    <div class="pricing-selector__original">
+      <h3>Original Artwork</h3>
+      <div class="pricing-selector__price">
+        ${{ artwork.original_price|floatformat:0|add:"0"|slice:":3" }}{% if artwork.original_price >= 1000 %},{{ artwork.original_price|floatformat:0|slice:"3:" }}{% endif %}
+      </div>
+      {% if artwork.edition_info %}
+        <p class="pricing-selector__edition">{{ artwork.edition_info }}</p>
+      {% endif %}
+    </div>
+
+  {% elif artwork.type == 'print' %}
+    <!-- Prints Only -->
+    <div class="pricing-selector__prints pricing-selector__prints--exclusive">
+      <h3>Available as Prints</h3>
+      <p class="pricing-selector__original-status">Original artwork is no longer available</p>
+      
+      <div class="pricing-selector__options">
+        {% for option in artwork.print_options.all %}
+        <label class="pricing-selector__option">
+          <input
+            type="radio"
+            name="print_option"
+            value="{{ option.id }}"
+            {% if selected_print_option.id == option.id %}checked{% endif %}
+            hx-get="{% url 'artwork_pricing_partial' artwork.id %}?print_option={{ option.id }}"
+            hx-target="#pricing-section-{{ artwork.id }}"
+            hx-swap="innerHTML"
+          />
+          <div class="pricing-selector__option-info">
+            <span class="size">{{ option.size }}</span>
+            <span class="material">{{ option.material }}</span>
+            <span class="price">${{ option.price }}</span>
+          </div>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+  {% else %}
+    <!-- Neither Available -->
+    <div class="pricing-selector__unavailable">
+      <h3>Currently Unavailable</h3>
+      <p>This artwork is not currently available for purchase.</p>
+      <form 
+        class="waitlist-form"
+        hx-post="{% url 'join_waitlist' artwork.id %}"
+        hx-target="#waitlist-status-{{ artwork.id }}"
+        hx-swap="innerHTML"
+      >
+        {% csrf_token %}
+        <input 
+          type="email" 
+          name="email" 
+          placeholder="Enter your email for updates"
+          required
+          class="waitlist-form__email"
+        />
+        <button type="submit" class="waitlist-form__submit">
+          Join Waitlist
+        </button>
+      </form>
+      <div id="waitlist-status-{{ artwork.id }}"></div>
+    </div>
+  {% endif %}
+
+  <!-- Selected Print Option Details -->
+  {% if selected_print_option and artwork.type == 'print' %}
+  <div class="pricing-selector__selected-details">
+    <h4>Selected: {{ selected_print_option.size }} {{ selected_print_option.material }}</h4>
+    <div class="pricing-selector__selected-price">
+      ${{ selected_print_option.price }}
+    </div>
+    {% if selected_print_option.description %}
+    <p class="pricing-selector__selected-description">
+      {{ selected_print_option.description }}
+    </p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Shipping and Handling Info -->
+  <div class="pricing-selector__shipping-info">
+    <div class="shipping-info__item">
+      <span class="shipping-info__label">Shipping:</span>
+      <span class="shipping-info__value">
+        {% if artwork.type == 'original' and artwork.original_price >= 100 or selected_print_option.price >= 100 %}
+          Free
+        {% else %}
+          $15
+        {% endif %}
+      </span>
+    </div>
+    <div class="shipping-info__item">
+      <span class="shipping-info__label">Processing time:</span>
+      <span class="shipping-info__value">3-5 business days</span>
+    </div>
+    {% if artwork.type == 'print' %}
+    <div class="shipping-info__item">
+      <span class="shipping-info__label">Print quality:</span>
+      <span class="shipping-info__value">Museum-grade archival paper</span>
+    </div>
+    {% endif %}
+  </div>
+</div>

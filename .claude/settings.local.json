@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(npm run build:dev:*)",
+      "Bash(ls:*)",
+      "Bash(npm run dev:*)",
+      "Bash(node:*)",
+      "Bash(npm:*)",
+      "Bash(rm:*)",
+      "Bash(timeout 30s npx webpack --mode development)",
+      "Bash(pip3 install:*)",
+      "Bash(python3 manage.py migrate:*)",
+      "Bash(python3 manage.py runserver:*)",
+      "Bash(python3 manage.py makemigrations:*)",
+      "Bash(find:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(npx webpack:*)",
+      "Bash(timeout 30s npx webpack --mode development --no-watch)",
+      "Bash(timeout 30s npx webpack --mode development --no-watch --stats=minimal)",
+      "Bash(touch:*)",
+      "Bash(curl:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(python3 manage.py shell:*)"
+    ],
+    "deny": []
+  }
+}

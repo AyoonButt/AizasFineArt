@@ -1,0 +1,18 @@
+<!-- Wishlist Button -->
+<button class="w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-sm transition-colors"
+        hx-put="{% url 'toggle_wishlist' artwork.id %}"
+        hx-target="this"
+        hx-swap="outerHTML"
+        title="{% if in_wishlist %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}">
+    {% if in_wishlist %}
+        <!-- Filled heart for items in wishlist -->
+        <svg class="w-4 h-4 text-red-500" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+        </svg>
+    {% else %}
+        <!-- Outline heart for items not in wishlist -->
+        <svg class="w-4 h-4 text-neutral-600 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+        </svg>
+    {% endif %}
+</button>

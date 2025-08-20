@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load webpack_loader %}
+
+{% block title %}{% if object %}Edit {{ object.title }}{% else %}Add New Artwork{% endif %} - Artist Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Custom CSS for React artwork form */
+.form-input {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg transition-colors;
+    @apply focus:ring-2 focus:ring-mocha focus:border-mocha;
+}
+
+.form-select {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg transition-colors;
+    @apply focus:ring-2 focus:ring-mocha focus:border-mocha;
+}
+
+.form-textarea {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg transition-colors;
+    @apply focus:ring-2 focus:ring-mocha focus:border-mocha;
+}
+
+.form-checkbox {
+    @apply h-4 w-4 text-mocha focus:ring-mocha border-gray-300 rounded;
+}
+
+.form-checkbox-grid {
+    @apply grid grid-cols-2 gap-2;
+}
+
+.btn {
+    @apply px-6 py-3 rounded-lg font-medium transition-all duration-200;
+}
+
+.btn-primary {
+    @apply bg-mocha text-white hover:bg-mocha-600 focus:ring-2 focus:ring-mocha-500 focus:ring-offset-2;
+}
+
+.btn-outline {
+    @apply border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-mocha-500 focus:ring-offset-2;
+}
+
+.upload-area {
+    @apply min-h-[200px] flex flex-col items-center justify-center cursor-pointer;
+    @apply transition-all duration-200;
+}
+
+.upload-area:hover {
+    @apply border-mocha bg-mocha-50;
+}
+
+.artwork-form {
+    @apply max-w-6xl mx-auto;
+}
+
+.preview-container {
+    @apply bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg;
+    @apply flex items-center justify-center;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">
+                        {% if object %}Edit Artwork{% else %}Add New Artwork{% endif %}
+                    </h1>
+                    <p class="text-gray-600 mt-1">
+                        {% if object %}Update details for "{{ object.title }}"{% else %}Create a new artwork in your collection{% endif %}
+                    </p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'artwork_list' %}" class="btn-outline">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Back to Artworks
+                    </a>
+                    {% if object %}
+                    <a href="{{ object.get_absolute_url }}" class="btn-outline" target="_blank">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                        View Public Page
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- React Component Mount Point -->
+        <div id="artwork-form-react" 
+             data-react-component="ArtworkForm"
+             data-initial-data="{{ initial_data|default:'{}' }}"
+             data-categories="{{ categories_json }}"
+             data-series="{{ series_json }}"
+             data-tags="{{ tags_json }}"
+             data-is-editing="{% if object %}true{% else %}false{% endif %}"
+             data-artwork-id="{% if object %}{{ object.pk }}{% else %}null{% endif %}"
+             data-csrf-token="{{ csrf_token }}"
+             data-submit-url="{% if object %}{% url 'artwork_update' object.pk %}{% else %}{% url 'artwork_create' %}{% endif %}">
+            
+            <!-- Loading State -->
+            <div class="flex items-center justify-center py-12">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-mocha"></div>
+                <span class="ml-3 text-gray-600">Loading artwork form...</span>
+            </div>
+        </div>
+
+        <!-- Fallback Form (No JavaScript) -->
+        <noscript>
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-yellow-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    <p class="text-sm text-yellow-800">
+                        JavaScript is disabled. Please enable JavaScript for the enhanced artwork form experience, or 
+                        <a href="{% url 'artwork_create' %}" class="underline">try again</a>.
+                    </p>
+                </div>
+            </div>
+        </noscript>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Load React bundles -->
+{% render_bundle 'main' 'js' %}
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize React component
+    const mountPoint = document.getElementById('artwork-form-react');
+    if (mountPoint && window.ReactComponents && window.ReactComponents.ArtworkForm) {
+        try {
+            // Parse data attributes
+            const initialData = JSON.parse(mountPoint.dataset.initialData || '{}');
+            const categories = JSON.parse(mountPoint.dataset.categories || '[]');
+            const series = JSON.parse(mountPoint.dataset.series || '[]');
+            const tags = JSON.parse(mountPoint.dataset.tags || '[]');
+            const isEditing = mountPoint.dataset.isEditing === 'true';
+            const artworkId = mountPoint.dataset.artworkId !== 'null' ? parseInt(mountPoint.dataset.artworkId) : null;
+            const csrfToken = mountPoint.dataset.csrfToken;
+            const submitUrl = mountPoint.dataset.submitUrl;
+
+            // Custom submit handler
+            const handleSubmit = async (formData) => {
+                try {
+                    // Add CSRF token
+                    formData.append('csrfmiddlewaretoken', csrfToken);
+                    
+                    console.log('Submitting form to:', submitUrl);
+                    console.log('Form data contents:');
+                    for (let [key, value] of formData.entries()) {
+                        console.log(`${key}:`, value);
+                    }
+                    
+                    const response = await fetch(submitUrl, {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin'
+                    });
+
+                    if (response.ok) {
+                        // Successful submission
+                        const result = await response.json();
+                        if (result.redirect) {
+                            window.location.href = result.redirect;
+                        } else {
+                            // Show success message
+                            showNotification('Artwork saved successfully!', 'success');
+                        }
+                    } else {
+                        // Handle form errors
+                        const errors = await response.json();
+                        throw new Error(errors.message || 'Form submission failed');
+                    }
+                } catch (error) {
+                    console.error('Form submission error:', error);
+                    
+                    // Handle specific browser extension errors
+                    if (error.message && error.message.includes('listener indicated an asynchronous response')) {
+                        console.warn('Browser extension interference detected, retrying...');
+                        showNotification('Browser extension interference detected. If the issue persists, try disabling extensions.', 'warning');
+                    } else {
+                        showNotification(error.message || 'An error occurred while saving the artwork.', 'error');
+                    }
+                    throw error; // Re-throw to let the form component handle it
+                }
+            };
+
+            // Mount the React component
+            window.ReactComponents.ArtworkForm({
+                container: mountPoint,
+                props: {
+                    initialData: initialData,
+                    categories: categories,
+                    series: series,
+                    tags: tags,
+                    isEditing: isEditing,
+                    onSubmit: handleSubmit,
+                    className: 'artwork-form'
+                }
+            });
+
+        } catch (error) {
+            console.error('Failed to initialize ArtworkForm component:', error);
+            mountPoint.innerHTML = `
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p class="text-red-800">Failed to load the artwork form. Please refresh the page or check the console for errors.</p>
+                </div>
+            `;
+        }
+    } else {
+        console.error('ArtworkForm component not available');
+        mountPoint.innerHTML = `
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p class="text-red-800">React components not loaded. Please refresh the page or check the console for errors.</p>
+            </div>
+        `;
+    }
+});
+
+// Notification helper
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+        type === 'success' ? 'bg-green-100 border-green-500 text-green-800' : 
+        type === 'error' ? 'bg-red-100 border-red-500 text-red-800' : 
+        'bg-blue-100 border-blue-500 text-blue-800'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}

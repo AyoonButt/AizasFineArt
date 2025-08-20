@@ -1,0 +1,629 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }} - Watercolor & Oil Paintings by Aiza{% endblock %}
+
+{% block meta_description %}{% if breadcrumb_medium %}Explore Aiza's {{ breadcrumb_medium|lower }} collection.{% else %}Browse Aiza's complete gallery of watercolor and oil paintings.{% endif %} Original artworks and fine art prints from Fort Worth, Texas.{% endblock %}
+
+{% block content %}
+<!-- Gallery Hero Section with Breadcrumbs -->
+<section class="hero-section relative py-16 bg-gradient-to-br from-neutral-50 to-primary-50 overflow-hidden">
+    <div class="container mx-auto px-4">
+        <!-- Breadcrumbs -->
+        <nav class="text-sm mb-8" aria-label="Breadcrumb">
+            <ol class="flex items-center space-x-2 text-neutral-600">
+                <li><a href="{% url 'home' %}" class="hover:text-primary-600 transition-colors">Home</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li><a href="{% url 'gallery' %}" class="hover:text-primary-600 transition-colors">Gallery</a></li>
+                {% if breadcrumb_medium %}
+                <li><span class="mx-2">/</span></li>
+                <li class="text-primary-600 font-medium">{{ breadcrumb_medium }}</li>
+                {% endif %}
+            </ol>
+        </nav>
+        
+        <div class="text-center max-w-4xl mx-auto">
+            <h1 class="text-display font-playfair font-bold text-neutral-800 mb-6">
+                <span class="text-gradient">{{ page_title }}</span>
+            </h1>
+            <p class="text-body-lg text-neutral-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+                {% if breadcrumb_medium %}
+                    Discover my {{ breadcrumb_medium|lower }} paintings, where {{ breadcrumb_medium|lower|slice:":1" }}{% if breadcrumb_medium == "Watercolors" %}ach piece captures the flowing beauty of water-based pigments{% elif breadcrumb_medium == "Oil Paintings" %}ach work explores rich textures and vibrant colors{% else %}ach creation combines multiple artistic techniques{% endif %}.
+                {% else %}
+                    Discover the complete collection of my watercolor and oil paintings. Each piece captures 
+                    a unique moment through the interplay of light, color, and emotion.
+                {% endif %}
+            </p>
+            
+            <!-- Medium Navigation Pills -->
+            <div class="flex flex-wrap gap-3 justify-center mb-8">
+                <a href="{% url 'gallery' %}" 
+                   class="medium-pill {% if not current_medium %}active{% endif %}">
+                    All Artworks
+                </a>
+                <a href="{% url 'gallery_medium' 'watercolors' %}" 
+                   class="medium-pill {% if current_medium == 'watercolors' %}active{% endif %}">
+                    Watercolors
+                </a>
+                <a href="{% url 'gallery_medium' 'oils' %}" 
+                   class="medium-pill {% if current_medium == 'oils' %}active{% endif %}">
+                    Oil Paintings
+                </a>
+                <a href="{% url 'gallery_medium' 'mixed-media' %}" 
+                   class="medium-pill {% if current_medium == 'mixed-media' %}active{% endif %}">
+                    Mixed Media
+                </a>
+            </div>
+            
+            <!-- Search and Filter Section -->
+            <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-soft">
+                <div class="flex flex-wrap gap-4 items-center justify-center">
+                    <!-- Search Bar -->
+                    <div class="flex items-center space-x-2">
+                        <label class="text-sm font-medium text-neutral-700">Search:</label>
+                        <input type="search" 
+                               id="search-input" 
+                               value="{{ current_filters.search }}"
+                               placeholder="Search artworks..." 
+                               class="px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-w-48">
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <label class="text-sm font-medium text-neutral-700">Status:</label>
+                        <select id="status-filter" class="px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            <option value="">All Works</option>
+                            <option value="available" {% if current_filters.status == 'available' %}selected{% endif %}>Available</option>
+                            <option value="sold" {% if current_filters.status == 'sold' %}selected{% endif %}>Sold</option>
+                        </select>
+                    </div>
+                    
+                    <label class="flex items-center space-x-2">
+                        <input type="checkbox" id="featured-filter" {% if current_filters.featured == 'true' %}checked{% endif %} 
+                               class="rounded border-neutral-300 text-primary-600 focus:ring-primary-500">
+                        <span class="text-sm font-medium text-neutral-700">Featured Only</span>
+                    </label>
+                    
+                    <button onclick="applyFilters()" class="btn-primary">
+                        Apply Filters
+                    </button>
+                    
+                    {% if current_filters.search or current_filters.status or current_filters.featured %}
+                    <button onclick="clearFilters()" class="btn-outline">
+                        Clear Filters
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Results Header -->
+<section class="py-8 bg-white border-b border-neutral-200">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center">
+            <div class="text-neutral-600">
+                Showing {{ artworks|length }} of {{ paginator.count }} artworks
+                {% if current_filters.search %} for "{{ current_filters.search }}"{% endif %}
+            </div>
+            <div class="flex items-center gap-4">
+                <!-- View Toggle -->
+                <div class="flex items-center bg-neutral-100 rounded-lg p-1">
+                    <button class="view-toggle active px-3 py-2 rounded text-sm font-medium" data-view="large" title="Large Cards">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                        </svg>
+                    </button>
+                    <button class="view-toggle px-3 py-2 rounded text-sm font-medium" data-view="small" title="Small Cards">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Grid -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div id="gallery-container" class="gallery-grid-large">
+            {% for artwork in artworks %}
+            <div class="artwork-item" 
+                 data-medium="{{ artwork.medium }}"
+                 data-title="{{ artwork.title }}"
+                 data-status="{{ artwork.status }}">
+                
+                <div class="card artwork-card group overflow-hidden">
+                    <a href="{{ artwork.get_absolute_url }}" class="artwork-link block">
+                        <div class="artwork-image-container relative overflow-hidden aspect-ratio-4-5">
+                            {% if artwork.main_image_url %}
+                                <img src="{{ artwork.image_url }}" 
+                                     alt="{{ artwork.alt_text|default:artwork.title }}"
+                                     class="artwork-image w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                     data-lazy="true"
+                                     data-aspect-ratio="4/5"
+                                     loading="lazy">
+                            {% else %}
+                                <div class="artwork-image w-full h-full bg-gradient-to-br from-neutral-100 to-neutral-200 flex items-center justify-center">
+                                    <span class="text-neutral-400">No Image</span>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Overlay with artwork info -->
+                            <div class="artwork-overlay absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div class="absolute bottom-4 left-4 text-white">
+                                    <h3 class="font-playfair font-semibold text-lg mb-1">{{ artwork.title }}</h3>
+                                    <p class="text-sm opacity-90">{{ artwork.get_medium_display }} • {{ artwork.dimensions_display }}</p>
+                                </div>
+                                
+                                {% if artwork.original_price %}
+                                <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-white text-sm font-medium">
+                                    ${{ artwork.original_price }}
+                                </div>
+                                {% endif %}
+                                
+                                
+                                {% if artwork.is_featured %}
+                                <div class="absolute bottom-4 right-4">
+                                    <span class="bg-accent-100 text-accent-800 text-xs px-2 py-1 rounded-full font-medium">
+                                        ✨ Featured
+                                    </span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- Artwork Info (always visible) -->
+                    <div class="artwork-info p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-playfair font-semibold text-lg text-neutral-800 line-clamp-1">
+                                <a href="{{ artwork.get_absolute_url }}" class="hover:text-primary-600 transition-colors">{{ artwork.title }}</a>
+                            </h3>
+                            {% if user.is_authenticated %}
+                            <button class="wishlist-toggle ml-2 p-1 text-neutral-400 hover:text-red-500 transition-colors flex-shrink-0"
+                                    data-artwork-id="{{ artwork.id }}"
+                                    title="Add to Wishlist">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                            {% endif %}
+                        </div>
+                        
+                        <p class="text-sm text-neutral-600 mb-3">{{ artwork.get_medium_display }} • {{ artwork.dimensions_display }}</p>
+                        
+                        <div class="flex justify-between items-center">
+                            <div class="price-display">
+                                {% if artwork.original_price %}
+                                    <span class="font-semibold text-lg text-neutral-800">${{ artwork.original_price }}</span>
+                                {% endif %}
+                                {% if artwork.prints_available %}
+                                    <div class="text-xs text-neutral-500 mt-1">Prints available</div>
+                                {% endif %}
+                            </div>
+                            <div class="flex items-center gap-2">
+                                {% if artwork.original_available %}
+                                <span class="bg-primary-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                                    Original
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-12">
+                <div class="text-6xl mb-4">🎨</div>
+                <h3 class="text-xl font-playfair font-semibold mb-2">No artworks found</h3>
+                <p class="text-neutral-600 mb-6">
+                    {% if current_filters.search %}
+                        No artworks match your search "{{ current_filters.search }}". Try different keywords or 
+                    {% endif %}
+                    Try adjusting your filters or browse all artworks.
+                </p>
+                <div class="flex gap-4 justify-center">
+                    {% if current_filters.search or current_filters.status or current_filters.featured %}
+                    <button onclick="clearFilters()" class="btn-primary">Clear Filters</button>
+                    {% endif %}
+                    <a href="{% url 'gallery' %}" class="btn-outline">Browse All Artworks</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Load More / Pagination -->
+        {% if page_obj.has_next %}
+        <div class="text-center mt-12">
+            <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" 
+               class="btn-primary">
+                Load More Artworks
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Traditional Pagination (fallback) -->
+        {% if paginator.num_pages > 1 %}
+        <nav class="pagination mt-12 flex justify-center">
+            <div class="flex items-center space-x-2">
+                {% if page_obj.has_previous %}
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}" 
+                       class="px-3 py-2 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors">Previous</a>
+                {% endif %}
+
+                {% for page_num in paginator.page_range %}
+                    {% if page_num == page_obj.number %}
+                        <span class="px-3 py-2 bg-primary-500 text-white rounded-lg">{{ page_num }}</span>
+                    {% else %}
+                        <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_num }}" 
+                           class="px-3 py-2 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors">{{ page_num }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" 
+                       class="px-3 py-2 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors">Next</a>
+                {% endif %}
+            </div>
+        </nav>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-16 bg-gradient-to-br from-primary-50 to-accent-50">
+    <div class="container mx-auto px-4 text-center">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-6">
+                {% if breadcrumb_medium %}
+                    Love {{ breadcrumb_medium }}? 
+                {% else %}
+                    Found Something You Love?
+                {% endif %}
+            </h2>
+            <p class="text-body-lg text-neutral-600 mb-8">
+                {% if breadcrumb_medium %}
+                    Explore other mediums or commission a custom {{ breadcrumb_medium|lower }} piece just for you.
+                {% else %}
+                    Each artwork tells a unique story. Commission a custom piece or browse by medium to find your perfect match.
+                {% endif %}
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'contact' %}" class="btn-primary">
+                    Commission Custom Art
+                </a>
+                {% if breadcrumb_medium %}
+                <a href="{% url 'gallery' %}" class="btn-outline">
+                    View All Artworks
+                </a>
+                {% else %}
+                <a href="{% url 'shop' %}" class="btn-outline">
+                    Shop Available Works
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Medium Navigation Pills */
+.medium-pill {
+    @apply px-6 py-3 rounded-full text-sm font-medium transition-all duration-200;
+    @apply bg-white text-neutral-600 border border-neutral-200;
+    @apply hover:bg-primary-50 hover:text-primary-700 hover:border-primary-200;
+}
+
+.medium-pill.active {
+    @apply bg-primary-500 text-white border-primary-500;
+    @apply shadow-lg;
+}
+
+/* Status badges */
+.status-available {
+    @apply bg-green-100 text-green-800;
+}
+
+.status-sold {
+    @apply bg-red-100 text-red-800;
+}
+
+.status-commission {
+    @apply bg-blue-100 text-blue-800;
+}
+
+.status-badge {
+    @apply text-xs px-2 py-1 rounded-full font-medium;
+}
+
+/* View toggle buttons */
+.view-toggle {
+    @apply text-neutral-500 hover:text-neutral-700 transition-colors;
+}
+
+.view-toggle.active {
+    @apply bg-white text-primary-600 shadow-sm;
+}
+
+/* Gallery Layout Systems - Amazon Style */
+.gallery-grid-large {
+    display: grid !important;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+    width: 100%;
+}
+
+.gallery-grid-small {
+    display: grid !important;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+    width: 100%;
+}
+
+/* Ensure grid items don't have flex or width constraints */
+.gallery-grid-large .artwork-item,
+.gallery-grid-small .artwork-item {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* Responsive adjustments - Amazon Style */
+@media (max-width: 640px) {
+    .gallery-grid-large {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
+        gap: 1rem;
+    }
+    
+    .gallery-grid-small {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+        gap: 0.5rem;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+    .gallery-grid-large {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    }
+    
+    .gallery-grid-small {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+    }
+}
+
+@media (min-width: 1280px) {
+    .gallery-grid-large {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+    }
+    
+    .gallery-grid-small {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+    }
+}
+
+/* Default aspect ratio for all image containers */
+.artwork-image-container {
+    aspect-ratio: 4/5;
+}
+
+/* Card styling adjustments for SMALL view - Amazon Style */
+.gallery-grid-small .artwork-card {
+    @apply text-sm;
+}
+
+.gallery-grid-small .artwork-info {
+    @apply p-3;
+}
+
+.gallery-grid-small .artwork-image-container {
+    aspect-ratio: 4/5;
+}
+
+.gallery-grid-small h3 {
+    @apply text-sm font-medium leading-tight;
+}
+
+.gallery-grid-small .price-display span {
+    @apply text-sm font-semibold;
+}
+
+.gallery-grid-small .status-badge {
+    @apply text-xs px-2 py-1;
+}
+
+.gallery-grid-small .btn-primary {
+    @apply text-sm px-3 py-2;
+}
+
+/* Keep all info visible in small view - Amazon style shows details */
+.gallery-grid-small .artwork-info p {
+    @apply block text-xs text-neutral-500 truncate;
+}
+
+.gallery-grid-small .price-display div {
+    @apply block;
+}
+
+/* Card styling adjustments for LARGE view */
+.gallery-grid-large .artwork-item {
+    width: 100%;
+}
+
+.gallery-grid-large .artwork-card {
+    width: 100%;
+}
+
+.gallery-grid-large .artwork-info {
+    @apply p-4;
+}
+
+.gallery-grid-large h3 {
+    @apply text-lg;
+}
+
+.gallery-grid-large .price-display span {
+    @apply text-lg;
+}
+
+.gallery-grid-large .artwork-image-container {
+    aspect-ratio: 4/5;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Gallery filtering and search functionality
+function applyFilters() {
+    const params = new URLSearchParams(window.location.search);
+    
+    // Get filter values
+    const search = document.getElementById('search-input').value;
+    const status = document.getElementById('status-filter').value;
+    const featured = document.getElementById('featured-filter').checked;
+    
+    // Update URL parameters
+    if (search) {
+        params.set('q', search);
+    } else {
+        params.delete('q');
+    }
+    
+    if (status) {
+        params.set('status', status);
+    } else {
+        params.delete('status');
+    }
+    
+    if (featured) {
+        params.set('featured', 'true');
+    } else {
+        params.delete('featured');
+    }
+    
+    // Remove page parameter when filtering
+    params.delete('page');
+    
+    // Navigate to filtered URL
+    window.location.search = params.toString();
+}
+
+function clearFilters() {
+    window.location.href = window.location.pathname;
+}
+
+// Search on Enter key
+document.getElementById('search-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        applyFilters();
+    }
+});
+
+// View toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const viewToggles = document.querySelectorAll('.view-toggle');
+    const galleryContainer = document.getElementById('gallery-container');
+    
+    viewToggles.forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const view = this.dataset.view;
+            
+            // Update active state
+            viewToggles.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Update gallery layout
+            if (view === 'small') {
+                galleryContainer.classList.remove('gallery-grid-large');
+                galleryContainer.classList.add('gallery-grid-small');
+            } else {
+                galleryContainer.classList.remove('gallery-grid-small');
+                galleryContainer.classList.add('gallery-grid-large');
+            }
+            
+            // Store user preference
+            localStorage.setItem('gallery-view', view);
+        });
+    });
+    
+    // Restore user preference
+    const savedView = localStorage.getItem('gallery-view');
+    if (savedView) {
+        const targetToggle = document.querySelector(`[data-view="${savedView}"]`);
+        if (targetToggle) {
+            targetToggle.click();
+        }
+    }
+    
+    // Wishlist functionality
+    document.querySelectorAll('.wishlist-toggle').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const artworkId = this.dataset.artworkId;
+            toggleWishlist(artworkId);
+        });
+    });
+});
+
+// Wishlist functionality
+function toggleWishlist(artworkId) {
+    fetch(`/api/wishlist/toggle/${artworkId}/`, {
+        method: 'PUT',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update wishlist button state
+            const btn = document.querySelector(`[data-artwork-id="${artworkId}"]`);
+            if (btn) {
+                if (data.in_wishlist) {
+                    btn.classList.add('text-red-500');
+                    btn.classList.remove('text-neutral-400');
+                } else {
+                    btn.classList.remove('text-red-500');
+                    btn.classList.add('text-neutral-400');
+                }
+            }
+            
+            // Show notification
+            showNotification(data.message, 'success');
+        } else {
+            showNotification(data.message || 'Failed to update wishlist', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Failed to update wishlist', 'error');
+    });
+}
+
+// Utility functions
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 ${
+        type === 'success' ? 'bg-green-500 text-white' : 
+        type === 'error' ? 'bg-red-500 text-white' : 
+        'bg-blue-500 text-white'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('opacity-0', 'translate-x-full');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+</script>
+{% endblock %}

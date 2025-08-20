@@ -1,0 +1,33 @@
+{% load static %}
+
+<div class="artwork-grid-container">
+  {% if artworks %}
+    {% for artwork in artworks %}
+    <div class="artwork-grid-item" data-artwork-id="{{ artwork.id }}">
+      {% include 'components/artwork_shopping_card.html' with artwork=artwork %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="no-results">
+      <div class="no-results__content">
+        <img src="{% static 'images/no-results.svg' %}" alt="No artworks found" class="no-results__image" />
+        <h3 class="no-results__title">No artworks found</h3>
+        <p class="no-results__message">
+          Try adjusting your filters or 
+          <button class="clear-filters-btn" 
+                  hx-get="{% url 'shop_artwork_list' %}"
+                  hx-target="#artwork-grid">
+            clear all filters
+          </button>
+          to see all artworks.
+        </p>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+{% if has_more %}
+<div class="pagination-info" style="display: none;">
+  <span data-has-more="true" data-next-page="{{ next_page }}"></span>
+</div>
+{% endif %}

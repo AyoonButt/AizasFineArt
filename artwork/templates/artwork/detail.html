@@ -1,0 +1,514 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ artwork.title }} - {{ artwork.category.name }} by Aiza{% endblock %}
+{% block meta_description %}{{ artwork.meta_description|default:artwork.description|truncatewords:30 }}{% endblock %}
+
+{% block og_type %}product{% endblock %}
+{% block og_title %}{{ artwork.title }} - Original {{ artwork.get_medium_display }} by Aiza{% endblock %}
+{% block og_description %}{{ artwork.description|truncatewords:25 }}{% endblock %}
+{% block og_image %}{% if artwork.primary_image %}{{ request.build_absolute_uri }}{{ artwork.primary_image.url }}{% endif %}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "VisualArtwork",
+    "name": "{{ artwork.title }}",
+    "description": "{{ artwork.description|truncatewords:30 }}",
+    "artform": "Painting",
+    "artMedium": "{{ artwork.get_medium_display }}",
+    "artworkSurface": "{% if artwork.medium == 'oil' %}Canvas{% else %}Paper{% endif %}",
+    "width": {
+        "@type": "QuantitativeValue",
+        "value": {{ artwork.dimensions_width }},
+        "unitText": "inches"
+    },
+    "height": {
+        "@type": "QuantitativeValue", 
+        "value": {{ artwork.dimensions_height }},
+        "unitText": "inches"
+    },
+    "creator": {
+        "@type": "Person",
+        "name": "Aiza"
+    },
+    "dateCreated": "{{ artwork.year_created }}",
+    {% if artwork.primary_image %}
+    "image": "{{ request.build_absolute_uri }}{{ artwork.primary_image.url }}",
+    {% endif %}
+    {% if artwork.price %}
+    "offers": {
+        "@type": "Offer",
+        "price": "{{ artwork.price }}",
+        "priceCurrency": "USD",
+        "availability": "{% if artwork.is_available %}InStock{% else %}OutOfStock{% endif %}"
+    },
+    {% endif %}
+    "url": "{{ request.build_absolute_uri }}"
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav class="py-4 bg-neutral-50 border-b">
+    <div class="container mx-auto px-4">
+        <ol class="flex items-center space-x-2 text-sm text-neutral-600">
+            <li><a href="{% url 'home' %}" class="hover:text-primary-600">Home</a></li>
+            <li><span class="text-neutral-400">/</span></li>
+            <li><a href="{% url 'artwork:gallery' %}" class="hover:text-primary-600">Gallery</a></li>
+            <li><span class="text-neutral-400">/</span></li>
+            <li><a href="{% url 'artwork:category_detail' artwork.category.slug %}" class="hover:text-primary-600">{{ artwork.category.name }}</a></li>
+            <li><span class="text-neutral-400">/</span></li>
+            <li class="text-neutral-800 font-medium">{{ artwork.title }}</li>
+        </ol>
+    </div>
+</nav>
+
+<!-- Artwork Detail -->
+<section class="py-12">
+    <div class="container mx-auto px-4">
+        <div class="grid lg:grid-cols-2 gap-12">
+            <!-- Artwork Images -->
+            <div class="artwork-images">
+                <!-- Main Image -->
+                <div class="main-image-container mb-4">
+                    {% if artwork.primary_image %}
+                        <div class="relative bg-white rounded-xl shadow-soft overflow-hidden">
+                            <img src="{{ artwork.primary_image.url }}" 
+                                 alt="{{ artwork.alt_text }}" 
+                                 class="artwork-zoom w-full h-auto"
+                                 id="main-artwork-image">
+                            
+                            <!-- Zoom Icon -->
+                            <div class="absolute top-4 right-4 bg-black/20 backdrop-blur-sm rounded-full p-2 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="aspect-[4/3] bg-gradient-to-br from-neutral-100 to-neutral-200 rounded-xl flex items-center justify-center">
+                            <span class="text-neutral-500">No image available</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Thumbnail Gallery -->
+                {% if artwork.detail_image_1 or artwork.detail_image_2 or artwork.process_image_1 or artwork.process_image_2 %}
+                <div class="thumbnail-gallery flex space-x-3 overflow-x-auto scrollbar-hide">
+                    {% if artwork.primary_image %}
+                    <button class="thumbnail-btn flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-primary-500" 
+                            data-image="{{ artwork.primary_image.url }}">
+                        <img src="{{ artwork.primary_image.url }}" alt="Main view" class="w-full h-full object-cover">
+                    </button>
+                    {% endif %}
+                    
+                    {% if artwork.detail_image_1 %}
+                    <button class="thumbnail-btn flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-transparent hover:border-primary-500 transition-colors" 
+                            data-image="{{ artwork.detail_image_1.url }}">
+                        <img src="{{ artwork.detail_image_1.url }}" alt="Detail view" class="w-full h-full object-cover">
+                    </button>
+                    {% endif %}
+                    
+                    {% if artwork.detail_image_2 %}
+                    <button class="thumbnail-btn flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-transparent hover:border-primary-500 transition-colors" 
+                            data-image="{{ artwork.detail_image_2.url }}">
+                        <img src="{{ artwork.detail_image_2.url }}" alt="Detail view" class="w-full h-full object-cover">
+                    </button>
+                    {% endif %}
+                    
+                    {% if artwork.process_image_1 %}
+                    <button class="thumbnail-btn flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-transparent hover:border-primary-500 transition-colors" 
+                            data-image="{{ artwork.process_image_1.url }}">
+                        <img src="{{ artwork.process_image_1.url }}" alt="Work in progress" class="w-full h-full object-cover">
+                    </button>
+                    {% endif %}
+                    
+                    {% if artwork.process_image_2 %}
+                    <button class="thumbnail-btn flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-transparent hover:border-primary-500 transition-colors" 
+                            data-image="{{ artwork.process_image_2.url }}">
+                        <img src="{{ artwork.process_image_2.url }}" alt="Work in progress" class="w-full h-full object-cover">
+                    </button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Artwork Info -->
+            <div class="artwork-info">
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h1 class="text-h1 font-playfair font-bold text-neutral-800 mb-2">{{ artwork.title }}</h1>
+                            <p class="text-body text-neutral-600">{{ artwork.year_created }}</p>
+                        </div>
+                        
+                        {% if user.is_authenticated %}
+                        <button class="wishlist-toggle p-3 rounded-full hover:bg-neutral-100 transition-colors"
+                                data-artwork-id="{{ artwork.id }}">
+                            <span class="wishlist-icon text-2xl">
+                                {% if is_wishlisted %}❤️{% else %}🤍{% endif %}
+                            </span>
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    <!-- Status Badge -->
+                    <div class="mb-4">
+                        <span class="status-{{ artwork.status }} inline-block px-3 py-1 rounded-full text-sm font-medium">
+                            {{ artwork.get_status_display }}
+                        </span>
+                    </div>
+
+                    <!-- Price -->
+                    {% if artwork.price %}
+                    <div class="mb-6">
+                        <div class="price-display text-3xl font-playfair font-bold text-primary-600 mb-2">
+                            {{ artwork.price_display }}
+                        </div>
+                        {% if artwork.allows_prints and artwork.is_available %}
+                        <p class="text-sm text-neutral-600">
+                            <span class="text-accent-600 font-medium">Prints also available</span> - starting at $45
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="mb-6">
+                        <div class="text-2xl font-playfair font-semibold text-neutral-700 mb-2">Price on Request</div>
+                        <p class="text-sm text-neutral-600">Contact us for pricing information</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Artwork Details -->
+                <div class="artwork-details space-y-4 mb-8">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <dt class="text-sm font-medium text-neutral-700">Medium</dt>
+                            <dd class="text-neutral-800">{{ artwork.get_medium_display }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-neutral-700">Dimensions</dt>
+                            <dd class="text-neutral-800">{{ artwork.dimensions_display }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-neutral-700">Category</dt>
+                            <dd class="text-neutral-800">
+                                <a href="{% url 'artwork:category_detail' artwork.category.slug %}" 
+                                   class="hover:text-primary-600">{{ artwork.category.name }}</a>
+                            </dd>
+                        </div>
+                        {% if artwork.series %}
+                        <div>
+                            <dt class="text-sm font-medium text-neutral-700">Series</dt>
+                            <dd class="text-neutral-800">
+                                <a href="{% url 'artwork:series_detail' artwork.category.slug artwork.series.slug %}" 
+                                   class="hover:text-primary-600">{{ artwork.series.name }}</a>
+                            </dd>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-8">
+                    <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-4">About This Artwork</h3>
+                    <div class="prose prose-neutral max-w-none">
+                        <p class="text-neutral-600 leading-relaxed mb-4">{{ artwork.description }}</p>
+                        
+                        {% if artwork.inspiration %}
+                        <div class="bg-primary-50 border-l-4 border-primary-500 p-4 rounded-r-lg">
+                            <h4 class="font-medium text-primary-800 mb-2">Artist's Inspiration</h4>
+                            <p class="text-primary-700 italic">{{ artwork.inspiration }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if artwork.technique_notes %}
+                        <details class="mt-4">
+                            <summary class="font-medium text-neutral-700 cursor-pointer hover:text-primary-600">
+                                Technical Notes
+                            </summary>
+                            <p class="text-neutral-600 mt-2 pl-4">{{ artwork.technique_notes }}</p>
+                        </details>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                    {% if artwork.is_available %}
+                        <a href="{% url 'artwork:inquiry' artwork.id %}" 
+                           class="btn-primary flex-1 text-center">
+                            {% if artwork.price %}Purchase Inquiry{% else %}Price Inquiry{% endif %}
+                        </a>
+                        {% if artwork.allows_prints %}
+                        <button class="btn-outline flex-1 print-inquiry-btn" 
+                                data-artwork-id="{{ artwork.id }}">
+                            Order Prints
+                        </button>
+                        {% endif %}
+                    {% else %}
+                        <div class="flex-1 p-3 bg-neutral-100 text-neutral-600 text-center rounded-lg">
+                            This artwork is no longer available
+                        </div>
+                    {% endif %}
+                    
+                    <button class="btn-ghost share-artwork" 
+                            data-url="{{ request.build_absolute_uri }}"
+                            data-title="{{ artwork.title }} by Aiza">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                        </svg>
+                        Share
+                    </button>
+                </div>
+
+                <!-- Shipping & Policies -->
+                <div class="border-t border-neutral-200 pt-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="text-neutral-600">Free shipping over $100</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                            <span class="text-neutral-600">Certificate of authenticity</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            </svg>
+                            <span class="text-neutral-600">7-day return policy</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                            <span class="text-neutral-600">Secure packaging</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Artworks -->
+{% if related_artworks %}
+<section class="py-16 bg-neutral-50">
+    <div class="container mx-auto px-4">
+        <h2 class="text-h2 font-playfair font-semibold text-neutral-800 text-center mb-12">You Might Also Like</h2>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for related_artwork in related_artworks %}
+            <div class="artwork-card card overflow-hidden">
+                <a href="{{ related_artwork.get_absolute_url }}" class="block">
+                    <div class="relative overflow-hidden">
+                        {% if related_artwork.primary_image %}
+                            <img src="{{ related_artwork.primary_image.url }}" 
+                                 alt="{{ related_artwork.alt_text }}" 
+                                 class="artwork-image w-full h-48 object-cover">
+                        {% else %}
+                            <div class="w-full h-48 bg-gradient-to-br from-neutral-100 to-neutral-200 flex items-center justify-center">
+                                <span class="text-neutral-400">No Image</span>
+                            </div>
+                        {% endif %}
+                        <div class="artwork-overlay">
+                            <div class="absolute bottom-4 left-4 text-white">
+                                <h3 class="font-playfair font-semibold text-lg mb-1">{{ related_artwork.title }}</h3>
+                                <p class="text-sm opacity-90">{{ related_artwork.get_medium_display }}</p>
+                            </div>
+                            <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-white text-sm">
+                                {{ related_artwork.price_display }}
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                
+                <div class="p-4">
+                    <h3 class="font-playfair font-semibold text-lg mb-2">
+                        <a href="{{ related_artwork.get_absolute_url }}" class="hover:text-primary-600">{{ related_artwork.title }}</a>
+                    </h3>
+                    <div class="flex justify-between items-center">
+                        <span class="price-display">{{ related_artwork.price_display }}</span>
+                        <a href="{% url 'artwork:inquiry' related_artwork.id %}" class="btn-primary btn-sm">
+                            Inquire
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-8">
+            <a href="{% url 'artwork:gallery' %}" class="btn-outline">View All Artworks</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Inquiry Modal -->
+<div id="inquiry-modal" class="modal-overlay fixed inset-0 z-50 hidden">
+    <div class="modal-backdrop absolute inset-0 bg-black/50" onclick="closeInquiryModal()"></div>
+    <div class="modal-content relative bg-white rounded-xl max-w-2xl mx-auto mt-20 mx-4">
+        <div class="modal-header flex justify-between items-center p-6 border-b">
+            <h3 class="text-xl font-playfair font-semibold">Inquire About "{{ artwork.title }}"</h3>
+            <button onclick="closeInquiryModal()" class="text-neutral-400 hover:text-neutral-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="modal-body p-6">
+            <form id="inquiry-form" method="post" action="{% url 'artwork:inquiry' artwork.id %}">
+                {% csrf_token %}
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label for="id_name" class="block text-sm font-medium text-neutral-700 mb-2">Full Name *</label>
+                        {{ inquiry_form.name }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_email" class="block text-sm font-medium text-neutral-700 mb-2">Email *</label>
+                        {{ inquiry_form.email }}
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div class="form-group">
+                        <label for="id_phone" class="block text-sm font-medium text-neutral-700 mb-2">Phone</label>
+                        {{ inquiry_form.phone }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_inquiry_type" class="block text-sm font-medium text-neutral-700 mb-2">Inquiry Type</label>
+                        {{ inquiry_form.inquiry_type }}
+                    </div>
+                </div>
+                
+                <div class="form-group mb-6">
+                    <label for="id_message" class="block text-sm font-medium text-neutral-700 mb-2">Message *</label>
+                    {{ inquiry_form.message }}
+                </div>
+                
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="closeInquiryModal()" class="btn-ghost">Cancel</button>
+                    <button type="submit" class="btn-primary">Send Inquiry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Thumbnail gallery functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const mainImage = document.getElementById('main-artwork-image');
+    const thumbnails = document.querySelectorAll('.thumbnail-btn');
+    
+    thumbnails.forEach(thumb => {
+        thumb.addEventListener('click', function() {
+            // Update main image
+            const newSrc = this.dataset.image;
+            mainImage.src = newSrc;
+            
+            // Update active thumbnail
+            thumbnails.forEach(t => t.classList.remove('border-primary-500'));
+            thumbnails.forEach(t => t.classList.add('border-transparent'));
+            this.classList.remove('border-transparent');
+            this.classList.add('border-primary-500');
+        });
+    });
+    
+    // Image zoom functionality
+    mainImage.addEventListener('click', function() {
+        this.classList.toggle('zoomed');
+        if (this.classList.contains('zoomed')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+    });
+    
+    // Share functionality
+    const shareBtn = document.querySelector('.share-artwork');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', function() {
+            if (navigator.share) {
+                navigator.share({
+                    title: this.dataset.title,
+                    url: this.dataset.url
+                });
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(this.dataset.url);
+                if (window.AizasFineArt) {
+                    const app = new window.AizasFineArt();
+                    app.showNotification('Link copied to clipboard!', 'success');
+                }
+            }
+        });
+    }
+});
+
+// Inquiry modal functions
+function openInquiryModal() {
+    document.getElementById('inquiry-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeInquiryModal() {
+    document.getElementById('inquiry-modal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Handle inquiry form submission
+document.getElementById('inquiry-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeInquiryModal();
+            if (window.AizasFineArt) {
+                const app = new window.AizasFineArt();
+                app.showNotification(data.message, 'success');
+            }
+            this.reset();
+        } else {
+            if (window.AizasFineArt) {
+                const app = new window.AizasFineArt();
+                app.showNotification(data.message, 'error');
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
+
+// Open modal when inquiry buttons are clicked
+document.querySelectorAll('a[href*="inquiry"]').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        openInquiryModal();
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,986 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ artwork.title }} - {{ artwork.get_medium_display }} by Aiza{% endblock %}
+
+{% block meta_description %}{{ artwork.meta_description|default:artwork.description|truncatewords:30 }}{% endblock %}
+
+{% block og_image %}{{ artwork.gallery_url }}{% endblock %}
+
+{% block extra_css %}
+<!-- Preload critical images -->
+<link rel="preload" as="image" href="{{ artwork.gallery_url }}" importance="high">
+<link rel="preload" as="image" href="{{ artwork.thumbnail_url }}" importance="high">
+{% if frame_images.frame1.gallery %}
+<link rel="preload" as="image" href="{{ frame_images.frame1.thumbnail }}" importance="low">
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Artwork Detail Hero -->
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="grid lg:grid-cols-2 gap-12 items-start">
+            <!-- Artwork Images with Thumbnail Navigation -->
+            <div class="reveal-on-scroll">
+                <div class="flex gap-6">
+                    <!-- Thumbnail Column -->
+                    <div class="flex flex-col space-y-3 w-20">
+                        <!-- Main image thumbnail -->
+                        <button onclick="changeMainImage('{{ artwork.gallery_url }}', 'main')" 
+                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-mocha shadow-md transition-all duration-200"
+                                data-image="main">
+                            <img src="{{ artwork.thumbnail_url }}" 
+                                 alt="{{ artwork.title }} - Main View" 
+                                 class="artwork-image w-full h-full object-cover"
+                                 data-lazy="true"
+                                 data-aspect-ratio="1/1"
+                                 data-priority="high"
+                                 loading="eager">
+                        </button>
+                        
+                        <!-- Frame thumbnails -->
+                        {% if frame_images.frame1.gallery %}
+                        <button onclick="changeMainImage('{{ frame_images.frame1.gallery }}', 'frame1')" 
+                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-neutral-200 hover:border-mocha transition-all duration-200"
+                                data-image="frame1">
+                            <img src="{{ frame_images.frame1.thumbnail }}" 
+                                 alt="{{ artwork.title }} - Frame 1" 
+                                 class="artwork-image w-full h-full object-cover"
+                                 data-lazy="true"
+                                 data-aspect-ratio="1/1"
+                                 loading="lazy">
+                        </button>
+                        {% else %}
+                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-gray-100 bg-gray-50 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        {% endif %}
+                        
+                        {% if frame_images.frame2.gallery %}
+                        <button onclick="changeMainImage('{{ frame_images.frame2.gallery }}', 'frame2')" 
+                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-neutral-200 hover:border-mocha transition-all duration-200"
+                                data-image="frame2">
+                            <img src="{{ frame_images.frame2.thumbnail }}" 
+                                 alt="{{ artwork.title }} - Frame 2" 
+                                 class="artwork-image w-full h-full object-cover"
+                                 data-lazy="true"
+                                 data-aspect-ratio="1/1"
+                                 loading="lazy">
+                        </button>
+                        {% else %}
+                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-gray-100 bg-gray-50 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        {% endif %}
+                        
+                        {% if frame_images.frame3.gallery %}
+                        <button onclick="changeMainImage('{{ frame_images.frame3.gallery }}', 'frame3')" 
+                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-neutral-200 hover:border-mocha transition-all duration-200"
+                                data-image="frame3">
+                            <img src="{{ frame_images.frame3.thumbnail }}" 
+                                 alt="{{ artwork.title }} - Frame 3" 
+                                 class="artwork-image w-full h-full object-cover"
+                                 data-lazy="true"
+                                 data-aspect-ratio="1/1"
+                                 loading="lazy">
+                        </button>
+                        {% else %}
+                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-gray-100 bg-gray-50 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        {% endif %}
+                        
+                        {% if frame_images.frame4.gallery %}
+                        <button onclick="changeMainImage('{{ frame_images.frame4.gallery }}', 'frame4')" 
+                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-neutral-200 hover:border-mocha transition-all duration-200"
+                                data-image="frame4">
+                            <img src="{{ frame_images.frame4.thumbnail }}" 
+                                 alt="{{ artwork.title }} - Frame 4" 
+                                 class="artwork-image w-full h-full object-cover"
+                                 data-lazy="true"
+                                 data-aspect-ratio="1/1"
+                                 loading="lazy">
+                        </button>
+                        {% else %}
+                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-gray-100 bg-gray-50 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Main Image Display -->
+                    <div class="flex-1 relative">
+                        <div class="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-soft group">
+                            <img src="{{ artwork.gallery_url }}" 
+                                 alt="{{ artwork.alt_text|default:artwork.title }}" 
+                                 class="artwork-image w-full h-full object-cover"
+                                 data-lazy="true"
+                                 data-aspect-ratio="4/5"
+                                 data-priority="high"
+                                 id="main-artwork-image"
+                                 loading="eager">
+                            
+                            <!-- Wishlist Button (hover only) -->
+                            <button class="wishlist-btn absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-sm text-neutral-600 rounded-full flex items-center justify-center hover:bg-white hover:text-red-500 transition-all duration-300 opacity-0 group-hover:opacity-100 z-10" 
+                                    data-artwork-id="{{ artwork.id }}" 
+                                    title="Add to Wishlist">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Artwork Information and Purchase Options -->
+            <div class="reveal-on-scroll">
+                <!-- Breadcrumb -->
+                <nav class="mb-6">
+                    <ol class="flex items-center space-x-2 text-sm text-neutral-600">
+                        <li><a href="{% url 'home' %}" class="hover:text-primary transition-colors">Home</a></li>
+                        <li><span class="mx-2">/</span></li>
+                        <li><a href="{% url 'portfolio' %}" class="hover:text-primary transition-colors">Portfolio</a></li>
+                        <li><span class="mx-2">/</span></li>
+                        <li class="text-neutral-800">{{ artwork.title }}</li>
+                    </ol>
+                </nav>
+                
+                <!-- Title and Status -->
+                <div class="mb-6">
+                    <h1 class="text-h1 font-playfair font-bold text-neutral-800 mb-2">{{ artwork.title }}</h1>
+                    <div class="flex items-center space-x-4 mb-4">
+                        {% if artwork.original_available %}
+                        <span class="bg-mocha text-white text-sm px-3 py-1 rounded-full font-medium">
+                            Original
+                        </span>
+                        {% endif %}
+                        {% if artwork.is_featured %}
+                            <span class="px-3 py-1 bg-accent text-white text-sm font-medium rounded-full">
+                                Featured
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Artwork Details -->
+                <div class="space-y-4 mb-8">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <span class="text-sm font-medium text-neutral-500">Medium</span>
+                            <p class="text-neutral-800">{{ artwork.get_medium_display }}</p>
+                        </div>
+                        <div>
+                            <span class="text-sm font-medium text-neutral-500">Dimensions</span>
+                            <p class="text-neutral-800">{{ artwork.dimensions_display }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if artwork.category %}
+                        <div>
+                            <span class="text-sm font-medium text-neutral-500">Category</span>
+                            <p class="text-neutral-800">{{ artwork.category.name }}</p>
+                        </div>
+                    {% endif %}
+                    
+                    {% if artwork.year_created %}
+                        <div>
+                            <span class="text-sm font-medium text-neutral-500">Year Created</span>
+                            <p class="text-neutral-800">{{ artwork.year_created }}</p>
+                        </div>
+                    {% endif %}
+                    
+                    <div>
+                        <span class="text-sm font-medium text-neutral-500">Views</span>
+                        <p class="text-neutral-800">{{ artwork.views }} view{{ artwork.views|pluralize }}</p>
+                    </div>
+                </div>
+                
+                <!-- Purchase Options -->
+                {% if artwork.type == 'original' and artwork.original_price or artwork.type == 'print' %}
+                    <div class="space-y-6 mb-8">
+                        <h3 class="text-h2 font-playfair font-semibold text-neutral-800">Purchase Options</h3>
+                        
+                        {% if artwork.original_price and artwork.type == 'original' %}
+                        <!-- Original Artwork Card -->
+                        <div class="bg-white border-2 border-neutral-200 rounded-xl p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex-1">
+                                    <h4 class="text-xl font-playfair font-semibold text-neutral-800 mb-2">One-of-a-Kind Original</h4>
+                                    <p class="text-neutral-600 mb-3">{{ artwork.dimensions_display }} • Signed by artist • Includes certificate of authenticity</p>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">✓ Ready to Ship</span>
+                                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded">Limited Edition</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-3xl font-bold text-primary">${{ artwork.original_price }}</span>
+                                    <p class="text-sm text-neutral-500">One-time purchase</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons for Original -->
+                            <div class="space-y-3">
+                                <button onclick="addOriginalToCart()" 
+                                        class="w-full btn-primary">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+                                    </svg>
+                                    Add to Cart
+                                </button>
+                                
+                                <button onclick="window.toggleWishlist({{ artwork.id }})" 
+                                        class="wishlist-btn w-full btn-outline" 
+                                        data-artwork-id="{{ artwork.id }}">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                    </svg>
+                                    Add to Wishlist
+                                </button>
+                                
+                                <button onclick="buyOriginalNow()" 
+                                        class="w-full btn-primary">
+                                    Buy Now
+                                </button>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if artwork.type == 'print' %}
+                        <!-- Print Options -->
+                        <div>
+                            <div class="mb-4">
+                                <h4 class="text-xl font-playfair font-semibold text-neutral-800 mb-2">Fine Art Prints</h4>
+                                <p class="text-neutral-600">High-quality reproduction prints available in multiple sizes.</p>
+                            </div>
+                            
+                            <!-- Print Options Grid -->
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <!-- 8x10 Print Card -->
+                                <div id="print-8x10-card" 
+                                     class="purchase-card bg-white border-2 border-neutral-200 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:shadow-lg text-center"
+                                     onclick="selectOption('print-8x10', 45)">
+                                    <h5 class="font-semibold text-neutral-800 mb-1">8" × 10"</h5>
+                                    <div class="text-lg font-bold text-primary mb-3">$45</div>
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <button type="button" onclick="event.stopPropagation(); updateQuantity('print-8x10', -1)" 
+                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">-</button>
+                                        <span id="qty-print-8x10" class="w-6 text-center font-medium">0</span>
+                                        <button type="button" onclick="event.stopPropagation(); updateQuantity('print-8x10', 1)" 
+                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">+</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- 11x14 Print Card -->
+                                <div id="print-11x14-card" 
+                                     class="purchase-card bg-white border-2 border-neutral-200 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:shadow-lg text-center"
+                                     onclick="selectOption('print-11x14', 65)">
+                                    <h5 class="font-semibold text-neutral-800 mb-1">11" × 14"</h5>
+                                    <div class="text-lg font-bold text-primary mb-3">$65</div>
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <button type="button" onclick="event.stopPropagation(); updateQuantity('print-11x14', -1)" 
+                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">-</button>
+                                        <span id="qty-print-11x14" class="w-6 text-center font-medium">0</span>
+                                        <button type="button" onclick="event.stopPropagation(); updateQuantity('print-11x14', 1)" 
+                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">+</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- 16x20 Print Card -->
+                                <div id="print-16x20-card" 
+                                     class="purchase-card bg-white border-2 border-neutral-200 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:shadow-lg text-center"
+                                     onclick="selectOption('print-16x20', 95)">
+                                    <h5 class="font-semibold text-neutral-800 mb-1">16" × 20"</h5>
+                                    <div class="text-lg font-bold text-primary mb-3">$95</div>
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <button type="button" onclick="event.stopPropagation(); updateQuantity('print-16x20', -1)" 
+                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">-</button>
+                                        <span id="qty-print-16x20" class="w-6 text-center font-medium">0</span>
+                                        <button type="button" onclick="event.stopPropagation(); updateQuantity('print-16x20', 1)" 
+                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">+</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- 24x30 Print Card -->
+                                <div id="print-24x30-card" 
+                                     class="purchase-card bg-white border-2 border-neutral-200 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:shadow-lg text-center"
+                                     onclick="selectOption('print-24x30', 155)">
+                                    <h5 class="font-semibold text-neutral-800 mb-1">24" × 30"</h5>
+                                    <div class="text-lg font-bold text-primary mb-3">$155</div>
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <button type="button" onclick="event.stopPropagation(); updateQuantity('print-24x30', -1)" 
+                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">-</button>
+                                        <span id="qty-print-24x30" class="w-6 text-center font-medium">0</span>
+                                        <button type="button" onclick="event.stopPropagation(); updateQuantity('print-24x30', 1)" 
+                                                class="w-7 h-7 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-sm">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Purchase Actions (for prints only) -->
+                        {% if artwork.type == 'print' %}
+                        <div class="bg-gradient-to-r from-primary-50 to-secondary-50 rounded-xl p-6">
+                            <!-- Total Price (for prints) -->
+                            <div class="flex justify-between items-center mb-6">
+                                <span class="text-lg font-semibold text-neutral-800">Total:</span>
+                                <span id="total-price" class="text-2xl font-bold text-primary">$0.00</span>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="space-y-3">
+                                <button id="add-to-cart-btn" 
+                                        onclick="addSelectedToCart()" 
+                                        disabled 
+                                        class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
+                                    </svg>
+                                    Add to Cart
+                                </button>
+                                
+                                <button onclick="window.toggleWishlist({{ artwork.id }})" 
+                                        class="wishlist-btn w-full btn-outline" 
+                                        data-artwork-id="{{ artwork.id }}">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                    </svg>
+                                    Add to Wishlist
+                                </button>
+                                
+                                <button id="buy-now-btn" 
+                                        onclick="buyNowSelected()" 
+                                        disabled
+                                        class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                                    Buy Now
+                                </button>
+                            </div>
+                            
+                            <!-- Purchase Info -->
+                            <div class="mt-6 text-xs text-neutral-500 space-y-1">
+                                <p>✓ Free shipping on orders over $75</p>
+                                <p>✓ 30-day return policy</p>
+                                <p>✓ Secure checkout</p>
+                                <p>✓ Ships within 3-5 business days</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                    </div>
+                {% elif not artwork.original_available and artwork.prints_available %}
+                    <div class="bg-neutral-100 rounded-xl p-6 mb-8">
+                        <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-2">Original Sold</h3>
+                        <p class="text-neutral-600 mb-4">
+                            This original artwork has found its home, but prints are still available! I'd also be happy to create something similar or discuss a custom commission.
+                        </p>
+                        <a href="{% url 'contact' %}" class="btn-outline">
+                            Commission Similar Work
+                        </a>
+                    </div>
+                {% endif %}
+                
+                <!-- Description -->
+                {% if artwork.description %}
+                    <div class="mb-8">
+                        <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-4">About This Piece</h3>
+                        <div class="prose text-neutral-600">
+                            {{ artwork.description|linebreaks }}
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <!-- Artist Note -->
+                {% if artwork.artist_notes %}
+                    <div class="bg-neutral-50 rounded-xl p-6 mb-8">
+                        <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-4">Artist's Note</h3>
+                        <div class="prose text-neutral-600">
+                            {{ artwork.artist_notes|linebreaks }}
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <!-- Share -->
+                <div class="border-t border-neutral-200 pt-6">
+                    <h3 class="font-medium text-neutral-800 mb-4">Share This Artwork</h3>
+                    <div class="flex space-x-4">
+                        <button onclick="shareOnFacebook()" 
+                                class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </button>
+                        
+                        <button onclick="shareOnTwitter()" 
+                                class="w-10 h-10 bg-blue-400 text-white rounded-full flex items-center justify-center hover:bg-blue-500 transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                            </svg>
+                        </button>
+                        
+                        <button onclick="shareOnPinterest()" 
+                                class="w-10 h-10 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-700 transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 0C5.374 0 0 5.372 0 12.017 0 16.4 2.331 20.027 5.75 21.526c.063-.6.124-1.519-.026-2.174-.138-.6-.896-3.78-.896-3.78s-.229-.457-.229-1.133c0-1.062.616-1.855 1.384-1.855.653 0 .969.49.969 1.076 0 .656-.418 1.637-.634 2.544-.18.761.381 1.381 1.133 1.381 1.36 0 2.407-1.436 2.407-3.509 0-1.834-1.318-3.114-3.202-3.114-2.183 0-3.467 1.636-3.467 3.325 0 .658.254 1.364.571 1.748.063.076.072.142.053.22-.058.241-.187.759-.212.864-.033.142-.108.173-.249.104-1.35-.629-2.193-2.604-2.193-4.192 0-2.416 1.755-4.635 5.056-4.635 2.653 0 4.718 1.888 4.718 4.412 0 2.633-1.658 4.751-3.961 4.751-.773 0-1.501-.402-1.751-.881l-.475 1.811c-.171.665-.636 1.495-.947 2.002A11.96 11.96 0 0012 24c6.624 0 12-5.373 12-12.017C24 5.372 18.626.001 12.001.001z"/>
+                            </svg>
+                        </button>
+                        
+                        <button onclick="copyLink()" 
+                                class="w-10 h-10 bg-neutral-600 text-white rounded-full flex items-center justify-center hover:bg-neutral-700 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Artworks -->
+{% if related_artworks %}
+    <section class="py-16 bg-neutral-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12 reveal-on-scroll">
+                <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-4">You Might Also Like</h2>
+                <p class="text-body-lg text-neutral-600">
+                    Similar works that share this piece's medium or artistic style.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {% for related in related_artworks %}
+                    <div class="artwork-card reveal-on-scroll">
+                        <a href="{% url 'artwork_detail' slug=related.slug %}" class="block">
+                            <div class="relative overflow-hidden">
+                                <img src="{{ related.thumbnail_url }}" 
+                                     alt="{{ related.alt_text|default:related.title }}" 
+                                     class="artwork-image w-full h-64 object-cover">
+                                
+                                <div class="artwork-overlay">
+                                    <div class="absolute bottom-4 left-4 text-white">
+                                        <h3 class="font-playfair font-semibold text-lg mb-1">{{ related.title }}</h3>
+                                        <p class="text-sm opacity-90">{{ related.get_medium_display }}</p>
+                                    </div>
+                                    
+                                    {% if related.status == 'available' and related.price %}
+                                        <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-sm rounded-full px-3 py-1">
+                                            <span class="text-white text-sm font-medium">{{ related.price_display }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="text-center mt-12 reveal-on-scroll">
+                <a href="{% url 'portfolio' %}" class="btn-primary">
+                    View Complete Portfolio
+                </a>
+            </div>
+        </div>
+    </section>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Image gallery navigation
+function changeMainImage(src, imageType) {
+    if (!src || src === 'None') return;
+    
+    document.getElementById('main-artwork-image').src = src;
+    
+    // Update active thumbnail
+    const thumbnails = document.querySelectorAll('.image-thumbnail');
+    thumbnails.forEach(thumb => {
+        thumb.classList.remove('border-mocha', 'shadow-lg');
+        thumb.classList.add('border-neutral-200');
+    });
+    
+    // Set active state for clicked thumbnail
+    const activeThumb = document.querySelector(`[data-image="${imageType}"]`);
+    if (activeThumb) {
+        activeThumb.classList.remove('border-neutral-200');
+        activeThumb.classList.add('border-mocha', 'shadow-lg');
+    }
+}
+
+// Global wishlist functionality for use across templates
+function toggleWishlist(artworkId) {
+    const button = document.querySelector(`[data-artwork-id="${artworkId}"]`);
+    if (!button) return;
+    
+    // Add loading state
+    const originalHTML = button.innerHTML;
+    button.innerHTML = '<div class="animate-spin w-5 h-5 border-2 border-current border-t-transparent rounded-full"></div>';
+    button.disabled = true;
+    
+    fetch(`/api/wishlist/toggle/${artworkId}/`, {
+        method: 'PUT',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        button.disabled = false;
+        
+        if (data.added) {
+            button.classList.add('active', 'bg-primary-500', 'text-white', 'border-primary-500');
+            button.classList.remove('text-primary-500', 'hover:bg-primary-500');
+            button.innerHTML = `<svg class="w-5 h-5" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>`;
+            button.title = 'Remove from Wishlist';
+        } else {
+            button.classList.remove('active', 'bg-primary-500', 'text-white');
+            button.classList.add('text-primary-500', 'hover:bg-primary-500');
+            button.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+            </svg>`;
+            button.title = 'Add to Wishlist';
+        }
+        
+        // Show toast notification
+        showToast(data.added ? 'Added to wishlist!' : 'Removed from wishlist');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        button.disabled = false;
+        button.innerHTML = originalHTML;
+        showToast('Error updating wishlist', 'error');
+    });
+}
+
+// Cart counter functionality
+function updateCartCounter(count) {
+    const cartCount = document.querySelector('.cart-count');
+    if (cartCount) {
+        if (count > 0) {
+            cartCount.textContent = count;
+            cartCount.classList.remove('hidden');
+        } else {
+            cartCount.classList.add('hidden');
+        }
+    }
+}
+
+// Load cart count on page load
+function loadCartCount() {
+    fetch('/api/cart/', {
+        method: 'GET',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateCartCounter(data.item_count);
+        }
+    })
+    .catch(error => console.error('Error loading cart count:', error));
+}
+
+// CSRF token helper
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Initialize main image as active thumbnail on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const mainThumb = document.querySelector('[data-image="main"]');
+    if (mainThumb) {
+        mainThumb.classList.add('border-mocha', 'shadow-lg');
+        mainThumb.classList.remove('border-neutral-200');
+    }
+});
+
+// Shopping cart state management
+let cartState = {
+    items: {},
+    total: 0
+};
+
+// Price lookup table
+const ITEM_PRICES = {
+    'original': {{ artwork.original_price|default:0 }},
+    'print-8x10': 45,
+    'print-11x14': 65,
+    'print-16x20': 95,
+    'print-24x30': 155
+};
+
+// Select purchase option (card clicked)
+function selectOption(itemId, price) {
+    // For originals, directly go to purchase
+    if (itemId === 'original') {
+        window.location.href = `/purchase/original/{{ artwork.id }}/`;
+        return;
+    }
+    
+    const card = document.getElementById(`${itemId}-card`);
+    const qtySpan = document.getElementById(`qty-${itemId}`);
+    
+    if (cartState.items[itemId]) {
+        // Already selected, deselect it
+        delete cartState.items[itemId];
+        card.classList.remove('border-primary', 'bg-primary-50');
+        card.classList.add('border-neutral-200');
+        
+        // Reset quantity to 0 for prints
+        if (qtySpan && itemId !== 'original') {
+            qtySpan.textContent = '0';
+        }
+    } else {
+        // Select the item
+        if (itemId === 'original') {
+            cartState.items[itemId] = { quantity: 1, price: price };
+        } else {
+            // For prints, set quantity to 1
+            cartState.items[itemId] = { quantity: 1, price: price };
+            if (qtySpan) {
+                qtySpan.textContent = '1';
+            }
+        }
+        
+        // Highlight the card
+        card.classList.remove('border-neutral-200');
+        card.classList.add('border-primary', 'bg-primary-50');
+    }
+    
+    updateOrderSummary();
+}
+
+// Update quantity (+ or - buttons)
+function updateQuantity(itemId, change) {
+    const qtySpan = document.getElementById(`qty-${itemId}`);
+    const card = document.getElementById(`${itemId}-card`);
+    
+    if (!qtySpan) return;
+    
+    let newQuantity = Math.max(0, parseInt(qtySpan.textContent) + change);
+    const maxQuantity = 10; // Default max for all print sizes
+    newQuantity = Math.min(newQuantity, maxQuantity);
+    
+    qtySpan.textContent = newQuantity;
+    
+    // Update card selection and cart state
+    if (newQuantity > 0) {
+        // Select the card and add to cart state
+        cartState.items[itemId] = { 
+            quantity: newQuantity, 
+            price: ITEM_PRICES[itemId] 
+        };
+        card.classList.remove('border-neutral-200');
+        card.classList.add('border-primary', 'bg-primary-50');
+    } else {
+        // Deselect the card and remove from cart state
+        delete cartState.items[itemId];
+        card.classList.remove('border-primary', 'bg-primary-50');
+        card.classList.add('border-neutral-200');
+    }
+    
+    updateOrderSummary();
+}
+
+// Update the order summary (just total, no item display)
+function updateOrderSummary() {
+    const totalPriceElement = document.getElementById('total-price');
+    const addToCartBtn = document.getElementById('add-to-cart-btn');
+    const buyNowBtn = document.getElementById('buy-now-btn');
+    
+    // Calculate total
+    let total = 0;
+    const selectedItems = Object.entries(cartState.items);
+    
+    if (selectedItems.length === 0) {
+        if (addToCartBtn) addToCartBtn.disabled = true;
+        if (buyNowBtn) buyNowBtn.disabled = true;
+        total = 0;
+    } else {
+        selectedItems.forEach(([itemId, item]) => {
+            total += item.price * item.quantity;
+        });
+        
+        if (addToCartBtn) addToCartBtn.disabled = false;
+        if (buyNowBtn) buyNowBtn.disabled = false;
+    }
+    
+    // Update cart state and display
+    cartState.total = total;
+    if (totalPriceElement) {
+        totalPriceElement.textContent = `$${total.toFixed(2)}`;
+    }
+}
+
+// Add original artwork to cart (from card button)
+function addOriginalToCart() {
+    fetch('/api/cart/add/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify({
+            artwork_id: {{ artwork.id }},
+            item_type: 'original',
+            quantity: 1
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('Original artwork added to cart!');
+            updateCartCounter(data.cart_count);
+        } else {
+            showToast(data.message || 'Error adding to cart', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showToast('Error adding to cart', 'error');
+    });
+}
+
+// Buy original artwork now (from card button)
+function buyOriginalNow() {
+    // Redirect directly to checkout with original artwork
+    window.location.href = `/checkout/?artwork_id={{ artwork.id }}&item_type=original&quantity=1`;
+}
+
+// Add selected items to cart
+function addSelectedToCart() {
+    const button = document.getElementById('add-to-cart-btn');
+    const originalHTML = button.innerHTML;
+    
+    if (Object.keys(cartState.items).length === 0) {
+        showToast('Please select items to add to cart', 'error');
+        return;
+    }
+    
+    // Add loading state
+    button.innerHTML = '<div class="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full mr-2"></div>Adding to Cart...';
+    button.disabled = true;
+    
+    // Prepare cart data
+    const cartItems = Object.entries(cartState.items).map(([itemId, item]) => ({
+        artwork_id: {{ artwork.id }},
+        item_type: itemId,
+        quantity: item.quantity,
+        price: item.price
+    }));
+    
+    // Add to cart via API
+    fetch('/api/cart/add-multiple/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            items: cartItems
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Success feedback
+            button.innerHTML = `<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>Added to Cart!`;
+            button.classList.remove('btn-primary');
+            button.classList.add('bg-green-500', 'text-white', 'hover:bg-green-600');
+            
+            // Update cart count
+            updateCartCounter(data.cart_count);
+            
+            // Show success toast
+            showToast(`${Object.keys(cartState.items).length} item(s) added to cart!`);
+            
+            // Reset form after delay
+            setTimeout(() => {
+                resetPurchaseForm();
+                button.innerHTML = originalHTML;
+                button.classList.remove('bg-green-500', 'text-white', 'hover:bg-green-600');
+                button.classList.add('btn-primary');
+                button.disabled = false;
+            }, 2000);
+        } else {
+            button.innerHTML = originalHTML;
+            button.disabled = false;
+            showToast(data.message || 'Error adding to cart', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        button.innerHTML = originalHTML;
+        button.disabled = false;
+        showToast('Error adding to cart', 'error');
+    });
+}
+
+// Buy selected items now (skip cart, go directly to checkout)
+function buyNowSelected() {
+    const button = document.getElementById('buy-now-btn');
+    const originalHTML = button.innerHTML;
+    
+    if (Object.keys(cartState.items).length === 0) {
+        showToast('Please select items to purchase', 'error');
+        return;
+    }
+    
+    // Add loading state
+    button.innerHTML = '<div class="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full mr-2"></div>Processing...';
+    button.disabled = true;
+    
+    // Prepare direct checkout data
+    const directCheckoutItems = Object.entries(cartState.items).map(([itemId, item]) => ({
+        artwork_id: {{ artwork.id }},
+        item_type: itemId,
+        quantity: item.quantity,
+        price: item.price
+    }));
+    
+    // Setup direct checkout (bypasses cart entirely)
+    fetch('/orders/checkout/setup/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            items: directCheckoutItems
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success toast
+            showToast('Proceeding to checkout...');
+            
+            // Small delay to show the toast, then redirect to direct checkout
+            setTimeout(() => {
+                window.location.href = data.redirect_url;
+            }, 500);
+        } else {
+            button.innerHTML = originalHTML;
+            button.disabled = false;
+            showToast(data.error || 'Error setting up checkout', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        button.innerHTML = originalHTML;
+        button.disabled = false;
+        showToast('Error processing order', 'error');
+    });
+}
+
+// Reset the purchase form
+function resetPurchaseForm() {
+    // Clear cart state
+    cartState.items = {};
+    
+    // Reset all purchase cards to unselected state
+    document.querySelectorAll('.purchase-card').forEach(card => {
+        card.classList.remove('border-primary', 'bg-primary-50');
+        card.classList.add('border-neutral-200');
+    });
+    
+    // Reset all quantity displays to 0
+    document.querySelectorAll('[id^="qty-"]').forEach(qtySpan => {
+        if (qtySpan.id !== 'qty-original') { // Don't reset original quantity display
+            qtySpan.textContent = '0';
+        }
+    });
+    
+    // Update order summary
+    updateOrderSummary();
+}
+
+// Toast notification system
+function showToast(message, type = 'success') {
+    // Remove existing toasts
+    const existingToasts = document.querySelectorAll('.toast');
+    existingToasts.forEach(toast => toast.remove());
+    
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `toast fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transform transition-all duration-300 ${
+        type === 'error' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+    }`;
+    toast.textContent = message;
+    
+    // Add to page
+    document.body.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => toast.classList.add('translate-y-0'), 10);
+    
+    // Remove after 4 seconds
+    setTimeout(() => {
+        toast.classList.add('translate-y-[-100px]', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+// Social sharing
+function shareOnFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
+}
+
+function shareOnTwitter() {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent('Check out this beautiful artwork by Aiza: {{ artwork.title }}');
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank', 'width=600,height=400');
+}
+
+function shareOnPinterest() {
+    const url = encodeURIComponent(window.location.href);
+    const media = encodeURIComponent('{{ artwork.gallery_url }}');
+    const description = encodeURIComponent('{{ artwork.title }} by Aiza - {{ artwork.description|truncatewords:20 }}');
+    window.open(`https://pinterest.com/pin/create/button/?url=${url}&media=${media}&description=${description}`, '_blank', 'width=600,height=400');
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('Link copied to clipboard!');
+    });
+}
+
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    loadCartCount();
+});
+
+</script>
+{% endblock %}

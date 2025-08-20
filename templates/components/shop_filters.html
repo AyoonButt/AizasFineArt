@@ -1,0 +1,140 @@
+<!-- Category Filter -->
+<div class="filter-group">
+  <h3 class="filter-title">Categories</h3>
+  <div class="filter-options">
+    <label class="filter-option">
+      <input type="checkbox" name="category" value="all" checked>
+      <span>All Artworks</span>
+    </label>
+    {% for category in categories %}
+    <label class="filter-option">
+      <input type="checkbox" 
+             name="category" 
+             value="{{ category.slug }}"
+             hx-get="{% url 'shop_artwork_list' %}"
+             hx-target="#artwork-grid"
+             hx-include="[name='category']:checked, [name='medium']:checked, [name='price_range']:checked, [name='availability']:checked">
+      <span>{{ category.name }}</span>
+      <span class="count">({{ category.artworks.count }})</span>
+    </label>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Medium Filter -->
+<div class="filter-group">
+  <h3 class="filter-title">Medium</h3>
+  <div class="filter-options">
+    {% for medium_choice in medium_choices %}
+    <label class="filter-option">
+      <input type="checkbox" 
+             name="medium" 
+             value="{{ medium_choice.0 }}"
+             hx-get="{% url 'shop_artwork_list' %}"
+             hx-target="#artwork-grid"
+             hx-include="[name='category']:checked, [name='medium']:checked, [name='price_range']:checked, [name='availability']:checked">
+      <span>{{ medium_choice.1 }}</span>
+    </label>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Price Range Filter -->
+<div class="filter-group">
+  <h3 class="filter-title">Price Range</h3>
+  <div class="filter-options">
+    <label class="filter-option">
+      <input type="radio" 
+             name="price_range" 
+             value="all" 
+             checked
+             hx-get="{% url 'shop_artwork_list' %}"
+             hx-target="#artwork-grid"
+             hx-include="[name='category']:checked, [name='medium']:checked, [name='price_range']:checked, [name='availability']:checked">
+      <span>All Prices</span>
+    </label>
+    <label class="filter-option">
+      <input type="radio" 
+             name="price_range" 
+             value="0-100"
+             hx-get="{% url 'shop_artwork_list' %}"
+             hx-target="#artwork-grid"
+             hx-include="[name='category']:checked, [name='medium']:checked, [name='price_range']:checked, [name='availability']:checked">
+      <span>Under $100</span>
+    </label>
+    <label class="filter-option">
+      <input type="radio" 
+             name="price_range" 
+             value="100-500"
+             hx-get="{% url 'shop_artwork_list' %}"
+             hx-target="#artwork-grid"
+             hx-include="[name='category']:checked, [name='medium']:checked, [name='price_range']:checked, [name='availability']:checked">
+      <span>$100 - $500</span>
+    </label>
+    <label class="filter-option">
+      <input type="radio" 
+             name="price_range" 
+             value="500-1000"
+             hx-get="{% url 'shop_artwork_list' %}"
+             hx-target="#artwork-grid"
+             hx-include="[name='category']:checked, [name='medium']:checked, [name='price_range']:checked, [name='availability']:checked">
+      <span>$500 - $1000</span>
+    </label>
+    <label class="filter-option">
+      <input type="radio" 
+             name="price_range" 
+             value="1000+"
+             hx-get="{% url 'shop_artwork_list' %}"
+             hx-target="#artwork-grid"
+             hx-include="[name='category']:checked, [name='medium']:checked, [name='price_range']:checked, [name='availability']:checked">
+      <span>$1000+</span>
+    </label>
+  </div>
+</div>
+
+<!-- Availability Filter -->
+<div class="filter-group">
+  <h3 class="filter-title">Availability</h3>
+  <div class="filter-options">
+    <label class="filter-option">
+      <input type="checkbox" 
+             name="availability" 
+             value="originals"
+             hx-get="{% url 'shop_artwork_list' %}"
+             hx-target="#artwork-grid"
+             hx-include="[name='category']:checked, [name='medium']:checked, [name='price_range']:checked, [name='availability']:checked">
+      <span>Originals Available</span>
+    </label>
+    <label class="filter-option">
+      <input type="checkbox" 
+             name="availability" 
+             value="prints"
+             hx-get="{% url 'shop_artwork_list' %}"
+             hx-target="#artwork-grid"
+             hx-include="[name='category']:checked, [name='medium']:checked, [name='price_range']:checked, [name='availability']:checked">
+      <span>Prints Available</span>
+    </label>
+  </div>
+</div>
+
+<!-- Tags Filter -->
+<div class="filter-group">
+  <h3 class="filter-title">Tags</h3>
+  <div class="filter-options filter-tags">
+    {% for tag in popular_tags %}
+    <button class="tag-filter" 
+            style="background-color: {{ tag.color }}20; color: {{ tag.color }};"
+            hx-get="{% url 'shop_artwork_list' %}?tag={{ tag.slug }}"
+            hx-target="#artwork-grid">
+      {{ tag.name }}
+    </button>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Clear Filters -->
+<button class="clear-filters-btn"
+        hx-get="{% url 'shop_artwork_list' %}"
+        hx-target="#artwork-grid">
+  Clear All Filters
+</button>

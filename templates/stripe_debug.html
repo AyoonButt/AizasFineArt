@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stripe Debug Test</title>
+    {% load static %}
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .card-element { padding: 10px; border: 1px solid #ccc; border-radius: 4px; margin: 10px 0; }
+        .error { color: red; margin: 10px 0; }
+        .success { color: green; margin: 10px 0; }
+        .debug { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stripe Debug Test</h1>
+        
+        <div class="debug">
+            <h3>Debug Information:</h3>
+            <p><strong>Stripe Public Key:</strong> <span id="stripe-key-display">{{ stripe_public_key|slice:":20" }}...</span></p>
+            <p><strong>Key Valid:</strong> <span id="key-valid">Checking...</span></p>
+            <p><strong>Stripe Object:</strong> <span id="stripe-object">Checking...</span></p>
+            <p><strong>Elements Object:</strong> <span id="elements-object">Checking...</span></p>
+            <p><strong>Card Element:</strong> <span id="card-element-status">Checking...</span></p>
+        </div>
+
+        <div id="error-message" class="error"></div>
+        <div id="success-message" class="success"></div>
+
+        <form id="test-form" data-stripe-key="{{ stripe_public_key }}">
+            <h3>Test Card Element:</h3>
+            <div id="card-element" class="card-element">
+                <!-- Card element will be mounted here -->
+            </div>
+            <div id="card-errors" class="error"></div>
+            
+            <button type="button" id="test-btn" onclick="testStripe()">Test Stripe Integration</button>
+        </form>
+    </div>
+
+    <script>
+        console.log('=== STRIPE DEBUG TEST ===');
+        
+        // Get Stripe key
+        const form = document.getElementById('test-form');
+        const stripeKey = form.dataset.stripeKey;
+        
+        console.log('Stripe key:', stripeKey ? stripeKey.substring(0, 20) + '...' : 'NOT_FOUND');
+        document.getElementById('stripe-key-display').textContent = stripeKey ? stripeKey.substring(0, 20) + '...' : 'NOT_FOUND';
+        
+        // Validate key format
+        const keyValid = stripeKey && stripeKey.startsWith('pk_');
+        console.log('Key valid:', keyValid);
+        document.getElementById('key-valid').textContent = keyValid ? 'Yes' : 'No';
+        document.getElementById('key-valid').style.color = keyValid ? 'green' : 'red';
+        
+        // Check if Stripe is available
+        console.log('Stripe available:', typeof Stripe !== 'undefined');
+        document.getElementById('stripe-object').textContent = typeof Stripe !== 'undefined' ? 'Available' : 'Not Available';
+        document.getElementById('stripe-object').style.color = typeof Stripe !== 'undefined' ? 'green' : 'red';
+        
+        let stripe = null;
+        let elements = null;
+        let cardElement = null;
+        
+        if (typeof Stripe !== 'undefined' && keyValid) {
+            try {
+                stripe = Stripe(stripeKey);
+                console.log('Stripe initialized:', stripe);
+                document.getElementById('elements-object').textContent = 'Stripe initialized successfully';
+                document.getElementById('elements-object').style.color = 'green';
+                
+                elements = stripe.elements();
+                console.log('Elements created:', elements);
+                
+                cardElement = elements.create('card');
+                console.log('Card element created:', cardElement);
+                
+                cardElement.mount('#card-element');
+                console.log('Card element mounted');
+                document.getElementById('card-element-status').textContent = 'Mounted successfully';
+                document.getElementById('card-element-status').style.color = 'green';
+                
+                cardElement.on('change', (event) => {
+                    console.log('Card change event:', event);
+                    const displayError = document.getElementById('card-errors');
+                    if (event.error) {
+                        displayError.textContent = event.error.message;
+                    } else {
+                        displayError.textContent = '';
+                    }
+                });
+                
+                cardElement.on('ready', () => {
+                    console.log('Card element ready');
+                    document.getElementById('success-message').textContent = 'Card element is ready for input!';
+                });
+                
+            } catch (error) {
+                console.error('Stripe initialization error:', error);
+                document.getElementById('error-message').textContent = 'Error: ' + error.message;
+                document.getElementById('elements-object').textContent = 'Error: ' + error.message;
+                document.getElementById('elements-object').style.color = 'red';
+            }
+        } else {
+            const errorMsg = !keyValid ? 'Invalid Stripe key' : 'Stripe not available';
+            console.error(errorMsg);
+            document.getElementById('error-message').textContent = errorMsg;
+            document.getElementById('elements-object').textContent = errorMsg;
+            document.getElementById('elements-object').style.color = 'red';
+        }
+        
+        function testStripe() {
+            console.log('Testing Stripe integration...');
+            if (stripe && cardElement) {
+                console.log('Stripe and card element available');
+                document.getElementById('success-message').textContent = 'Stripe integration test passed!';
+            } else {
+                console.log('Stripe or card element not available');
+                document.getElementById('error-message').textContent = 'Stripe integration test failed!';
+            }
+        }
+    </script>
+</body>
+</html>

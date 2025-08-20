@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load webpack_loader %}
+
+{% block title %}React Image Viewer Demo{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-12">
+    <h1 class="text-3xl font-bold text-center mb-8">React Multi-Image Viewer Demo</h1>
+    
+    <!-- Demo with sample data -->
+    <div class="max-w-6xl mx-auto">
+        <div id="demo-artwork-viewer" 
+             data-react-component="artwork-image-viewer"
+             data-react-props='{
+                 "artwork": {
+                     "id": 1,
+                     "title": "Sample Artwork with Multiple Views",
+                     "gallery_url": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800",
+                     "thumbnail_url": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200",
+                     "main_image_url": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800",
+                     "frame1_image_url": "https://images.unsplash.com/photo-1577720643271-6760b6b9c448?w=800",
+                     "frame2_image_url": "https://images.unsplash.com/photo-1582201957340-4cfb9089b5a2?w=800",
+                     "frame3_image_url": "",
+                     "frame4_image_url": "https://images.unsplash.com/photo-1582201958030-96aded1e1e1a?w=800"
+                 }
+             }'>
+            
+            <!-- Fallback Loading State -->
+            <div class="flex gap-6">
+                <div class="flex flex-col space-y-3 w-20">
+                    <div class="aspect-square rounded-lg bg-gray-200 animate-pulse"></div>
+                    <div class="aspect-square rounded-lg bg-gray-200 animate-pulse"></div>
+                    <div class="aspect-square rounded-lg bg-gray-200 animate-pulse"></div>
+                    <div class="aspect-square rounded-lg bg-gray-200 animate-pulse"></div>
+                    <div class="aspect-square rounded-lg bg-gray-200 animate-pulse"></div>
+                </div>
+                <div class="flex-1 aspect-[4/5] rounded-2xl bg-gray-200 animate-pulse"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Instructions -->
+    <div class="max-w-4xl mx-auto mt-12 text-center">
+        <h2 class="text-2xl font-semibold mb-4">How to Use</h2>
+        <div class="bg-gray-50 rounded-lg p-6">
+            <p class="text-gray-700 mb-4">
+                This React component displays a main artwork image with 5 thumbnail navigation buttons on the left side.
+            </p>
+            <ul class="list-disc list-inside text-gray-600 space-y-2">
+                <li>Click any thumbnail to switch the main image</li>
+                <li>Empty thumbnails show a placeholder camera icon</li>
+                <li>Active thumbnail is highlighted with a colored border</li>
+                <li>Smooth transitions with Framer Motion animations</li>
+                <li>Navigation arrows allow keyboard-like browsing</li>
+                <li>Image counter shows current position</li>
+                <li>Loading spinner during image transitions</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Load React bundles -->
+{% render_bundle 'main' 'js' %}
+
+<script>
+// Initialize React components
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.ReactComponents && window.ReactComponents.mountAll) {
+        window.ReactComponents.mountAll();
+        console.log('React components mounted successfully');
+    } else {
+        console.error('React components not available');
+        document.getElementById('demo-artwork-viewer').innerHTML = `
+            <div class="text-center py-12 text-red-600">
+                <p>Failed to load React components. Check console for errors.</p>
+            </div>
+        `;
+    }
+});
+</script>
+{% endblock %}

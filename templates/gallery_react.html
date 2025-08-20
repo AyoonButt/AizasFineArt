@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load webpack_loader %}
+
+{% block title %}Gallery - React Multi-Image View{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Gallery-specific styles */
+.gallery-container {
+    min-height: 60vh;
+}
+
+.status-available {
+    @apply bg-green-100 text-green-800 px-2 py-1 text-xs rounded-full;
+}
+
+.status-sold {
+    @apply bg-red-100 text-red-800 px-2 py-1 text-xs rounded-full;
+}
+
+.status-reserved {
+    @apply bg-yellow-100 text-yellow-800 px-2 py-1 text-xs rounded-full;
+}
+
+.price-display {
+    @apply text-lg font-semibold text-mocha;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Gallery Header -->
+    <section class="py-16 bg-gradient-to-br from-mocha-50 to-lavender-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center max-w-4xl mx-auto">
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                    Multi-Image Gallery
+                </h1>
+                <p class="text-lg text-gray-600 leading-relaxed">
+                    Experience artworks with multiple views - hover over cards to cycle through different frames and angles.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- React Gallery Mount Point -->
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <div id="react-gallery" 
+                 data-react-component="gallery-grid"
+                 data-react-props='{"showFilters": true, "endpoint": "/api/artworks/"}'>
+                
+                <!-- Loading State -->
+                <div class="gallery-container flex items-center justify-center">
+                    <div class="text-center">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-mocha mx-auto mb-4"></div>
+                        <p class="text-gray-600">Loading gallery...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Info -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">Multi-Image Features</h2>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="bg-mocha-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-mocha" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">Multiple Views</h3>
+                        <p class="text-gray-600">See artworks from different angles and in various frame styles</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="bg-lavender-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-lavender" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">Interactive Preview</h3>
+                        <p class="text-gray-600">Hover over cards to cycle through available images automatically</p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <div class="bg-terracotta-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-terracotta" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">Smooth Animations</h3>
+                        <p class="text-gray-600">Framer Motion powered transitions for a premium experience</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Load React bundles -->
+{% render_bundle 'main' 'js' %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mount the React gallery component
+    const galleryMount = document.getElementById('react-gallery');
+    
+    if (galleryMount && window.ReactComponents && window.ReactComponents.mountAll) {
+        // Let the auto-mount system handle it
+        window.ReactComponents.mountAll();
+    } else {
+        console.error('React components not available');
+        galleryMount.innerHTML = `
+            <div class="text-center py-12">
+                <p class="text-red-600">Failed to load React gallery. Please check console for errors.</p>
+            </div>
+        `;
+    }
+});
+</script>
+{% endblock %}

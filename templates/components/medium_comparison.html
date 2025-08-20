@@ -1,0 +1,153 @@
+<!-- Medium Comparison Component -->
+<section class="py-20 bg-gradient-to-br from-neutral-50 via-white to-neutral-100 relative overflow-hidden">
+    <!-- Background decorative elements -->
+    <div class="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-primary-200/10 to-transparent rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-tl from-secondary-200/10 to-transparent rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+        <!-- Section Header -->
+        <div class="text-center mb-16 reveal-on-scroll">
+            <h2 class="text-4xl md:text-5xl font-playfair font-bold text-neutral-800 mb-6 leading-tight">
+                Why I Choose Different Mediums
+            </h2>
+            <p class="text-lg text-neutral-600 max-w-3xl mx-auto leading-relaxed">
+                Each medium speaks its own artistic language, and I select the one that best expresses 
+                the soul and story of each subject I paint.
+            </p>
+        </div>
+
+        <!-- Medium Comparison Cards -->
+        <div class="grid lg:grid-cols-2 gap-8 mb-16">
+            <!-- Watercolor Card -->
+            <div class="reveal-on-scroll">
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-neutral-200 h-full">
+                    <!-- Header -->
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                            <!-- Watercolor icon -->
+                            <svg class="w-6 h-6 text-primary-600" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="30" fill="currentColor" opacity="0.3"/>
+                                <circle cx="55" cy="45" r="18" fill="currentColor" opacity="0.5"/>
+                                <circle cx="45" cy="55" r="15" fill="currentColor" opacity="0.7"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-playfair font-bold text-neutral-800">Watercolor</h3>
+                            <span class="text-primary-600 font-medium text-sm">Gentle & Flowing</span>
+                        </div>
+                    </div>
+
+                    <!-- Perfect for section -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-semibold text-neutral-700 mb-4 uppercase tracking-wide">Perfect for...</h4>
+                        <ul class="space-y-3 text-neutral-600">
+                            <li class="flex items-center space-x-3">
+                                <span class="w-1.5 h-1.5 bg-primary-500 rounded-full"></span>
+                                <span>Delicate florals and botanical subjects</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <span class="w-1.5 h-1.5 bg-primary-500 rounded-full"></span>
+                                <span>Capturing the essence of light and atmosphere</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <span class="w-1.5 h-1.5 bg-primary-500 rounded-full"></span>
+                                <span>Creating gentle, meditative compositions</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <span class="w-1.5 h-1.5 bg-primary-500 rounded-full"></span>
+                                <span>Expressing spontaneous, emotional moments</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- CTA Button -->
+                    <div>
+                        <a href="{% url 'portfolio' %}?medium=watercolor" class="btn-primary">
+                            View Watercolor Works
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oil Paint Card -->
+            <div class="reveal-on-scroll">
+                <div class="bg-white rounded-2xl p-8 shadow-lg border border-neutral-200 h-full">
+                    <!-- Header -->
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="w-12 h-12 bg-secondary-100 rounded-xl flex items-center justify-center">
+                            <!-- Oil paint brush strokes icon -->
+                            <svg class="w-6 h-6 text-secondary-600" viewBox="0 0 100 100">
+                                <rect x="15" y="20" width="8" height="50" fill="currentColor" opacity="0.6" transform="rotate(15 19 45)"/>
+                                <rect x="35" y="10" width="6" height="60" fill="currentColor" opacity="0.4" transform="rotate(-10 38 40)"/>
+                                <rect x="55" y="25" width="10" height="40" fill="currentColor" opacity="0.7" transform="rotate(25 60 45)"/>
+                                <rect x="75" y="15" width="7" height="55" fill="currentColor" opacity="0.5" transform="rotate(-5 78.5 42.5)"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-playfair font-bold text-neutral-800">Oil Paint</h3>
+                            <span class="text-secondary-600 font-medium text-sm">Bold & Expressive</span>
+                        </div>
+                    </div>
+
+                    <!-- Perfect for section -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-semibold text-neutral-700 mb-4 uppercase tracking-wide">Perfect for...</h4>
+                        <ul class="space-y-3 text-neutral-600">
+                            <li class="flex items-center space-x-3">
+                                <span class="w-1.5 h-1.5 bg-secondary-500 rounded-full"></span>
+                                <span>Complex landscapes with rich detail</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <span class="w-1.5 h-1.5 bg-secondary-500 rounded-full"></span>
+                                <span>Portraits requiring depth and dimension</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <span class="w-1.5 h-1.5 bg-secondary-500 rounded-full"></span>
+                                <span>Works needing strong color saturation</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <span class="w-1.5 h-1.5 bg-secondary-500 rounded-full"></span>
+                                <span>Classical, timeless artistic statements</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- CTA Button -->
+                    <div>
+                        <a href="{% url 'portfolio' %}?medium=oil" class="btn-secondary">
+                            View Oil Paintings
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Artist Quote Card -->
+        <div class="reveal-on-scroll">
+            <div class="bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800 rounded-2xl p-10 text-center shadow-lg border border-purple-500/30">
+                <div class="max-w-3xl mx-auto">
+                    <div class="mb-6">
+                        <svg class="w-12 h-12 text-purple-200 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z"/>
+                        </svg>
+                    </div>
+                    
+                    <blockquote class="text-xl md:text-2xl font-light text-purple-50 leading-relaxed mb-6 font-playfair italic">
+                        Each medium tells its own story. Watercolor whispers with gentle transparency, 
+                        while oil paint speaks with bold, confident strokes. I choose the medium that 
+                        best serves the emotional truth of each subject.
+                    </blockquote>
+                    
+                    <footer class="border-t border-purple-400/40 pt-6">
+                        <cite class="text-lg font-playfair font-semibold text-purple-100 not-italic">
+                            — Aiza
+                        </cite>
+                        <p class="text-purple-200 mt-2 text-sm">
+                            Fine Artist • Fort Worth, Texas
+                        </p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

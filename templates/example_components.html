@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Django Components Example - Aiza's Fine Art{% endblock %}
+
+{% block content %}
+<div class="pt-8">
+    <!-- Page Header -->
+    <section class="container mx-auto px-4 py-12" data-gsap="fadeInUp">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-playfair font-bold text-neutral-800 mb-4">
+                Django Components + HTMX + GSAP
+            </h1>
+            <p class="text-lg text-neutral-600 max-w-2xl mx-auto">
+                Professional animations powered by GSAP, interactive components with HTMX, 
+                and reusable Django components working in harmony.
+            </p>
+            <div class="mt-6 flex flex-wrap justify-center gap-4">
+                <span class="px-4 py-2 bg-primary-100 text-primary-800 rounded-full text-sm font-medium">GSAP 3.12.5</span>
+                <span class="px-4 py-2 bg-secondary-100 text-secondary-800 rounded-full text-sm font-medium">HTMX 1.9.10</span>
+                <span class="px-4 py-2 bg-accent-100 text-accent-800 rounded-full text-sm font-medium">Django Components</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Component Demo -->
+    <section class="container mx-auto px-4 pb-8">
+        <h2 class="text-2xl font-playfair font-semibold mb-6">Gallery Component</h2>
+        
+        {% component "gallery_grid" artworks=sample_artworks show_filters=True %}{% endcomponent %}
+    </section>
+
+    <!-- Forms Demo -->
+    <section class="container mx-auto px-4 pb-8">
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Newsletter Form -->
+            <div>
+                <h2 class="text-2xl font-playfair font-semibold mb-6">Newsletter Component</h2>
+                {% component "newsletter_form" %}{% endcomponent %}
+            </div>
+            
+            <!-- Contact Form -->
+            <div>
+                <h2 class="text-2xl font-playfair font-semibold mb-6">Contact Form Component</h2>
+                {% component "contact_form" %}{% endcomponent %}
+            </div>
+        </div>
+    </section>
+    
+    <!-- Commission Form -->
+    <section class="container mx-auto px-4 pb-16">
+        <h2 class="text-2xl font-playfair font-semibold mb-6">Commission Form Component</h2>
+        <div class="max-w-2xl">
+            {% component "commission_form" %}{% endcomponent %}
+        </div>
+    </section>
+</div>
+{% endblock %}

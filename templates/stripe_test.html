@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stripe Element Test</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        #card-element { 
+            padding: 12px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            margin: 20px 0; 
+        }
+        #card-errors { color: red; margin-top: 10px; }
+        .test-info { background: #f0f0f0; padding: 15px; margin: 20px 0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Stripe Elements Test</h1>
+    
+    <div class="test-info">
+        <h3>Test Info:</h3>
+        <p><strong>Stripe Public Key:</strong> <span id="stripe-key-display">{{ stripe_public_key }}</span></p>
+        <p><strong>Key Valid:</strong> <span id="key-status">Checking...</span></p>
+    </div>
+    
+    <div id="card-element">
+        <!-- Stripe Element will be inserted here -->
+    </div>
+    <div id="card-errors" role="alert"></div>
+    
+    <div id="test-results">
+        <h3>Test Results:</h3>
+        <ul id="results-list">
+            <li>Loading...</li>
+        </ul>
+    </div>
+
+    <script>
+        const stripePublicKey = '{{ stripe_public_key }}';
+        const resultsList = document.getElementById('results-list');
+        const keyDisplay = document.getElementById('stripe-key-display');
+        const keyStatus = document.getElementById('key-status');
+        
+        function addResult(message, isError = false) {
+            const li = document.createElement('li');
+            li.textContent = message;
+            if (isError) li.style.color = 'red';
+            resultsList.appendChild(li);
+        }
+        
+        function clearResults() {
+            resultsList.innerHTML = '';
+        }
+        
+        clearResults();
+        
+        // Check if key exists
+        if (!stripePublicKey || stripePublicKey.trim() === '') {
+            addResult('❌ No Stripe public key provided', true);
+            keyStatus.textContent = 'Missing';
+            keyStatus.style.color = 'red';
+        } else {
+            addResult('✅ Stripe public key found: ' + stripePublicKey.substring(0, 20) + '...');
+            keyStatus.textContent = 'Present';
+            keyStatus.style.color = 'green';
+            
+            // Test Stripe initialization
+            try {
+                addResult('🔄 Initializing Stripe...');
+                const stripe = Stripe(stripePublicKey);
+                addResult('✅ Stripe initialized successfully');
+                
+                // Test Elements creation
+                addResult('🔄 Creating Stripe Elements...');
+                const elements = stripe.elements();
+                addResult('✅ Stripe Elements created');
+                
+                // Test Card Element creation
+                addResult('🔄 Creating Card Element...');
+                const cardElement = elements.create('card', {
+                    style: {
+                        base: {
+                            fontSize: '16px',
+                            color: '#424770',
+                            '::placeholder': {
+                                color: '#aab7c4',
+                            },
+                        },
+                    },
+                });
+                addResult('✅ Card Element created');
+                
+                // Test mounting
+                addResult('🔄 Mounting Card Element...');
+                cardElement.mount('#card-element');
+                addResult('✅ Card Element mounted successfully');
+                
+                // Test event handling
+                cardElement.on('change', ({error}) => {
+                    const displayError = document.getElementById('card-errors');
+                    if (error) {
+                        displayError.textContent = error.message;
+                        addResult('⚠️ Card validation error: ' + error.message);
+                    } else {
+                        displayError.textContent = '';
+                        addResult('✅ Card input valid');
+                    }
+                });
+                
+                addResult('🎉 All tests passed! Stripe Elements are working correctly.');
+                
+            } catch (error) {
+                addResult('❌ Stripe error: ' + error.message, true);
+                keyStatus.textContent = 'Invalid';
+                keyStatus.style.color = 'red';
+            }
+        }
+    </script>
+</body>
+</html>

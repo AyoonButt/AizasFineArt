@@ -1,0 +1,111 @@
+<!-- Gallery Filters Component -->
+<div class="gallery-filters mb-8 p-6 bg-neutral-50 rounded-lg border" 
+     data-component="gallery-filters" 
+     data-gsap="slideInUp">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+        
+        <!-- Filter Controls -->
+        <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6">
+            
+            <!-- Medium Filter -->
+            <div class="flex flex-col space-y-2">
+                <label class="text-sm font-medium text-neutral-700">Medium</label>
+                <select name="medium" 
+                        class="form-select text-sm"
+                        hx-get="{% url 'htmx_gallery_filter' %}"
+                        hx-target=".gallery-container"
+                        hx-swap="outerHTML"
+                        hx-include="[name='category']"
+                        hx-trigger="change">
+                    {% for value, label in media_choices %}
+                        <option value="{{ value }}" {% if value == current_medium %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Category Filter -->
+            <div class="flex flex-col space-y-2">
+                <label class="text-sm font-medium text-neutral-700">Category</label>
+                <select name="category" 
+                        class="form-select text-sm"
+                        hx-get="{% url 'htmx_gallery_filter' %}"
+                        hx-target=".gallery-container"
+                        hx-swap="outerHTML"
+                        hx-include="[name='medium']"
+                        hx-trigger="change">
+                    {% for value, label in category_choices %}
+                        <option value="{{ value }}" {% if value == current_category %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        
+        <!-- Search and Actions -->
+        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+            
+            <!-- Search -->
+            <div class="relative">
+                <input type="search" 
+                       name="search"
+                       placeholder="Search artworks..."
+                       class="w-full sm:w-64 pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm"
+                       hx-get="{% url 'htmx_search' %}"
+                       hx-target=".gallery-container"
+                       hx-swap="outerHTML"
+                       hx-trigger="keyup changed delay:500ms, search"
+                       hx-include="[name='medium'], [name='category']">
+                <svg class="absolute left-3 top-2.5 w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+            </div>
+            
+            <!-- Clear Filters -->
+            {% if current_medium != "all" or current_category != "all" %}
+                <button type="button" 
+                        class="btn-outline text-sm whitespace-nowrap"
+                        hx-get="{% url 'htmx_gallery_filter' %}?medium=all&category=all"
+                        hx-target=".gallery-container"
+                        hx-swap="outerHTML">
+                    Clear Filters
+                </button>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Quick Filter Tags -->
+    <div class="mt-4 flex flex-wrap gap-2">
+        <span class="text-sm text-neutral-600 mr-2">Quick filters:</span>
+        
+        <button class="px-3 py-1 text-xs bg-white border border-neutral-300 rounded-full hover:border-primary-300 hover:text-primary-600 transition-colors"
+                hx-get="{% url 'htmx_gallery_filter' %}?medium=watercolor&category=all"
+                hx-target=".gallery-container"
+                hx-swap="outerHTML">
+            Watercolors
+        </button>
+        
+        <button class="px-3 py-1 text-xs bg-white border border-neutral-300 rounded-full hover:border-primary-300 hover:text-primary-600 transition-colors"
+                hx-get="{% url 'htmx_gallery_filter' %}?medium=oil&category=all"
+                hx-target=".gallery-container"
+                hx-swap="outerHTML">
+            Oil Paintings
+        </button>
+        
+        <button class="px-3 py-1 text-xs bg-white border border-neutral-300 rounded-full hover:border-primary-300 hover:text-primary-600 transition-colors"
+                hx-get="{% url 'htmx_gallery_filter' %}?medium=all&category=landscape"
+                hx-target=".gallery-container"
+                hx-swap="outerHTML">
+            Landscapes
+        </button>
+        
+        <button class="px-3 py-1 text-xs bg-white border border-neutral-300 rounded-full hover:border-primary-300 hover:text-primary-600 transition-colors"
+                hx-get="{% url 'htmx_gallery_filter' %}?medium=all&category=portrait"
+                hx-target=".gallery-container"
+                hx-swap="outerHTML">
+            Portraits
+        </button>
+    </div>
+</div>

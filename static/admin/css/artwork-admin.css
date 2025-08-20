@@ -1,0 +1,217 @@
+/* Artwork Admin Styling */
+
+.form-file-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    background: #f9fafb;
+    transition: all 0.2s ease;
+    display: block !important; /* Ensure file inputs are never hidden */
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Prevent any file inputs from being hidden */
+input[type="file"][name*="image_file"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Remove hidden class from image file inputs specifically */
+input[type="file"][name*="image_file"].hidden {
+    display: block !important;
+}
+
+.form-file-input:hover {
+    border-color: #9ca3af;
+    background: #f3f4f6;
+}
+
+.form-file-input:focus {
+    border-color: #3b82f6;
+    background: white;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 12px;
+    background: #f9fafb;
+}
+
+.form-checkbox-grid label {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    margin: 0;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.form-checkbox-grid label:hover {
+    background-color: #e5e7eb;
+}
+
+.form-checkbox-grid input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/* Image preview styling */
+.image-previews {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 15px;
+    background: #f9fafb;
+    margin-bottom: 15px;
+}
+
+.image-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.image-preview-item {
+    text-align: center;
+    padding: 10px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background: white;
+    transition: border-color 0.2s ease;
+}
+
+.image-preview-item:hover {
+    border-color: #3b82f6;
+}
+
+.image-preview-item img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.image-preview-item .placeholder {
+    width: 100%;
+    height: 150px;
+    background: #f3f4f6;
+    border: 2px dashed #d1d5db;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.image-preview-item .label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+/* Enhanced form styling */
+.field-title .form-row {
+    display: flex;
+    align-items: center;
+}
+
+.field-title input {
+    font-size: 18px;
+    font-weight: 600;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    transition: border-color 0.2s ease;
+}
+
+.field-title input:focus {
+    border-color: #3b82f6;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Print options inline styling */
+.tabular.inline-group {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tabular.inline-group .form-row {
+    background: white;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.tabular.inline-group .form-row:nth-child(even) {
+    background: #f9fafb;
+}
+
+.tabular.inline-group th {
+    background: #f3f4f6;
+    padding: 12px 8px;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+/* Fieldset styling */
+.module h2 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 16px;
+    margin: 0;
+    border-radius: 8px 8px 0 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.module {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.module .form-row {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.module .form-row:last-child {
+    border-bottom: none;
+}
+
+/* Status and availability indicators */
+.field-status select,
+.field-original_available input,
+.field-prints_available input,
+.field-is_featured input,
+.field-is_active input {
+    margin-right: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .form-checkbox-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .image-preview-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+}

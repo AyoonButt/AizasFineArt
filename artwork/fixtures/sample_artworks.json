@@ -1,0 +1,382 @@
+[
+  {
+    "model": "artwork.category",
+    "pk": 1,
+    "fields": {
+      "name": "Watercolors",
+      "slug": "watercolors",
+      "description": "Delicate watercolor paintings capturing light and emotion",
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "artwork.category",
+    "pk": 2,
+    "fields": {
+      "name": "Oil Paintings",
+      "slug": "oil-paintings",
+      "description": "Rich oil paintings with bold textures and vibrant colors",
+      "display_order": 2,
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "artwork.tag",
+    "pk": 1,
+    "fields": {
+      "name": "Landscape",
+      "slug": "landscape",
+      "color": "#10B981",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "artwork.tag",
+    "pk": 2,
+    "fields": {
+      "name": "Nature",
+      "slug": "nature",
+      "color": "#059669",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "artwork.tag",
+    "pk": 3,
+    "fields": {
+      "name": "Peaceful",
+      "slug": "peaceful",
+      "color": "#A78BFA",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "artwork.tag",
+    "pk": 4,
+    "fields": {
+      "name": "Sunset",
+      "slug": "sunset",
+      "color": "#F59E0B",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "artwork.tag",
+    "pk": 5,
+    "fields": {
+      "name": "Prairie",
+      "slug": "prairie",
+      "color": "#84CC16",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "artwork.artwork",
+    "pk": 1,
+    "fields": {
+      "title": "Serene Lake Reflection",
+      "slug": "serene-lake-reflection-2024",
+      "category": 1,
+      "medium": "watercolor",
+      "dimensions_width": "16.00",
+      "dimensions_height": "20.00",
+      "year_created": 2024,
+      "description": "A tranquil watercolor painting capturing the peaceful reflection of mountains in a still lake at sunset. The soft, flowing brushstrokes create a meditative quality that invites contemplation.",
+      "story": "This piece was painted during a particularly challenging time in my journey with chronic illness. The calm waters represent the peace I found through art, while the mountain reflections symbolize strength found in reflection and stillness.",
+      "original_available": true,
+      "original_price": "650.00",
+      "prints_available": true,
+      "status": "available",
+      "main_image_url": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&h=1200&fit=crop",
+      "detail_images": [
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&crop=focalpoint&fp-x=0.3&fp-y=0.3",
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&crop=focalpoint&fp-x=0.7&fp-y=0.5"
+      ],
+      "framed_images": [
+        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop"
+      ],
+      "lifestyle_images": [
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop"
+      ],
+      "alt_text": "Watercolor painting of mountains reflected in calm lake waters at sunset",
+      "meta_description": "Serene Lake Reflection - Original watercolor painting by Aiza. Peaceful mountain lake scene perfect for meditation spaces.",
+      "views": 125,
+      "favorites": 8,
+      "is_featured": true,
+      "is_active": true,
+      "created_at": "2024-01-15T00:00:00Z",
+      "updated_at": "2024-01-15T00:00:00Z"
+    }
+  },
+  {
+    "model": "artwork.artwork",
+    "pk": 2,
+    "fields": {
+      "title": "Golden Prairie Sunset",
+      "slug": "golden-prairie-sunset-2024",
+      "category": 2,
+      "medium": "oil",
+      "dimensions_width": "18.00",
+      "dimensions_height": "24.00",
+      "year_created": 2024,
+      "description": "An oil painting depicting the warm, golden light of sunset over the Texas prairie. Rich textures and bold brushwork capture the wild beauty of the landscape.",
+      "story": "Inspired by evening walks near Fort Worth, this painting represents the healing power of nature and the way golden hour light can transform an ordinary moment into something magical.",
+      "original_available": false,
+      "original_price": "850.00",
+      "prints_available": true,
+      "status": "sold",
+      "main_image_url": "https://images.unsplash.com/photo-1500964757637-c85e8a162699?w=1600&h=1200&fit=crop",
+      "detail_images": [
+        "https://images.unsplash.com/photo-1500964757637-c85e8a162699?w=800&h=600&fit=crop&crop=focalpoint&fp-x=0.4&fp-y=0.6",
+        "https://images.unsplash.com/photo-1500964757637-c85e8a162699?w=800&h=600&fit=crop&crop=focalpoint&fp-x=0.6&fp-y=0.3"
+      ],
+      "framed_images": [
+        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop",
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop"
+      ],
+      "lifestyle_images": [
+        "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop"
+      ],
+      "alt_text": "Oil painting of golden sunset over Texas prairie grasslands",
+      "meta_description": "Golden Prairie Sunset - Original oil painting by Aiza. Warm Texas landscape capturing golden hour magic.",
+      "views": 89,
+      "favorites": 12,
+      "is_featured": true,
+      "is_active": true,
+      "created_at": "2024-01-10T00:00:00Z",
+      "updated_at": "2024-01-10T00:00:00Z"
+    }
+  },
+  {
+    "model": "artwork.artwork",
+    "pk": 3,
+    "fields": {
+      "title": "Morning Mist",
+      "slug": "morning-mist-2024",
+      "category": 1,
+      "medium": "watercolor",
+      "dimensions_width": "12.00",
+      "dimensions_height": "16.00",
+      "year_created": 2024,
+      "description": "A delicate watercolor capturing the ethereal beauty of morning mist over a quiet meadow. Soft washes of color create an atmosphere of peaceful awakening.",
+      "story": "Painted during early morning studio sessions when the world was still quiet. This piece reflects the hope and possibility that comes with each new day.",
+      "original_available": true,
+      "original_price": "450.00",
+      "prints_available": true,
+      "status": "available",
+      "main_image_url": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1600&h=1200&fit=crop",
+      "detail_images": [
+        "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=600&fit=crop&crop=focalpoint&fp-x=0.3&fp-y=0.4",
+        "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=600&fit=crop&crop=focalpoint&fp-x=0.7&fp-y=0.6"
+      ],
+      "framed_images": [],
+      "lifestyle_images": [],
+      "alt_text": "Watercolor painting of morning mist over peaceful meadow",
+      "meta_description": "Morning Mist - Delicate watercolor painting by Aiza. Ethereal landscape perfect for bedroom or meditation space.",
+      "views": 67,
+      "favorites": 5,
+      "is_featured": false,
+      "is_active": true,
+      "created_at": "2024-01-20T00:00:00Z",
+      "updated_at": "2024-01-20T00:00:00Z"
+    }
+  },
+  {
+    "model": "artwork.printoption",
+    "pk": 1,
+    "fields": {
+      "artwork": 1,
+      "size": "8x10",
+      "material": "Fine Art Paper",
+      "price": "35.00",
+      "description": "High-quality archival paper print",
+      "is_available": true,
+      "display_order": 1
+    }
+  },
+  {
+    "model": "artwork.printoption",
+    "pk": 2,
+    "fields": {
+      "artwork": 1,
+      "size": "11x14",
+      "material": "Fine Art Paper",
+      "price": "55.00",
+      "description": "High-quality archival paper print",
+      "is_available": true,
+      "display_order": 2
+    }
+  },
+  {
+    "model": "artwork.printoption",
+    "pk": 3,
+    "fields": {
+      "artwork": 1,
+      "size": "16x20",
+      "material": "Canvas Print",
+      "price": "85.00",
+      "description": "Museum-quality canvas print with gallery wrap",
+      "is_available": true,
+      "display_order": 3
+    }
+  },
+  {
+    "model": "artwork.printoption",
+    "pk": 4,
+    "fields": {
+      "artwork": 1,
+      "size": "18x24",
+      "material": "Canvas Print",
+      "price": "125.00",
+      "description": "Large museum-quality canvas print with gallery wrap",
+      "is_available": true,
+      "display_order": 4
+    }
+  },
+  {
+    "model": "artwork.printoption",
+    "pk": 5,
+    "fields": {
+      "artwork": 2,
+      "size": "8x10",
+      "material": "Fine Art Paper",
+      "price": "40.00",
+      "description": "High-quality archival paper print",
+      "is_available": true,
+      "display_order": 1
+    }
+  },
+  {
+    "model": "artwork.printoption",
+    "pk": 6,
+    "fields": {
+      "artwork": 2,
+      "size": "11x14",
+      "material": "Fine Art Paper",
+      "price": "60.00",
+      "description": "High-quality archival paper print",
+      "is_available": true,
+      "display_order": 2
+    }
+  },
+  {
+    "model": "artwork.printoption",
+    "pk": 7,
+    "fields": {
+      "artwork": 2,
+      "size": "18x24",
+      "material": "Canvas Print",
+      "price": "135.00",
+      "description": "Large museum-quality canvas print with gallery wrap",
+      "is_available": true,
+      "display_order": 3
+    }
+  },
+  {
+    "model": "artwork.printoption",
+    "pk": 8,
+    "fields": {
+      "artwork": 3,
+      "size": "8x10",
+      "material": "Fine Art Paper",
+      "price": "30.00",
+      "description": "High-quality archival paper print",
+      "is_available": true,
+      "display_order": 1
+    }
+  },
+  {
+    "model": "artwork.printoption",
+    "pk": 9,
+    "fields": {
+      "artwork": 3,
+      "size": "11x14",
+      "material": "Fine Art Paper",
+      "price": "45.00",
+      "description": "High-quality archival paper print",
+      "is_available": true,
+      "display_order": 2
+    }
+  },
+  {
+    "model": "artwork.artwork_tags",
+    "pk": 1,
+    "fields": {
+      "artwork": 1,
+      "tag": 1
+    }
+  },
+  {
+    "model": "artwork.artwork_tags",
+    "pk": 2,
+    "fields": {
+      "artwork": 1,
+      "tag": 2
+    }
+  },
+  {
+    "model": "artwork.artwork_tags",
+    "pk": 3,
+    "fields": {
+      "artwork": 1,
+      "tag": 3
+    }
+  },
+  {
+    "model": "artwork.artwork_tags",
+    "pk": 4,
+    "fields": {
+      "artwork": 2,
+      "tag": 1
+    }
+  },
+  {
+    "model": "artwork.artwork_tags",
+    "pk": 5,
+    "fields": {
+      "artwork": 2,
+      "tag": 4
+    }
+  },
+  {
+    "model": "artwork.artwork_tags",
+    "pk": 6,
+    "fields": {
+      "artwork": 2,
+      "tag": 5
+    }
+  },
+  {
+    "model": "artwork.artwork_tags",
+    "pk": 7,
+    "fields": {
+      "artwork": 3,
+      "tag": 1
+    }
+  },
+  {
+    "model": "artwork.artwork_tags",
+    "pk": 8,
+    "fields": {
+      "artwork": 3,
+      "tag": 2
+    }
+  },
+  {
+    "model": "artwork.artwork_tags",
+    "pk": 9,
+    "fields": {
+      "artwork": 3,
+      "tag": 3
+    }
+  }
+]

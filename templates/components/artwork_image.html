@@ -1,0 +1,7 @@
+<img 
+  id="main-artwork-image-{{ artwork.id }}"
+  src="{{ image_url }}" 
+  alt="{{ artwork.alt_text|default:artwork.title }} by {{ artwork.artist_name }}"
+  class="image-viewer__main-image"
+  onclick="openImageZoom(this)"
+/>

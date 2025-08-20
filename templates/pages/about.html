@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Aiza - Fort Worth Artist{% endblock %}
+
+{% block content %}
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16">
+                <h1 class="text-4xl lg:text-5xl font-playfair font-bold text-neutral-800 mb-6">
+                    About Aiza
+                </h1>
+                <p class="text-xl text-neutral-600 leading-relaxed">
+                    Fort Worth artist specializing in watercolor and oil paintings
+                </p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12 items-center mb-16">
+                <div>
+                    <div class="w-full aspect-[4/5] bg-gradient-to-br from-primary-200 to-secondary-200 rounded-2xl overflow-hidden shadow-soft">
+                        <div class="w-full h-full flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full mx-auto mb-4 flex items-center justify-center">
+                                    <span class="text-3xl">👩‍🎨</span>
+                                </div>
+                                <p class="text-primary-700 font-medium">Artist Photo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h2 class="text-3xl font-playfair font-semibold text-neutral-800 mb-6">
+                        My Artistic Journey
+                    </h2>
+                    
+                    <div class="prose prose-lg text-neutral-600">
+                        <p class="mb-6">
+                            Welcome to my world of color and light! I'm Aiza, a passionate artist based in Fort Worth, Texas, 
+                            where I create original watercolor and oil paintings that capture the beauty of life's fleeting moments.
+                        </p>
+                        
+                        <p class="mb-6">
+                            My journey as an artist began with a deep fascination for how light dances across surfaces and 
+                            how colors can convey emotions that words sometimes cannot. Whether working with the fluid 
+                            transparency of watercolors or the rich depth of oils, each medium offers its own unique voice 
+                            in telling visual stories.
+                        </p>
+                        
+                        <p class="mb-6">
+                            I find inspiration in the everyday magic around us—the gentle morning light filtering through 
+                            curtains, the vibrant colors of a sunset, the quiet dignity of a flower in bloom. My goal is 
+                            to translate these moments of wonder into paintings that speak to the heart and soul.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 mb-16">
+                <div class="text-center p-6 bg-neutral-50 rounded-xl">
+                    <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">🎨</span>
+                    </div>
+                    <h3 class="font-playfair font-semibold text-lg mb-2">Artistic Style</h3>
+                    <p class="text-neutral-600">
+                        Contemporary realism with impressionistic influences, focusing on light, color, and emotional depth.
+                    </p>
+                </div>
+                
+                <div class="text-center p-6 bg-neutral-50 rounded-xl">
+                    <div class="w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">🏛️</span>
+                    </div>
+                    <h3 class="font-playfair font-semibold text-lg mb-2">Education</h3>
+                    <p class="text-neutral-600">
+                        Self-taught artist with continuous learning through workshops and masterclasses with renowned artists.
+                    </p>
+                </div>
+                
+                <div class="text-center p-6 bg-neutral-50 rounded-xl">
+                    <div class="w-16 h-16 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">🏆</span>
+                    </div>
+                    <h3 class="font-playfair font-semibold text-lg mb-2">Recognition</h3>
+                    <p class="text-neutral-600">
+                        Featured in local galleries and art shows throughout the Dallas-Fort Worth area.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <h2 class="text-3xl font-playfair font-semibold text-neutral-800 mb-6">
+                    Let's Create Something Beautiful Together
+                </h2>
+                <p class="text-xl text-neutral-600 mb-8 max-w-2xl mx-auto">
+                    Whether you're looking for an original piece for your home or want to commission a custom artwork, 
+                    I'd love to work with you to bring your vision to life.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="{% url 'contact' %}" class="btn-outline">Get In Touch</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
