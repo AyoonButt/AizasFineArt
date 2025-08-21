@@ -309,26 +309,29 @@
     transform: translateY(-1px);
 }
 
-/* Gallery Layout Systems - Amazon Style */
-.gallery-grid-large {
-    display: grid !important;
-    gap: 1.5rem;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
-    width: 100%;
-}
-
+/* Gallery Layout Systems - Variable Width Masonry */
+.gallery-grid-large,
 .gallery-grid-small {
-    display: grid !important;
-    gap: 0.75rem;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+    position: relative;
     width: 100%;
+    min-height: 400px;
 }
 
-/* Ensure grid items don't have flex or width constraints */
+/* Variable width masonry items */
 .gallery-grid-large .artwork-item,
 .gallery-grid-small .artwork-item {
-    width: 100% !important;
-    max-width: none !important;
+    position: absolute;
+    transition: all 0.3s ease;
+}
+
+.gallery-grid-large .artwork-item {
+    max-width: 400px;
+    min-width: 280px;
+}
+
+.gallery-grid-small .artwork-item {
+    max-width: 220px;
+    min-width: 150px;
 }
 
 /* Only force display block when not filtered */
@@ -434,17 +437,18 @@
     @apply text-lg;
 }
 
-/* Default aspect ratio for all image containers */
-.artwork-image-container {
-    aspect-ratio: 4/5;
-}
-
-.gallery-grid-large .artwork-image-container {
-    aspect-ratio: 4/5;
-}
-
+/* Natural dimensions for masonry layout */
+.artwork-image-container,
+.gallery-grid-large .artwork-image-container,
 .gallery-grid-small .artwork-image-container {
-    aspect-ratio: 4/5;
+    max-width: 100%;
+}
+
+.artwork-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    width: auto;
 }
 
 /* Smooth transitions for filter changes */
@@ -475,9 +479,145 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
 <script>
 // Enhanced shop loading animations and new filtering system
 document.addEventListener('DOMContentLoaded', function() {
+    
+    // Variable Width Masonry Layout - No Overlaps
+    function initVariableMasonry() {
+        const container = document.getElementById('shop-gallery-container');
+        const items = Array.from(container.querySelectorAll('.artwork-item:not(.filter-hidden)'));
+        
+        if (items.length === 0) return;
+        
+        const isSmallView = container.classList.contains('gallery-grid-small');
+        const gap = isSmallView ? 12 : 24;
+        const containerWidth = container.offsetWidth;
+        
+        // Reset all items to natural state first
+        items.forEach(item => {
+            item.style.position = 'static';
+            item.style.width = 'auto';
+        });
+        
+        // Wait for natural sizing, then apply masonry
+        setTimeout(() => {
+            const itemData = [];
+            
+            items.forEach(item => {
+                const img = item.querySelector('.artwork-image');
+                if (!img) return;
+                
+                // Get natural dimensions or use defaults
+                const aspectRatio = (img.naturalWidth && img.naturalHeight) ? 
+                    img.naturalWidth / img.naturalHeight : 1.2;
+                
+                // Significantly different sizes for large vs small view
+                let width;
+                if (isSmallView) {
+                    const maxWidth = 220;
+                    const minWidth = 150;
+                    width = aspectRatio * 200; // smaller base height
+                    width = Math.max(minWidth, Math.min(maxWidth, width));
+                } else {
+                    const maxWidth = 400;
+                    const minWidth = 280;
+                    width = aspectRatio * 350; // larger base height
+                    width = Math.max(minWidth, Math.min(maxWidth, width));
+                }
+                
+                itemData.push({
+                    element: item,
+                    width: width
+                });
+            });
+            
+            // Sort items by area (largest first) for better packing
+            itemData.sort((a, b) => (b.width * 300) - (a.width * 300));
+            
+            // Track occupied space to prevent overlaps
+            const occupiedSpaces = [];
+            
+            itemData.forEach((item, index) => {
+                // Set item width
+                item.element.style.position = 'absolute';
+                item.element.style.width = `${item.width}px`;
+                
+                // Wait for height calculation
+                setTimeout(() => {
+                    const itemHeight = item.element.offsetHeight;
+                    
+                    // Find best position with minimal whitespace
+                    let bestX = 0;
+                    let bestY = 0;
+                    let bestScore = Infinity;
+                    
+                    // Try positions with smaller increments for better packing
+                    const stepSize = Math.min(gap, 20);
+                    
+                    for (let y = 0; y < 2000; y += stepSize) {
+                        for (let x = 0; x <= containerWidth - item.width; x += stepSize) {
+                            
+                            // Check if this position overlaps with any existing item
+                            const overlaps = occupiedSpaces.some(space => 
+                                !(x >= space.right + gap || 
+                                  x + item.width + gap <= space.left || 
+                                  y >= space.bottom + gap || 
+                                  y + itemHeight + gap <= space.top)
+                            );
+                            
+                            if (!overlaps) {
+                                // Calculate score - prefer positions that minimize total height and fill gaps
+                                let score = y * 2; // Strongly prefer higher positions
+                                
+                                // Bonus for filling gaps between existing items
+                                const adjacentItems = occupiedSpaces.filter(space =>
+                                    Math.abs(space.right + gap - x) < gap ||
+                                    Math.abs(space.left - gap - (x + item.width)) < gap ||
+                                    Math.abs(space.bottom + gap - y) < gap ||
+                                    Math.abs(space.top - gap - (y + itemHeight)) < gap
+                                );
+                                score -= adjacentItems.length * 50; // Bonus for being adjacent
+                                
+                                // Penalty for being far from left edge
+                                score += x * 0.1;
+                                
+                                if (score < bestScore) {
+                                    bestScore = score;
+                                    bestX = x;
+                                    bestY = y;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Position the item
+                    item.element.style.left = `${bestX}px`;
+                    item.element.style.top = `${bestY}px`;
+                    
+                    // Record occupied space
+                    occupiedSpaces.push({
+                        left: bestX,
+                        right: bestX + item.width,
+                        top: bestY,
+                        bottom: bestY + itemHeight
+                    });
+                    
+                    // Update container height after last item
+                    if (index === itemData.length - 1) {
+                        setTimeout(() => {
+                            const maxBottom = Math.max(...occupiedSpaces.map(space => space.bottom));
+                            container.style.height = `${maxBottom + gap}px`;
+                        }, 50);
+                    }
+                    
+                }, index * 20); // Stagger positioning to avoid race conditions
+            });
+            
+        }, 100);
+    }
+    
     // Apply randomized loading to shop cards
     function setupShopAnimations() {
         const shopCards = document.querySelectorAll('.artwork-card.image-reveal');
@@ -613,6 +753,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (resultsText && resultsText.textContent.includes('Showing')) {
                 resultsText.textContent = `Showing ${visibleCount} artworks`;
             }
+            
+            // Re-apply variable masonry after filtering
+            setTimeout(initVariableMasonry, 100);
         }
         
         // Image loading detection for smooth card appearance
@@ -647,13 +790,22 @@ document.addEventListener('DOMContentLoaded', function() {
         filterArtworks();
     }
     
+    
     // Run setup functions
     setupShopAnimations();
     setupShopFiltering();
     
-    // Re-run on view toggle
+    // Initialize variable masonry after images load
+    setTimeout(() => {
+        initVariableMasonry();
+    }, 500);
+    
+    // Re-run on view toggle and resize
     window.addEventListener('resize', () => {
-        setTimeout(setupShopAnimations, 100);
+        setTimeout(() => {
+            setupShopAnimations();
+            initVariableMasonry();
+        }, 100);
     });
 
 // View toggle functionality for shop
@@ -679,6 +831,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Store user preference
             localStorage.setItem('shop-gallery-view', view);
+            
+            // Re-apply variable masonry
+            setTimeout(initVariableMasonry, 100);
         });
     });
     

@@ -47,7 +47,21 @@
     @apply text-primary-500 hover:bg-primary-50 px-6 py-3 rounded-lg font-medium transition-all duration-200;
   }
   
-  /* Card Styles */
+  /* Card Styles - JavaScript Masonry */
+  .gallery-grid-large {
+    position: relative;
+  }
+  
+  /* Artwork items positioned by JavaScript */
+  .gallery-grid-large .artwork-item {
+    position: absolute;
+    transition: all 0.3s ease;
+  }
+  
+  /* Ensure consistent aspect ratio for images */
+  .artwork-card .aspect-square {
+    aspect-ratio: 4/5 !important;
+  }
   .card {
     @apply bg-white rounded-xl shadow-soft hover:shadow-medium transition-all duration-300;
   }

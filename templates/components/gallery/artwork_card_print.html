@@ -1,14 +1,14 @@
 <!-- Print Artwork Card Component -->
-<div class="artwork-card card group relative overflow-hidden border-l-4 border-lavender" data-gsap="scaleIn">
+<div class="artwork-card card group relative overflow-hidden border-4 border-lavender" data-gsap="scaleIn">
     <a href="{% if artwork.get_absolute_url %}{{ artwork.get_absolute_url }}{% else %}#{% endif %}" 
        class="block">
         
         <!-- Image Container -->
-        <div class="relative overflow-hidden aspect-square">
+        <div class="relative overflow-hidden">
             {% if artwork.gallery_url %}
                 <img src="{{ artwork.gallery_url }}" 
                      alt="{{ artwork.alt_text|default:artwork.title }}"
-                     class="artwork-image w-full h-full object-cover"
+                     class="artwork-image object-cover"
                      loading="lazy">
             {% else %}
                 <!-- Placeholder Image -->
