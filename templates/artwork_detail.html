@@ -119,18 +119,18 @@
                     
                     <!-- Main Image Display -->
                     <div class="flex-1 relative">
-                        <div class="relative aspect-[4/5] rounded-2xl overflow-hidden shadow-soft group">
+                        <div class="relative rounded-2xl overflow-hidden shadow-soft group max-w-full max-h-[70vh] flex items-center justify-center bg-neutral-50">
                             <img src="{{ artwork.gallery_url }}" 
                                  alt="{{ artwork.alt_text|default:artwork.title }}" 
-                                 class="artwork-image w-full h-full object-cover"
+                                 class="artwork-image max-w-full max-h-full w-auto h-auto object-contain"
                                  data-lazy="true"
-                                 data-aspect-ratio="4/5"
                                  data-priority="high"
                                  id="main-artwork-image"
                                  loading="eager">
                             
                             <!-- Wishlist Button (hover only) -->
-                            <button class="wishlist-btn absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-sm text-neutral-600 rounded-full flex items-center justify-center hover:bg-white hover:text-red-500 transition-all duration-300 opacity-0 group-hover:opacity-100 z-10" 
+                            <button onclick="window.toggleWishlist({{ artwork.id }})" 
+                                    class="wishlist-btn absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-sm text-neutral-600 rounded-full flex items-center justify-center hover:bg-white hover:text-red-500 transition-all duration-300 opacity-0 group-hover:opacity-100 z-10" 
                                     data-artwork-id="{{ artwork.id }}" 
                                     title="Add to Wishlist">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -583,13 +583,21 @@ function changeMainImage(src, imageType) {
 
 // Global wishlist functionality for use across templates
 function toggleWishlist(artworkId) {
-    const button = document.querySelector(`[data-artwork-id="${artworkId}"]`);
-    if (!button) return;
+    const buttons = document.querySelectorAll(`[data-artwork-id="${artworkId}"]`);
+    if (!buttons.length) return;
     
-    // Add loading state
-    const originalHTML = button.innerHTML;
-    button.innerHTML = '<div class="animate-spin w-5 h-5 border-2 border-current border-t-transparent rounded-full"></div>';
-    button.disabled = true;
+    // Store original HTML for all buttons
+    const originalData = Array.from(buttons).map(button => ({
+        button: button,
+        originalHTML: button.innerHTML,
+        isIcon: button.classList.contains('w-10') && button.classList.contains('h-10') // Image overlay button
+    }));
+    
+    // Add loading state to all buttons
+    buttons.forEach(button => {
+        button.innerHTML = '<div class="animate-spin w-5 h-5 border-2 border-current border-t-transparent rounded-full"></div>';
+        button.disabled = true;
+    });
     
     fetch(`/api/wishlist/toggle/${artworkId}/`, {
         method: 'PUT',
@@ -600,31 +608,64 @@ function toggleWishlist(artworkId) {
     })
     .then(response => response.json())
     .then(data => {
-        button.disabled = false;
-        
-        if (data.added) {
-            button.classList.add('active', 'bg-primary-500', 'text-white', 'border-primary-500');
-            button.classList.remove('text-primary-500', 'hover:bg-primary-500');
-            button.innerHTML = `<svg class="w-5 h-5" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-            </svg>`;
-            button.title = 'Remove from Wishlist';
-        } else {
-            button.classList.remove('active', 'bg-primary-500', 'text-white');
-            button.classList.add('text-primary-500', 'hover:bg-primary-500');
-            button.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-            </svg>`;
-            button.title = 'Add to Wishlist';
-        }
+        originalData.forEach(({button, isIcon}) => {
+            button.disabled = false;
+            
+            if (data.added) {
+                // Added to wishlist - show filled state
+                button.classList.add('active');
+                button.title = 'Remove from Wishlist';
+                
+                if (isIcon) {
+                    // Image overlay button - filled heart with red colors
+                    button.classList.add('bg-red-500', 'text-white', 'hover:bg-red-600');
+                    button.classList.remove('text-neutral-600', 'hover:text-red-500');
+                    button.innerHTML = `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>`;
+                } else {
+                    // Text button - filled heart with red styling
+                    button.classList.add('border-red-500', 'bg-red-50', 'text-red-600');
+                    button.classList.remove('border-neutral-300', 'text-neutral-600', 'hover:border-primary');
+                    button.innerHTML = `<svg class="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    <span class="text-xs">Wishlist</span>`;
+                }
+            } else {
+                // Removed from wishlist - show unfilled state
+                button.classList.remove('active');
+                button.title = 'Add to Wishlist';
+                
+                if (isIcon) {
+                    // Image overlay button - outline heart with neutral colors
+                    button.classList.remove('bg-red-500', 'text-white', 'hover:bg-red-600');
+                    button.classList.add('text-neutral-600', 'hover:text-red-500');
+                    button.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>`;
+                } else {
+                    // Text button - outline heart with neutral styling
+                    button.classList.remove('border-red-500', 'bg-red-50', 'text-red-600');
+                    button.classList.add('border-neutral-300', 'text-neutral-600', 'hover:border-primary');
+                    button.innerHTML = `<svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                    <span class="text-xs">Wishlist</span>`;
+                }
+            }
+        });
         
         // Show toast notification
         showToast(data.added ? 'Added to wishlist!' : 'Removed from wishlist');
     })
     .catch(error => {
         console.error('Error:', error);
-        button.disabled = false;
-        button.innerHTML = originalHTML;
+        // Restore original state for all buttons
+        originalData.forEach(({button, originalHTML}) => {
+            button.disabled = false;
+            button.innerHTML = originalHTML;
+        });
         showToast('Error updating wishlist', 'error');
     });
 }
@@ -659,6 +700,8 @@ function loadCartCount() {
     .catch(error => console.error('Error loading cart count:', error));
 }
 
+// Wishlist initialization is now handled globally in base.html
+
 // CSRF token helper
 function getCookie(name) {
     let cookieValue = null;
@@ -675,13 +718,16 @@ function getCookie(name) {
     return cookieValue;
 }
 
-// Initialize main image as active thumbnail on page load
+// Initialize main image as active thumbnail and wishlist state on page load
 document.addEventListener('DOMContentLoaded', function() {
     const mainThumb = document.querySelector('[data-image="main"]');
     if (mainThumb) {
         mainThumb.classList.add('border-mocha', 'shadow-lg');
         mainThumb.classList.remove('border-neutral-200');
     }
+    
+    // Load cart state (wishlist state is initialized globally in base.html)
+    loadCartCount();
 });
 
 // Shopping cart state management
@@ -1072,9 +1118,13 @@ function copyLink() {
 }
 
 
+// Make functions globally available
+window.toggleWishlist = toggleWishlist;
+
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
     loadCartCount();
+    loadWishlistState({{ artwork.id }});
 });
 
 </script>

@@ -33,7 +33,6 @@ urlpatterns = [
     path('portfolio/', views.PortfolioView.as_view(), name='portfolio'),  # Keep for backward compatibility
     path('gallery/', views.GalleryView.as_view(), name='gallery'),
     path('gallery/<str:medium>/', views.GalleryView.as_view(), name='gallery_medium'),
-    path('gallery-react/', TemplateView.as_view(template_name='gallery_react.html'), name='gallery_react'),
     path('react-demo/', TemplateView.as_view(template_name='react_demo.html'), name='react_demo'),
     path('stripe-test/', TemplateView.as_view(template_name='stripe_test.html', extra_context={'stripe_public_key': getattr(settings, 'STRIPE_PUBLISHABLE_KEY', '')}), name='stripe_test'),
     path('debug-stripe/', TemplateView.as_view(template_name='debug_stripe.html', extra_context={'stripe_public_key': getattr(settings, 'STRIPE_PUBLISHABLE_KEY', '')}), name='debug_stripe'),

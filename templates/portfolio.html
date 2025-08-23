@@ -59,49 +59,43 @@
 <section class="py-16 bg-white">
     <div class="container mx-auto px-4">
         <!-- Portfolio Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div id="gallery-container" class="gallery-grid-large">
             {% for artwork in artworks %}
-            <div class="group relative overflow-hidden rounded-lg bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <a href="{{ artwork.get_absolute_url }}" class="block">
-                    <div class="aspect-square overflow-hidden">
-                        <img src="{{ artwork.image_url }}" 
-                             alt="{{ artwork.alt_text|default:artwork.title }}"
-                             class="artwork-image w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                             data-lazy="true"
-                             data-aspect-ratio="1/1"
-                             data-priority="{% if forloop.counter <= 6 %}high{% else %}normal{% endif %}"
-                             loading="lazy">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-semibold text-gray-900 mb-1">{{ artwork.title }}</h3>
-                        <p class="text-sm text-gray-600 mb-2">{{ artwork.get_medium_display }}</p>
-                        <p class="text-sm text-gray-500">{{ artwork.dimensions_display }}</p>
-                        {% if artwork.original_price %}
-                        <p class="text-lg font-bold text-gray-900 mt-2">${{ artwork.original_price }}</p>
-                        {% endif %}
-                        <div class="flex items-center justify-between mt-3">
-                            {% if artwork.original_available %}
-                            <span class="bg-mocha text-white text-xs px-2 py-1 rounded-full font-medium">
-                                Original
-                            </span>
-                            {% endif %}
+            <div class="artwork-item group relative overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300"
+                 data-medium="{{ artwork.medium }}"
+                 data-title="{{ artwork.title }}"
+                 data-created="{{ artwork.created_at|date:'c' }}"
+                 onclick="window.location.href='{{ artwork.get_absolute_url }}'">
+                
+                <!-- Image Only -->
+                <div class="artwork-image-container relative overflow-hidden">
+                    <img src="{{ artwork.gallery_url }}" 
+                         alt="{{ artwork.alt_text|default:artwork.title }}"
+                         class="artwork-image object-cover transition-transform duration-300 group-hover:scale-105"
+                         loading="lazy">
+                    
+                    <!-- Title Overlay on Hover -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                            <h3 class="font-playfair font-semibold text-lg mb-1">{{ artwork.title }}</h3>
+                            <p class="text-sm opacity-90">{{ artwork.get_medium_display }}</p>
                             {% if artwork.is_featured %}
-                            <span class="text-xs text-gold-600 font-semibold">Featured</span>
+                            <span class="inline-block mt-2 bg-primary-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                                Featured
+                            </span>
                             {% endif %}
                         </div>
                     </div>
-                </a>
-                
-                <!-- Wishlist Button -->
-                <button class="absolute top-3 right-3 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-sm transition-colors opacity-0 group-hover:opacity-100"
-                        hx-put="{% url 'toggle_wishlist' artwork.id %}"
-                        hx-target="this"
-                        hx-swap="outerHTML"
-                        title="Add to Wishlist">
-                    <svg class="w-4 h-4 text-gray-600 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                    </svg>
-                </button>
+                    
+                    <!-- Wishlist Button -->
+                    <button class="absolute top-3 right-3 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-sm transition-all duration-300 opacity-0 group-hover:opacity-100"
+                            onclick="event.stopPropagation(); toggleWishlist({{ artwork.id }})"
+                            title="Add to Wishlist">
+                        <svg class="w-4 h-4 text-gray-600 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
             {% empty %}
             <div class="col-span-full text-center py-12">
@@ -208,5 +202,115 @@ function toggleWishlist(artworkId, button) {
         console.error('Error:', error);
     });
 }
+
+// Gallery Masonry Layout
+let galleryMasonryInProgress = false;
+
+function initGalleryMasonry() {
+    if (galleryMasonryInProgress) return;
+    galleryMasonryInProgress = true;
+    
+    const container = document.getElementById('gallery-container');
+    const items = Array.from(container.querySelectorAll('.artwork-item'));
+    
+    if (items.length === 0) {
+        galleryMasonryInProgress = false;
+        return;
+    }
+    
+    const gap = 24;
+    const containerWidth = container.offsetWidth;
+    let columns = 1;
+    
+    if (window.innerWidth >= 1280) columns = 4;
+    else if (window.innerWidth >= 1024) columns = 3;
+    else if (window.innerWidth >= 640) columns = 2;
+    
+    // Reset positioning
+    items.forEach(item => {
+        item.style.position = 'static';
+        item.style.left = 'auto';
+        item.style.top = 'auto';
+        item.style.width = 'auto';
+    });
+    container.style.height = 'auto';
+    
+    requestAnimationFrame(() => {
+        const itemWidth = (containerWidth - (gap * (columns - 1))) / columns;
+        container.style.position = 'relative';
+        const columnHeights = new Array(columns).fill(0);
+        const occupiedSpaces = [];
+        
+        items.forEach((item, index) => {
+            setTimeout(() => {
+                const img = item.querySelector('.artwork-image');
+                if (!img) return;
+                
+                // Get aspect ratio
+                const aspectRatio = (img.naturalWidth && img.naturalHeight) ? 
+                    img.naturalWidth / img.naturalHeight : 1.2;
+                
+                // Calculate dimensions
+                const width = itemWidth;
+                const height = width / aspectRatio;
+                
+                // Find shortest column
+                const shortestColumn = columnHeights.indexOf(Math.min(...columnHeights));
+                const x = shortestColumn * (itemWidth + gap);
+                const y = columnHeights[shortestColumn];
+                
+                // Position item
+                item.style.position = 'absolute';
+                item.style.width = `${width}px`;
+                item.style.left = `${x}px`;
+                item.style.top = `${y}px`;
+                
+                // Set image container dimensions
+                const imageContainer = item.querySelector('.artwork-image-container');
+                if (imageContainer) {
+                    imageContainer.style.width = `${width}px`;
+                    imageContainer.style.height = `${height}px`;
+                }
+                
+                // Set image dimensions
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                
+                // Update column height
+                columnHeights[shortestColumn] += height + gap;
+                
+                // Record occupied space
+                occupiedSpaces.push({
+                    left: x,
+                    right: x + width,
+                    top: y,
+                    bottom: y + height
+                });
+                
+                // Set container height after last item
+                if (index === items.length - 1) {
+                    setTimeout(() => {
+                        const maxHeight = Math.max(...columnHeights);
+                        container.style.height = `${maxHeight - gap}px`;
+                        galleryMasonryInProgress = false;
+                    }, 50);
+                }
+            }, index * 30);
+        });
+    });
+}
+
+// Initialize gallery masonry
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        initGalleryMasonry();
+    }, 500);
+});
+
+// Re-run on resize
+window.addEventListener('resize', () => {
+    setTimeout(initGalleryMasonry, 100);
+});
 </script>
 {% endblock %}

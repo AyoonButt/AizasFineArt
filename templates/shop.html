@@ -485,21 +485,84 @@
 document.addEventListener('DOMContentLoaded', function() {
     
     // Variable Width Masonry Layout - No Overlaps
+    let masonryInProgress = false;
+    let layoutCache = {
+        large: null,
+        small: null,
+        itemCount: 0,
+        containerWidth: 0,
+        cacheTimestamp: 0
+    };
+    
     function initVariableMasonry() {
+        // Prevent multiple simultaneous runs
+        if (masonryInProgress) {
+            console.log('Masonry already in progress, skipping...');
+            console.trace('Call stack for blocked masonry call:');
+            return;
+        }
+        
+        masonryInProgress = true;
+        console.log('Starting masonry layout...', new Date().toLocaleTimeString());
+        console.trace('Call stack for masonry start:');
+        
+        // Emergency timeout to reset flag in case something goes wrong
+        setTimeout(() => {
+            if (masonryInProgress) {
+                console.warn('Masonry timeout - forcing reset of progress flag');
+                masonryInProgress = false;
+            }
+        }, 10000); // 10 second emergency timeout
+        
         const container = document.getElementById('shop-gallery-container');
         const items = Array.from(container.querySelectorAll('.artwork-item:not(.filter-hidden)'));
         
-        if (items.length === 0) return;
+        if (items.length === 0) {
+            masonryInProgress = false;
+            return;
+        }
         
         const isSmallView = container.classList.contains('gallery-grid-small');
         const gap = isSmallView ? 12 : 24;
         const containerWidth = container.offsetWidth;
+        const viewType = isSmallView ? 'small' : 'large';
         
-        // Reset all items to natural state first
-        items.forEach(item => {
+        // Check if we can use cached layout
+        const canUseCache = layoutCache[viewType] && 
+                           layoutCache.itemCount === items.length &&
+                           Math.abs(layoutCache.containerWidth - containerWidth) < 50 && // 50px tolerance
+                           Date.now() - layoutCache.cacheTimestamp < 300000; // 5 minute cache expiry
+        
+        if (canUseCache) {
+            console.log(`Using cached ${viewType} layout for ${items.length} items`);
+            applyLayoutFromCache(layoutCache[viewType], container, gap);
+            masonryInProgress = false;
+            return;
+        }
+        
+        console.log(`Calculating new ${viewType} layout for ${items.length} items`);
+        
+        // Force complete reset of all items to prevent stacking
+        console.log(`Resetting ${items.length} items to natural state`);
+        items.forEach((item, index) => {
             item.style.position = 'static';
             item.style.width = 'auto';
+            item.style.left = '';
+            item.style.top = '';
+            item.style.height = '';
+            item.style.transform = '';
+            
+            // Debug first few items
+            if (index < 3) {
+                console.log(`Reset item ${index}:`, item.querySelector('h3')?.textContent?.trim());
+            }
         });
+        
+        // Force container reset
+        container.style.height = '';
+        
+        // Force reflow to ensure reset is applied
+        container.offsetHeight;
         
         // Wait for natural sizing, then apply masonry
         setTimeout(() => {
@@ -513,109 +576,324 @@ document.addEventListener('DOMContentLoaded', function() {
                 const aspectRatio = (img.naturalWidth && img.naturalHeight) ? 
                     img.naturalWidth / img.naturalHeight : 1.2;
                 
-                // Significantly different sizes for large vs small view
-                let width;
-                if (isSmallView) {
-                    const maxWidth = 220;
-                    const minWidth = 150;
-                    width = aspectRatio * 200; // smaller base height
-                    width = Math.max(minWidth, Math.min(maxWidth, width));
-                } else {
-                    const maxWidth = 400;
-                    const minWidth = 280;
-                    width = aspectRatio * 350; // larger base height
-                    width = Math.max(minWidth, Math.min(maxWidth, width));
-                }
-                
+                // Store aspect ratio for adaptive sizing
                 itemData.push({
                     element: item,
-                    width: width
+                    aspectRatio: aspectRatio,
+                    baseWidth: isSmallView ? 180 : 320, // Base size for calculations
+                    minWidth: isSmallView ? 120 : 200,
+                    maxWidth: isSmallView ? 250 : 450
                 });
             });
             
-            // Sort items by area (largest first) for better packing
-            itemData.sort((a, b) => (b.width * 300) - (a.width * 300));
+            // Don't sort by size - use natural DOM order for more mixed distribution
+            // This prevents tall items from being automatically pushed to the end
             
             // Track occupied space to prevent overlaps
             const occupiedSpaces = [];
             
             itemData.forEach((item, index) => {
-                // Set item width
-                item.element.style.position = 'absolute';
-                item.element.style.width = `${item.width}px`;
-                
-                // Wait for height calculation
                 setTimeout(() => {
-                    const itemHeight = item.element.offsetHeight;
+                    // Find the best size and position for this item
+                    const bestFit = findBestAdaptiveFit(item, occupiedSpaces, containerWidth, gap, isSmallView);
                     
-                    // Find best position with minimal whitespace
-                    let bestX = 0;
-                    let bestY = 0;
-                    let bestScore = Infinity;
+                    // Debug the "Photo" card specifically
+                    const title = item.element.querySelector('h3')?.textContent || 'Unknown';
+                    if (title.includes('Photo')) {
+                        const img = item.element.querySelector('.artwork-image');
+                        console.log('Photo card debug:', {
+                            title: title,
+                            aspectRatio: item.aspectRatio,
+                            naturalWidth: img?.naturalWidth,
+                            naturalHeight: img?.naturalHeight,
+                            calculatedAspectRatio: img?.naturalWidth / img?.naturalHeight,
+                            bestFitWidth: bestFit.width,
+                            expectedImageHeight: bestFit.width / item.aspectRatio
+                        });
+                    }
                     
-                    // Try positions with smaller increments for better packing
-                    const stepSize = Math.min(gap, 20);
+                    // Apply the adaptive sizing and positioning
+                    item.element.style.position = 'absolute';
+                    item.element.style.width = `${bestFit.width}px`;
+                    item.element.style.left = `${bestFit.x}px`;
+                    item.element.style.top = `${bestFit.y}px`;
                     
-                    for (let y = 0; y < 2000; y += stepSize) {
-                        for (let x = 0; x <= containerWidth - item.width; x += stepSize) {
+                    // Apply proper aspect ratio handling for all cards while preserving content
+                    const imageContainer = item.element.querySelector('.artwork-image-container, .relative');
+                    const image = item.element.querySelector('.artwork-image');
+                    const contentArea = item.element.querySelector('.p-4, .artwork-info');
+                    
+                    if (imageContainer && image) {
+                        // Only set width and let CSS handle the height naturally to preserve content
+                        imageContainer.style.width = `${bestFit.width}px`;
+                        imageContainer.style.height = 'auto'; // Let CSS determine height
+                        
+                        image.style.width = '100%';
+                        image.style.height = 'auto'; // Maintain aspect ratio naturally
+                        image.style.objectFit = 'cover';
+                        
+                        if (title.includes('Photo')) {
+                            console.log('Photo card natural sizing:', {
+                                containerWidth: bestFit.width,
+                                aspectRatio: item.aspectRatio,
+                                imageNaturalWidth: image.naturalWidth,
+                                imageNaturalHeight: image.naturalHeight
+                            });
+                        }
+                    }
+                    
+                    // Find and ensure ALL content areas are visible with multiple selectors
+                    const possibleContentSelectors = [
+                        '.p-4', 
+                        '.artwork-info', 
+                        '.card-content',
+                        '[class*="p-"]',
+                        '.artwork-card > div:last-child',
+                        '.artwork-card > *:not(.relative):not(.artwork-image-container)'
+                    ];
+                    
+                    let contentFound = false;
+                    
+                    for (const selector of possibleContentSelectors) {
+                        const content = item.element.querySelector(selector);
+                        if (content && !contentFound) {
+                            content.style.display = 'block !important';
+                            content.style.width = '100%';
+                            content.style.position = 'relative';
+                            content.style.zIndex = '10';
+                            content.style.backgroundColor = 'white';
+                            content.style.minHeight = `${isSmallView ? 80 : 100}px`;
+                            contentFound = true;
                             
-                            // Check if this position overlaps with any existing item
-                            const overlaps = occupiedSpaces.some(space => 
-                                !(x >= space.right + gap || 
-                                  x + item.width + gap <= space.left || 
-                                  y >= space.bottom + gap || 
-                                  y + itemHeight + gap <= space.top)
-                            );
-                            
-                            if (!overlaps) {
-                                // Calculate score - prefer positions that minimize total height and fill gaps
-                                let score = y * 2; // Strongly prefer higher positions
-                                
-                                // Bonus for filling gaps between existing items
-                                const adjacentItems = occupiedSpaces.filter(space =>
-                                    Math.abs(space.right + gap - x) < gap ||
-                                    Math.abs(space.left - gap - (x + item.width)) < gap ||
-                                    Math.abs(space.bottom + gap - y) < gap ||
-                                    Math.abs(space.top - gap - (y + itemHeight)) < gap
-                                );
-                                score -= adjacentItems.length * 50; // Bonus for being adjacent
-                                
-                                // Penalty for being far from left edge
-                                score += x * 0.1;
-                                
-                                if (score < bestScore) {
-                                    bestScore = score;
-                                    bestX = x;
-                                    bestY = y;
-                                }
+                            if (title.includes('Photo')) {
+                                console.log('Photo card content area found:', selector, content);
                             }
                         }
                     }
                     
-                    // Position the item
-                    item.element.style.left = `${bestX}px`;
-                    item.element.style.top = `${bestY}px`;
-                    
-                    // Record occupied space
-                    occupiedSpaces.push({
-                        left: bestX,
-                        right: bestX + item.width,
-                        top: bestY,
-                        bottom: bestY + itemHeight
-                    });
-                    
-                    // Update container height after last item
-                    if (index === itemData.length - 1) {
-                        setTimeout(() => {
-                            const maxBottom = Math.max(...occupiedSpaces.map(space => space.bottom));
-                            container.style.height = `${maxBottom + gap}px`;
-                        }, 50);
+                    // If no content area found, try to find any text content
+                    if (!contentFound) {
+                        const allDivs = item.element.querySelectorAll('div');
+                        for (const div of allDivs) {
+                            if (div.textContent.trim().length > 0 && 
+                                !div.querySelector('img') && 
+                                !div.classList.contains('artwork-overlay')) {
+                                div.style.display = 'block !important';
+                                div.style.position = 'relative';
+                                div.style.zIndex = '10';
+                                div.style.backgroundColor = 'white';
+                                contentFound = true;
+                                
+                                if (title.includes('Photo')) {
+                                    console.log('Photo card content found in div:', div);
+                                }
+                                break;
+                            }
+                        }
                     }
                     
-                }, index * 20); // Stagger positioning to avoid race conditions
+                    // Wait for DOM to update, then record space
+                    setTimeout(() => {
+                        const actualHeight = item.element.offsetHeight;
+                        
+                        // Record occupied space
+                        occupiedSpaces.push({
+                            left: bestFit.x,
+                            right: bestFit.x + bestFit.width,
+                            top: bestFit.y,
+                            bottom: bestFit.y + actualHeight
+                        });
+                        
+                        // Update container height after last item
+                        if (index === itemData.length - 1) {
+                            setTimeout(() => {
+                                const maxBottom = Math.max(...occupiedSpaces.map(space => space.bottom));
+                                container.style.height = `${maxBottom + gap}px`;
+                                
+                                // Save layout to cache and reset the progress flag
+                                setTimeout(() => {
+                                    saveLayoutToCache(itemData, occupiedSpaces, viewType, containerWidth);
+                                    masonryInProgress = false;
+                                    console.log('Masonry layout completed and cached at', new Date().toLocaleTimeString());
+                                    console.log('Final container height:', container.style.height);
+                                }, 100);
+                            }, 50);
+                        }
+                    }, 15); // Reduced inner timeout for faster DOM updates
+                    
+                }, index * 50); // Increased stagger time
             });
             
-        }, 100);
+        }, 300); // Increased initial delay for proper DOM settling
+        
+        // Find the best adaptive fit for an item
+        function findBestAdaptiveFit(item, occupiedSpaces, containerWidth, gap, isSmallView) {
+            let bestFit = {
+                x: 0,
+                y: 0,
+                width: item.baseWidth,
+                score: Infinity
+            };
+            
+            // Try different sizes within the allowed range
+            for (let width = item.minWidth; width <= item.maxWidth; width += 20) {
+                // Try positions for this size
+                const stepSize = Math.min(gap, 15);
+                
+                for (let y = 0; y < 1500; y += stepSize) {
+                    for (let x = 0; x <= containerWidth - width; x += stepSize) {
+                        
+                        // Estimate height for overlap checking (we'll get actual height later)
+                        const estimatedHeight = (width / item.aspectRatio) + (isSmallView ? 80 : 100);
+                        
+                        // Check if this size and position would overlap
+                        const wouldOverlap = occupiedSpaces.some(space => 
+                            !(x >= space.right + gap || 
+                              x + width + gap <= space.left || 
+                              y >= space.bottom + gap || 
+                              y + estimatedHeight + gap <= space.top)
+                        );
+                        
+                        if (!wouldOverlap) {
+                            // Calculate how well this size and position fits
+                            let score = y * 2; // Prefer higher positions
+                            
+                            // Bonus for filling gaps efficiently
+                            const gapFillBonus = calculateGapFillBonus(x, y, width, estimatedHeight, occupiedSpaces, gap);
+                            score -= gapFillBonus;
+                            
+                            // Small penalty for deviating from base size
+                            const sizeDeviation = Math.abs(width - item.baseWidth) / item.baseWidth;
+                            score += sizeDeviation * 100;
+                            
+                            // Penalty for being far from left edge
+                            score += x * 0.1;
+                            
+                            if (score < bestFit.score) {
+                                bestFit = {
+                                    x: x,
+                                    y: y,
+                                    width: width,
+                                    score: score
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return bestFit;
+        }
+        
+        // Calculate bonus for filling gaps efficiently
+        function calculateGapFillBonus(x, y, width, height, occupiedSpaces, gap) {
+            let bonus = 0;
+            
+            // Strong bonus for placing directly below existing items in same column
+            const directlyBelow = occupiedSpaces.filter(space => {
+                const sameColumnOverlap = !(x >= space.right || x + width <= space.left);
+                const directlyBelowGap = Math.abs(space.bottom + gap - y) <= gap * 0.2;
+                return sameColumnOverlap && directlyBelowGap;
+            });
+            
+            bonus += directlyBelow.length * 150; // Strong bonus for column stacking
+            
+            // Bonus for being adjacent to existing items
+            const adjacentSpaces = occupiedSpaces.filter(space => {
+                const rightAdjacent = Math.abs(space.right + gap - x) <= gap * 0.3;
+                const leftAdjacent = Math.abs(space.left - gap - (x + width)) <= gap * 0.3;
+                const bottomAdjacent = Math.abs(space.bottom + gap - y) <= gap * 0.3;
+                const topAdjacent = Math.abs(space.top - gap - (y + height)) <= gap * 0.3;
+                
+                return rightAdjacent || leftAdjacent || bottomAdjacent || topAdjacent;
+            });
+            
+            bonus += adjacentSpaces.length * 50;
+            
+            return bonus;
+        }
+        
+        // Save current layout to cache
+        function saveLayoutToCache(itemData, occupiedSpaces, viewType, containerWidth) {
+            const layoutData = itemData.map((item, index) => {
+                const element = item.element;
+                const space = occupiedSpaces.find(space => 
+                    space.left === parseInt(element.style.left) && 
+                    space.top === parseInt(element.style.top)
+                );
+                
+                return {
+                    id: element.dataset.artworkId || element.querySelector('h3')?.textContent?.trim() || index,
+                    width: parseInt(element.style.width),
+                    left: parseInt(element.style.left),
+                    top: parseInt(element.style.top),
+                    height: space ? space.bottom - space.top : element.offsetHeight,
+                    aspectRatio: item.aspectRatio
+                };
+            });
+            
+            layoutCache[viewType] = layoutData;
+            layoutCache.itemCount = itemData.length;
+            layoutCache.containerWidth = containerWidth;
+            layoutCache.cacheTimestamp = Date.now();
+            
+            console.log(`Cached ${layoutData.length} item positions for ${viewType} view`);
+        }
+        
+        // Apply cached layout to items
+        function applyLayoutFromCache(cachedLayout, container, gap) {
+            const items = Array.from(container.querySelectorAll('.artwork-item:not(.filter-hidden)'));
+            
+            // Create a mapping of current items by their ID
+            const itemMap = new Map();
+            items.forEach((item, index) => {
+                const id = item.dataset.artworkId || item.querySelector('h3')?.textContent?.trim() || index;
+                itemMap.set(id, { element: item, index: index });
+            });
+            
+            // Apply cached positions by matching IDs
+            let appliedCount = 0;
+            const maxBottom = Math.max(...cachedLayout.map(item => item.top + item.height));
+            
+            cachedLayout.forEach(cachedItem => {
+                const itemInfo = itemMap.get(cachedItem.id);
+                if (itemInfo) {
+                    const item = itemInfo.element;
+                    item.style.position = 'absolute';
+                    item.style.width = `${cachedItem.width}px`;
+                    item.style.left = `${cachedItem.left}px`;
+                    item.style.top = `${cachedItem.top}px`;
+                    
+                    // Apply proper image sizing based on cached data
+                    const imageContainer = item.querySelector('.artwork-image-container, .relative');
+                    const image = item.querySelector('.artwork-image');
+                    
+                    if (imageContainer && image && cachedItem.aspectRatio) {
+                        imageContainer.style.width = `${cachedItem.width}px`;
+                        imageContainer.style.height = 'auto';
+                        image.style.width = '100%';
+                        image.style.height = 'auto';
+                        image.style.objectFit = 'cover';
+                    }
+                    
+                    appliedCount++;
+                }
+            });
+            
+            // Set container height from cached data
+            container.style.height = `${maxBottom + gap}px`;
+            
+            console.log(`Applied cached layout to ${appliedCount}/${items.length} items in ${viewType} view`);
+        }
+        
+        // Clear cache when items change (for filtering)
+        function clearLayoutCache() {
+            layoutCache.large = null;
+            layoutCache.small = null;
+            layoutCache.itemCount = 0;
+            layoutCache.cacheTimestamp = 0;
+            console.log('Layout cache cleared');
+        }
     }
     
     // Apply randomized loading to shop cards
@@ -754,8 +1032,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 resultsText.textContent = `Showing ${visibleCount} artworks`;
             }
             
-            // Re-apply variable masonry after filtering
-            setTimeout(initVariableMasonry, 100);
+            // Re-apply variable masonry after filtering (only after initial load is complete)
+            if (initialLoadComplete && !masonryInProgress) {
+                console.log('Filtering after initial load, clearing cache and scheduling masonry...');
+                clearLayoutCache();
+                setTimeout(initVariableMasonry, 100);
+            } else {
+                console.log('Filtering during initial load, skipping masonry call');
+            }
         }
         
         // Image loading detection for smooth card appearance
@@ -786,8 +1070,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Set up image loading detection
         setupImageLoading();
         
-        // Apply default filter immediately on page load
-        filterArtworks();
+        // Apply default filter immediately on page load (but don't trigger masonry yet)
+        setTimeout(() => {
+            console.log('Applying initial filters...');
+            filterArtworks();
+        }, 100);
     }
     
     
@@ -795,10 +1082,50 @@ document.addEventListener('DOMContentLoaded', function() {
     setupShopAnimations();
     setupShopFiltering();
     
-    // Initialize variable masonry after images load
-    setTimeout(() => {
-        initVariableMasonry();
-    }, 500);
+    // Apply saved view preference BEFORE initializing masonry
+    const savedView = localStorage.getItem('shop-gallery-view');
+    if (savedView) {
+        console.log('Applying saved view preference before masonry:', savedView);
+        const galleryContainer = document.getElementById('shop-gallery-container');
+        if (savedView === 'small') {
+            galleryContainer.classList.remove('gallery-grid-large');
+            galleryContainer.classList.add('gallery-grid-small');
+        } else {
+            galleryContainer.classList.remove('gallery-grid-small');
+            galleryContainer.classList.add('gallery-grid-large');
+        }
+        
+        // Update toggle states
+        document.querySelectorAll('.view-toggle').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll(`[data-view="${savedView}"]`).forEach(t => t.classList.add('active'));
+    }
+    
+    // Initialize variable masonry after images load with generous delay
+    console.log('Scheduling initial masonry layout...');
+    let initialLoadComplete = false;
+    let initialMasonryScheduled = false;
+    
+    function scheduleInitialMasonry() {
+        if (initialMasonryScheduled) {
+            console.log('Initial masonry already scheduled, skipping duplicate call');
+            return;
+        }
+        initialMasonryScheduled = true;
+        
+        setTimeout(() => {
+            console.log('Initial masonry starting...');
+            initVariableMasonry();
+            // Mark initial load as complete after masonry finishes
+            setTimeout(() => {
+                initialLoadComplete = true;
+                console.log('Initial load sequence completed');
+            }, 3000);
+        }, 1500); // Increased delay to ensure everything is ready
+    }
+    
+    scheduleInitialMasonry();
+    
+    // Wishlist states are initialized globally in base.html
     
     // Re-run on view toggle and resize
     window.addEventListener('resize', () => {
@@ -815,6 +1142,7 @@ document.addEventListener('DOMContentLoaded', function() {
     viewToggles.forEach(toggle => {
         toggle.addEventListener('click', function() {
             const view = this.dataset.view;
+            console.log('View toggle clicked:', view, 'currently active:', this.classList.contains('active'));
             
             // Update active state for all view toggles (both sidebar and header)
             document.querySelectorAll('.view-toggle').forEach(t => t.classList.remove('active'));
@@ -832,19 +1160,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // Store user preference
             localStorage.setItem('shop-gallery-view', view);
             
-            // Re-apply variable masonry
-            setTimeout(initVariableMasonry, 100);
+            // Re-apply variable masonry with extra time for view switching
+            setTimeout(initVariableMasonry, 1000);
         });
     });
     
-    // Restore user preference
-    const savedView = localStorage.getItem('shop-gallery-view');
-    if (savedView) {
-        const targetToggle = document.querySelector(`[data-view="${savedView}"]`);
-        if (targetToggle) {
-            targetToggle.click();
-        }
-    }
+    // View preference already applied before masonry initialization
     
     // Wishlist functionality
     document.querySelectorAll('.wishlist-toggle').forEach(button => {
@@ -858,54 +1179,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Wishlist functionality
-function toggleWishlist(artworkId) {
-    const button = document.querySelector(`[data-artwork-id="${artworkId}"]`);
-    if (!button) return;
-    
-    // Add loading state
-    const originalHTML = button.innerHTML;
-    button.innerHTML = '<div class="animate-spin w-5 h-5 border-2 border-current border-t-transparent rounded-full"></div>';
-    button.disabled = true;
-    
-    fetch(`/api/wishlist/toggle/${artworkId}/`, {
-        method: 'PUT',
-        headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken'),
-            'Content-Type': 'application/json',
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        button.disabled = false;
-        
-        // Update wishlist button state based on API response
-        if (data.added) {
-            button.classList.add('text-red-500');
-            button.classList.remove('text-neutral-600');
-            button.innerHTML = `<svg class="w-5 h-5" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-            </svg>`;
-            button.title = 'Remove from Wishlist';
-        } else {
-            button.classList.remove('text-red-500');
-            button.classList.add('text-neutral-600');
-            button.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-            </svg>`;
-            button.title = 'Add to Wishlist';
-        }
-        
-        // Show notification
-        showNotification(data.message, 'success');
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        button.disabled = false;
-        button.innerHTML = originalHTML;
-        showNotification('Failed to update wishlist', 'error');
-    });
-}
+// Wishlist initialization is now handled globally in base.html
 
 
 // Utility functions

@@ -40,8 +40,7 @@
     
     <!-- Styles -->
     <link href="{% static 'dist/css/main.css' %}" rel="stylesheet">
-    <!-- Image Loading Optimizations -->
-    <link href="{% static 'dist/css/image-loading.css' %}" rel="stylesheet">
+    <!-- Image loading CSS removed - was conflicting -->
     {% block extra_css %}{% endblock %}
     
     <!-- Structured Data -->
@@ -348,355 +347,234 @@
     
     <!-- GSAP Animation Library - Removed to fix 404 errors -->
     
-    <!-- Enhanced Image Loading System -->
+    <!-- Script removed - was conflicting with gallery masonry -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Simple but effective image loading system
-        
-        function hideImagePlaceholders() {
-            const artworkImages = document.querySelectorAll('.artwork-image');
-            artworkImages.forEach(img => {
-                const checkAndHide = () => {
-                    if (img.complete && img.naturalHeight !== 0) {
-                        const container = img.closest('.image-container');
-                        img.classList.add('loaded', 'image-fade-in');
-                        img.classList.remove('loading');
-                        
-                        if (container) {
-                            container.classList.add('loaded');
-                            const placeholder = container.querySelector('.image-placeholder');
-                            if (placeholder) {
-                                placeholder.style.opacity = '0';
-                                placeholder.style.visibility = 'hidden';
-                                placeholder.style.display = 'none';
-                            }
-                        }
-                    }
-                };
-                
-                // Check immediately for cached images
-                checkAndHide();
-                
-                // Also listen for load event
-                img.addEventListener('load', checkAndHide);
-                
-                // Handle errors
-                img.addEventListener('error', () => {
-                    const container = img.closest('.image-container');
-                    if (container) {
-                        const placeholder = container.querySelector('.image-placeholder');
-                        if (placeholder) {
-                            placeholder.style.background = '#fee2e2';
-                            placeholder.innerHTML = '<div style="color: #991b1b; font-size: 14px; text-align: center;">Failed to load</div>';
-                        }
-                    }
-                });
-            });
-        }
-        
-        // Enhanced image loading with progressive loading and aspect ratio preservation
-        
-        class ImageLoader {
-            constructor() {
-                this.imageQueue = [];
-                this.loadedImages = new Set();
-                this.lozadInstance = null;
-                this.lazyLoadInstance = null;
-                this.initializeLoader();
-            }
-            
-            initializeLoader() {
-                // Initialize professional loaders first
-                this.initializeProfessionalLoaders();
-                
-                // Handle images with containers
-                this.setupImageContainers();
-                
-                // Setup intersection observer for lazy loading
-                this.setupIntersectionObserver();
-                
-                // Preload critical images
-                this.preloadCriticalImages();
-                
-                // Handle grid animations
-                this.setupGridAnimations();
-                
-                // Run the simple placeholder hiding
-                hideImagePlaceholders();
-            }
-            
-            initializeProfessionalLoaders() {
-                // Initialize Lozad.js for ultra-lightweight lazy loading
-                if (typeof lozad !== 'undefined') {
-                    this.lozadInstance = lozad('.lozad', {
-                        load: function(el) {
-                            el.src = el.dataset.src;
-                            el.onload = function() {
-                                el.classList.add('loaded', 'image-fade-in');
-                                const container = el.closest('.image-container');
-                                if (container) {
-                                    container.classList.add('loaded');
-                                }
-                            };
-                        },
-                        loaded: function(el) {
-                            el.classList.add('lozad-loaded');
-                        }
-                    });
-                    this.lozadInstance.observe();
-                }
-                
-                // Initialize vanilla-lazyload for comprehensive features
-                if (typeof LazyLoad !== 'undefined') {
-                    this.lazyLoadInstance = new LazyLoad({
-                        elements_selector: '.lazy-load',
-                        threshold: 300,
-                        callback_loaded: function(el) {
-                            el.classList.add('loaded', 'image-fade-in');
-                            const container = el.closest('.image-container');
-                            if (container) {
-                                container.classList.add('loaded');
-                            }
-                        },
-                        callback_error: function(el) {
-                            const container = el.closest('.image-container');
-                            if (container) {
-                                const placeholder = container.querySelector('.image-placeholder');
-                                if (placeholder) {
-                                    placeholder.style.background = '#fee2e2';
-                                    placeholder.innerHTML = '<div style="color: #991b1b; font-size: 14px;">Failed to load</div>';
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-            
-            setupImageContainers() {
-                const images = document.querySelectorAll('.artwork-image, img[data-lazy="true"]');
-                images.forEach((img, index) => {
-                    this.wrapImageInContainer(img);
-                    this.setupImageLoadHandlers(img);
-                    
-                    // Add a small delay for images that might already be cached
-                    setTimeout(() => {
-                        if (img.complete && img.naturalHeight !== 0) {
-                            const container = img.closest('.image-container');
-                            img.classList.remove('loading');
-                            img.classList.add('loaded', 'image-fade-in');
-                            if (container) {
-                                container.classList.add('loaded');
-                            }
-                        }
-                    }, index * 50); // Stagger checks
-                });
-            }
-            
-            wrapImageInContainer(img) {
-                if (img.closest('.image-container')) return;
-                
-                const container = document.createElement('div');
-                container.className = 'image-container';
-                
-                // Preserve aspect ratio if specified
-                const aspectRatio = img.dataset.aspectRatio;
-                if (aspectRatio) {
-                    container.style.aspectRatio = aspectRatio;
-                    container.classList.add(`aspect-ratio-${aspectRatio.replace('/', '-')}`);
-                }
-                
-                // Create placeholder
-                const placeholder = document.createElement('div');
-                placeholder.className = 'image-placeholder shimmer';
-                
-                // Wrap image
-                img.parentNode.insertBefore(container, img);
-                container.appendChild(placeholder);
-                container.appendChild(img);
-                
-                // Add loading state
-                img.classList.add('loading');
-            }
-            
-            setupImageLoadHandlers(img) {
-                const container = img.closest('.image-container');
-                
-                // Check if image is already loaded (for images with immediate src)
-                const handleImageLoad = () => {
-                    img.classList.remove('loading');
-                    img.classList.add('loaded', 'image-fade-in');
-                    if (container) {
-                        container.classList.add('loaded');
-                    }
-                    this.loadedImages.add(img);
-                };
-                
-                // If image is already complete, handle immediately
-                if (img.complete && img.naturalHeight !== 0) {
-                    handleImageLoad();
-                } else {
-                    // Otherwise wait for load event
-                    img.addEventListener('load', handleImageLoad);
-                    
-                    img.addEventListener('error', () => {
-                        img.classList.add('error');
-                        if (container) {
-                            const placeholder = container.querySelector('.image-placeholder');
-                            if (placeholder) {
-                                placeholder.style.background = '#fee2e2';
-                                placeholder.innerHTML = '<div style="color: #991b1b; font-size: 14px;">Failed to load</div>';
-                            }
-                        }
-                    });
-                }
-            }
-            
-            setupIntersectionObserver() {
-                if (!('IntersectionObserver' in window)) {
-                    // Fallback for older browsers - images already have src, so just add loaded class
-                    document.querySelectorAll('img[data-lazy="true"]').forEach(img => {
-                        img.classList.add('loaded');
-                    });
-                    return;
-                }
-                
-                const imageObserver = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            const img = entry.target;
-                            
-                            // For images with data-src (true lazy loading)
-                            if (img.dataset.src) {
-                                img.classList.add('blur-load');
-                                img.src = img.dataset.src;
-                                img.removeAttribute('data-src');
-                                
-                                img.addEventListener('load', () => {
-                                    img.classList.remove('blur-load');
-                                    img.classList.add('loaded');
-                                });
-                            } else {
-                                // For images that already have src but want progressive enhancement
-                                img.classList.add('loaded');
-                            }
-                            
-                            imageObserver.unobserve(img);
-                        }
-                    });
-                }, {
-                    rootMargin: '50px',
-                    threshold: 0.1
-                });
-                
-                // Observe both data-src images and data-lazy images
-                document.querySelectorAll('img[data-src], img[data-lazy="true"]').forEach(img => {
-                    imageObserver.observe(img);
-                });
-            }
-            
-            preloadCriticalImages() {
-                const criticalImages = document.querySelectorAll('img[data-priority="high"]');
-                criticalImages.forEach((img, index) => {
-                    setTimeout(() => {
-                        const link = document.createElement('link');
-                        link.rel = 'preload';
-                        link.as = 'image';
-                        link.href = img.src || img.dataset.src;
-                        document.head.appendChild(link);
-                    }, index * 100); // Stagger preloads
-                });
-            }
-            
-            setupGridAnimations() {
-                // Enhanced staggered animations that avoid top-to-bottom pattern
-                const gridItems = document.querySelectorAll('.image-reveal');
-                
-                // Create randomized but balanced reveal pattern
-                const shuffleArray = (array) => {
-                    const shuffled = [...array];
-                    for (let i = shuffled.length - 1; i > 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-                    }
-                    return shuffled;
-                };
-                
-                // Create groups for wave-like reveals
-                const itemsArray = Array.from(gridItems);
-                const totalItems = itemsArray.length;
-                const groupSize = Math.ceil(totalItems / 4); // Create 4 groups
-                
-                itemsArray.forEach((item, index) => {
-                    // Assign stagger class based on mixed pattern
-                    const staggerClass = `reveal-stagger-${((index * 3) % 12) + 1}`;
-                    item.classList.add(staggerClass);
-                    
-                    // Add random slight delay for more organic feel
-                    const randomDelay = Math.random() * 0.3;
-                    const baseDelay = parseFloat(getComputedStyle(item).animationDelay) || 0;
-                    item.style.animationDelay = `${baseDelay + randomDelay}s`;
-                    
-                    // Initially pause animations
-                    item.style.animationPlayState = 'paused';
-                });
-                
-                // Observe grid items for scroll-triggered animations with intersection observer
-                const gridObserver = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            // Small delay to ensure smooth reveal
-                            setTimeout(() => {
-                                entry.target.style.animationPlayState = 'running';
-                            }, 50);
-                            gridObserver.unobserve(entry.target);
-                        }
-                    });
-                }, {
-                    threshold: 0.1,
-                    rootMargin: '20px'
-                });
-                
-                gridItems.forEach(item => {
-                    gridObserver.observe(item);
-                });
-            }
-            
-            // Method to update lazy loading for new content (for HTMX/dynamic content)
-            updateLazyLoading() {
-                if (this.lozadInstance) {
-                    this.lozadInstance.observe();
-                }
-                if (this.lazyLoadInstance) {
-                    this.lazyLoadInstance.update();
-                }
-                
-                // Re-run setup for any new images
-                this.setupImageContainers();
-                hideImagePlaceholders();
-            }
-        }
-        
-        // Initialize the enhanced image loader
-        const imageLoader = new ImageLoader();
-        
-        // Additional fallback: check all images after page load
-        window.addEventListener('load', function() {
-            // Run hideImagePlaceholders again after page fully loads
-            hideImagePlaceholders();
-            
-            // And once more after a short delay for any slow-loading images
-            setTimeout(() => {
-                hideImagePlaceholders();
-            }, 500);
-        });
-        
-        // Export for use in other scripts
-        window.ImageLoader = ImageLoader;
-        window.imageLoader = imageLoader;
+        // Simple image loading without conflicts
+        console.log('Gallery ready');
     });
     </script>
     
     {% block extra_js %}{% endblock %}
+
+    <!-- Global Wishlist Functions -->
+    <script>
+        // Global wishlist functions available across all pages
+        window.toggleWishlist = function(artworkId) {
+            const buttons = document.querySelectorAll(`[data-artwork-id="${artworkId}"]`);
+            if (buttons.length === 0) return;
+            
+            // Add loading state to the clicked button
+            const clickedButton = event?.target?.closest('[data-artwork-id]') || buttons[0];
+            const originalHTML = clickedButton.innerHTML;
+            clickedButton.innerHTML = '<div class="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full"></div>';
+            clickedButton.disabled = true;
+            
+            fetch(`/api/wishlist/toggle/${artworkId}/`, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                clickedButton.disabled = false;
+                
+                if (data.success) {
+                    // Use the is_wishlisted field from the API response
+                    const inWishlist = data.is_wishlisted;
+                    
+                    console.log('Wishlist toggle response:', data, 'inWishlist:', inWishlist);
+                    
+                    // Update all wishlist buttons for this artwork across all pages
+                    updateWishlistButtonState(artworkId, inWishlist);
+                    
+                    // Show notification if function exists
+                    if (typeof showNotification === 'function' && data.message) {
+                        showNotification(data.message, 'success');
+                    }
+                } else {
+                    // Restore original state on failure
+                    clickedButton.innerHTML = originalHTML;
+                    if (typeof showNotification === 'function') {
+                        showNotification(data.message || 'Failed to update wishlist', 'error');
+                    } else if (data.message && data.message.includes('authentication')) {
+                        alert('Please log in to use the wishlist feature');
+                    } else {
+                        alert(data.message || 'Failed to update wishlist');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                clickedButton.disabled = false;
+                clickedButton.innerHTML = originalHTML;
+                if (typeof showNotification === 'function') {
+                    showNotification('Failed to update wishlist', 'error');
+                } else {
+                    alert('Failed to update wishlist. Please try again.');
+                }
+            });
+        };
+
+        // Update wishlist button state across all instances
+        window.updateWishlistButtonState = function(artworkId, inWishlist) {
+            const buttons = document.querySelectorAll(`[data-artwork-id="${artworkId}"]`);
+            
+            buttons.forEach(btn => {
+                const heart = btn.querySelector('.wishlist-heart, svg');
+                const isIconButton = btn.classList.contains('w-10') && btn.classList.contains('h-10'); // Detail page overlay
+                const isTextButton = btn.querySelector('.text-xs'); // Detail page text buttons
+                
+                if (inWishlist) {
+                    btn.classList.add('active');
+                    btn.title = 'Remove from Wishlist';
+                    
+                    if (isIconButton) {
+                        // Detail page image overlay button - just fill the heart, keep background
+                        const heart = btn.querySelector('svg');
+                        if (heart) {
+                            heart.setAttribute('fill', 'currentColor');
+                            heart.classList.add('text-red-500');
+                        }
+                    } else if (isTextButton) {
+                        // Detail page text buttons - keep text, just fill the heart
+                        btn.classList.add('border-red-500', 'bg-red-50', 'text-red-600');
+                        btn.classList.remove('border-neutral-300', 'text-neutral-600', 'hover:border-primary');
+                        btn.innerHTML = `<svg class="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <span class="text-xs">Wishlist</span>`;
+                    } else {
+                        // Shop and gallery cards - fill heart red
+                        if (heart) {
+                            heart.setAttribute('fill', 'currentColor');
+                            heart.classList.remove('text-white', 'text-neutral-400', 'text-neutral-600');
+                            heart.classList.add('text-red-500');
+                        }
+                        btn.classList.add('text-red-500');
+                        btn.classList.remove('text-neutral-600');
+                        
+                        // Update shop-style buttons
+                        if (btn.querySelector('.w-5') || btn.innerHTML.includes('w-5')) {
+                            btn.innerHTML = `<svg class="w-5 h-5" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>`;
+                        } else if (btn.querySelector('.w-4')) {
+                            btn.innerHTML = `<svg class="w-4 h-4 text-red-500 wishlist-heart" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>`;
+                        }
+                    }
+                } else {
+                    btn.classList.remove('active');
+                    btn.title = 'Add to Wishlist';
+                    
+                    if (isIconButton) {
+                        // Detail page image overlay button - just empty the heart, keep background
+                        const heart = btn.querySelector('svg');
+                        if (heart) {
+                            heart.setAttribute('fill', 'none');
+                            heart.classList.remove('text-red-500');
+                            heart.classList.add('text-neutral-600');
+                        }
+                    } else if (isTextButton) {
+                        // Detail page text buttons - restore neutral styling
+                        btn.classList.remove('border-red-500', 'bg-red-50', 'text-red-600');
+                        btn.classList.add('border-neutral-300', 'text-neutral-600', 'hover:border-primary');
+                        btn.innerHTML = `<svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                        <span class="text-xs">Wishlist</span>`;
+                    } else {
+                        // Shop and gallery cards - empty heart outline
+                        if (heart) {
+                            heart.setAttribute('fill', 'none');
+                            heart.classList.remove('text-red-500');
+                            if (btn.classList.contains('bg-black')) {
+                                heart.classList.add('text-white');
+                            } else {
+                                heart.classList.add('text-neutral-600');
+                            }
+                        }
+                        btn.classList.remove('text-red-500');
+                        btn.classList.add('text-neutral-600');
+                        
+                        // Update shop-style buttons
+                        if (btn.querySelector('.w-5') || btn.innerHTML.includes('w-5')) {
+                            btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>`;
+                        } else if (btn.querySelector('.w-4')) {
+                            const color = btn.classList.contains('bg-black') ? 'text-white' : 'text-neutral-600';
+                            btn.innerHTML = `<svg class="w-4 h-4 ${color} wishlist-heart" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>`;
+                        }
+                    }
+                }
+            });
+        };
+        
+        // Initialize wishlist states globally for all pages
+        window.initializeGlobalWishlistStates = function() {
+            fetch('/api/wishlist/status/', {
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Wishlist status response:', data);
+                if (data.success && data.wishlisted_artwork_ids) {
+                    // Update all wishlist buttons based on current wishlist state from DB
+                    data.wishlisted_artwork_ids.forEach(artworkId => {
+                        updateWishlistButtonState(artworkId, true);
+                    });
+                    console.log('Updated wishlist buttons for IDs:', data.wishlisted_artwork_ids);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading wishlist state:', error);
+            });
+        };
+
+        // Helper function for cookies
+        window.getCookie = function(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        };
+
+        // Auto-initialize wishlist states on every page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, checking for wishlist buttons...');
+            
+            // Wait a moment for page elements to render, then load wishlist states
+            setTimeout(() => {
+                const wishlistButtons = document.querySelectorAll('[data-artwork-id]');
+                console.log('Found', wishlistButtons.length, 'wishlist buttons');
+                
+                if (wishlistButtons.length > 0) {
+                    console.log('Initializing wishlist states from database...');
+                    initializeGlobalWishlistStates();
+                } else {
+                    console.log('No wishlist buttons found, skipping initialization');
+                }
+            }, 200); // Increased to 200ms to ensure elements are rendered
+        });
+    </script>
 
     <!-- HTMX Configuration -->
     <script>

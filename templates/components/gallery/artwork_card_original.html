@@ -1,5 +1,5 @@
 <!-- Original Artwork Card Component -->
-<div class="artwork-card card group relative overflow-hidden border-4 border-mocha cursor-pointer hover:shadow-lg transition-all duration-300" data-gsap="scaleIn" onclick="window.location.href='{% if artwork.get_absolute_url %}{{ artwork.get_absolute_url }}{% else %}#{% endif %}'">
+<div class="artwork-card card group relative overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300" data-gsap="scaleIn" onclick="window.location.href='{% if artwork.get_absolute_url %}{{ artwork.get_absolute_url }}{% else %}#{% endif %}'">
     <!-- Image Container -->
         <div class="relative overflow-hidden">
             {% if artwork.gallery_url %}
@@ -22,6 +22,16 @@
                     Original
                 </span>
             </div>
+            
+            <!-- Wishlist Button -->
+            <button class="absolute top-3 right-3 w-8 h-8 bg-black/80 hover:bg-black backdrop-blur-md rounded-full flex items-center justify-center shadow-xl border border-white/20 transition-all duration-300 opacity-0 group-hover:opacity-100 wishlist-btn"
+                    data-artwork-id="{{ artwork.id }}"
+                    onclick="event.stopPropagation(); toggleWishlist({{ artwork.id }})"
+                    title="Add to Wishlist">
+                <svg class="w-4 h-4 text-white hover:text-red-400 drop-shadow-md wishlist-heart" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+            </button>
             
             <!-- Overlay -->
             <div class="artwork-overlay">
