@@ -8,24 +8,26 @@
 
 {% block content %}
 <!-- Gallery Header -->
-<section class="py-16 bg-gradient-subtle from-primary-50 to-secondary-50">
-    <div class="container mx-auto px-4">
+<section class="section-padding bg-vintage-rosewood">
+    <div class="container">
         <div class="text-center max-w-4xl mx-auto">
-            <h1 class="text-h1 font-playfair font-bold text-neutral-800 mb-4">Shop Artworks</h1>
-            <p class="text-body-lg text-neutral-600 leading-relaxed mb-8">
-                Browse available original paintings and high-quality fine art prints. 
-                Each purchase supports an independent artist and brings beauty into your space.
-            </p>
+            <div>
+                <h1 class="text-page-title text-white mb-6">Shop Artworks</h1>
+                <p class="text-body text-pale-blush leading-relaxed mb-8">
+                    Browse available original paintings and high-quality fine art prints. 
+                    Each purchase supports an independent artist and brings beauty into your space.
+                </p>
+            </div>
             
             <!-- Shop Filter Component -->
-            <div class="shop-filter-component bg-white rounded-lg shadow-sm border border-neutral-200 p-6 max-w-2xl mx-auto">
+            <div class="shop-filter-component bg-surface rounded-xl shadow-soft border border-muted p-6 max-w-2xl mx-auto">
                 <!-- Original vs Prints Toggle -->
                 <div class="flex items-center justify-center mb-6">
-                    <div class="bg-neutral-100 rounded-lg p-1 inline-flex relative">
-                        <button class="shop-type-toggle active px-6 py-2 rounded-md text-sm font-medium transition-all" data-type="original">
+                    <div class="bg-muted rounded-lg p-1 inline-flex relative">
+                        <button class="shop-type-toggle active px-6 py-2 rounded-md text-navigation font-medium transition-all" data-type="original">
                             Originals
                         </button>
-                        <button class="shop-type-toggle px-6 py-2 rounded-md text-sm font-medium transition-all" data-type="print">
+                        <button class="shop-type-toggle px-6 py-2 rounded-md text-navigation font-medium transition-all" data-type="print">
                             Prints
                         </button>
                     </div>
@@ -36,18 +38,18 @@
                     <div class="flex items-center justify-center space-x-4">
                         <label class="inline-flex items-center">
                             <input type="checkbox" class="medium-filter sr-only" value="watercolor">
-                            <span class="medium-tag px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800 cursor-pointer transition-all hover:bg-blue-200">
+                            <span class="medium-tag px-4 py-2 rounded-full text-caption font-medium bg-secondary-10 text-secondary cursor-pointer transition-all hover:bg-secondary-20">
                                 Watercolor
                             </span>
                         </label>
                         <label class="inline-flex items-center">
                             <input type="checkbox" class="medium-filter sr-only" value="oil">
-                            <span class="medium-tag px-4 py-2 rounded-full text-sm font-medium bg-amber-100 text-amber-800 cursor-pointer transition-all hover:bg-amber-200">
+                            <span class="medium-tag px-4 py-2 rounded-full text-caption font-medium bg-primary-10 text-primary cursor-pointer transition-all hover:bg-primary-20">
                                 Oil
                             </span>
                         </label>
                     </div>
-                    <p class="text-xs text-neutral-500 mt-2">Select medium types to filter prints (no selection shows all prints)</p>
+                    <p class="text-caption text-muted mt-2">Select medium types to filter prints (no selection shows all prints)</p>
                 </div>
             </div>
         </div>
@@ -55,25 +57,25 @@
 </section>
 
 <!-- Gallery Content -->
-<section class="py-12">
-    <div class="container mx-auto px-4">
+<section class="section-padding bg-surface section-border-top from-rosewood-section watercolor-natural">
+    <div class="container">
         <!-- Main Gallery -->
         <main class="max-w-7xl mx-auto">
                 <!-- Sort and Results Header -->
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-                    <div class="text-sm text-neutral-600">
+                    <div class="text-caption text-secondary">
                         Showing {{ artworks|length }} of {{ paginator.count }} artworks
                     </div>
                     
                     <div class="flex items-center gap-4">
                         <!-- View Toggle -->
-                        <div class="flex items-center bg-neutral-100 rounded-lg p-1">
-                            <button class="view-toggle active px-3 py-1 rounded text-sm font-medium" data-view="large" title="Large Cards">
+                        <div class="flex items-center bg-muted rounded-lg p-1">
+                            <button class="view-toggle active px-3 py-1 rounded text-caption font-medium" data-view="large" title="Large Cards">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
                                 </svg>
                             </button>
-                            <button class="view-toggle px-3 py-1 rounded text-sm font-medium" data-view="small" title="Small Cards">
+                            <button class="view-toggle px-3 py-1 rounded text-caption font-medium" data-view="small" title="Small Cards">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
                                 </svg>
@@ -81,7 +83,7 @@
                         </div>
                         
                         <!-- Sort Dropdown -->
-                        <select class="sort-select form-select text-sm">
+                        <select class="sort-select form-input text-caption">
                             <option value="newest" {% if current_filters.sort == 'newest' %}selected{% endif %}>Newest First</option>
                             <option value="oldest" {% if current_filters.sort == 'oldest' %}selected{% endif %}>Oldest First</option>
                             <option value="price_low" {% if current_filters.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
@@ -114,9 +116,9 @@
                     {% empty %}
                     <div class="col-span-full text-center py-12">
                         <div class="text-6xl mb-4">🎨</div>
-                        <h3 class="text-xl font-playfair font-semibold mb-2">No artworks found</h3>
-                        <p class="text-neutral-600 mb-6">Try adjusting your filters or search terms</p>
-                        <button class="clear-filters btn-primary">Clear Filters</button>
+                        <h3 class="text-artwork-title text-primary font-semibold mb-2">No artworks found</h3>
+                        <p class="text-body text-secondary mb-6">Try adjusting your filters or search terms</p>
+                        <button class="clear-filters btn btn-primary">Clear Filters</button>
                     </div>
                     {% endfor %}
                 </div>
@@ -126,7 +128,7 @@
                 <div class="text-center mt-12">
                     <div class="load-more inline-block">
                         <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" 
-                           class="btn-primary">
+                           class="btn btn-primary">
                             Load More Artworks
                         </a>
                     </div>
@@ -139,21 +141,21 @@
                     <div class="flex items-center space-x-2">
                         {% if page_obj.has_previous %}
                             <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}" 
-                               class="px-3 py-2 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors">Previous</a>
+                               class="px-3 py-2 border border-muted rounded-lg hover:bg-muted transition-colors">Previous</a>
                         {% endif %}
 
                         {% for page_num in paginator.page_range %}
                             {% if page_num == page_obj.number %}
-                                <span class="px-3 py-2 bg-primary-500 text-white rounded-lg">{{ page_num }}</span>
+                                <span class="px-3 py-2 bg-primary text-white rounded-lg">{{ page_num }}</span>
                             {% else %}
                                 <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_num }}" 
-                                   class="px-3 py-2 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors">{{ page_num }}</a>
+                                   class="px-3 py-2 border border-muted rounded-lg hover:bg-muted transition-colors">{{ page_num }}</a>
                             {% endif %}
                         {% endfor %}
 
                         {% if page_obj.has_next %}
                             <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" 
-                               class="px-3 py-2 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors">Next</a>
+                               class="px-3 py-2 border border-muted rounded-lg hover:bg-muted transition-colors">Next</a>
                         {% endif %}
                     </div>
                 </nav>
@@ -164,44 +166,44 @@
 
 
 <!-- Shopping Information -->
-<section class="py-16 bg-white">
-    <div class="container mx-auto px-4">
+<section class="section-padding bg-gradient-about section-border-top from-surface-section watercolor-natural">
+    <div class="container">
         <div class="grid md:grid-cols-3 gap-8">
             <!-- Shipping Info -->
             <div class="text-center">
-                <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-vintage-rosewood" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                     </svg>
                 </div>
-                <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-2">Secure Shipping</h3>
-                <p class="text-neutral-600 text-sm">
+                <h3 class="text-artwork-title text-vintage-rosewood mb-2">Secure Shipping</h3>
+                <p class="text-body text-vintage-rosewood">
                     Free shipping on orders over $75. Professional packaging ensures your artwork arrives safely.
                 </p>
             </div>
             
             <!-- Quality Guarantee -->
             <div class="text-center">
-                <div class="w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-vintage-rosewood" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
-                <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-2">Quality Guarantee</h3>
-                <p class="text-neutral-600 text-sm">
+                <h3 class="text-artwork-title text-vintage-rosewood mb-2">Quality Guarantee</h3>
+                <p class="text-body text-vintage-rosewood">
                     30-day return policy. Each piece is inspected and certified before shipping.
                 </p>
             </div>
             
             <!-- Customer Support -->
             <div class="text-center">
-                <div class="w-16 h-16 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-vintage-rosewood" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                     </svg>
                 </div>
-                <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-2">Personal Service</h3>
-                <p class="text-neutral-600 text-sm">
+                <h3 class="text-artwork-title text-vintage-rosewood mb-2">Personal Service</h3>
+                <p class="text-body text-vintage-rosewood">
                     Direct communication with the artist. Questions about sizing, custom work, or commissions welcome.
                 </p>
             </div>
@@ -210,20 +212,20 @@
 </section>
 
 <!-- Call to Action -->
-<section class="py-16 bg-gradient-to-br from-primary-50 to-accent-50">
-    <div class="container mx-auto px-4 text-center">
+<section class="section-padding bg-gradient-hero section-border-top from-about-section watercolor-natural">
+    <div class="container text-center">
         <div class="max-w-3xl mx-auto">
-            <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-6">
+            <h2 class="text-section-heading text-white mb-6">
                 Ready to Start Your Collection?
             </h2>
-            <p class="text-body-lg text-neutral-600 mb-8">
+            <p class="text-body text-secondary mb-8">
                 Can't find exactly what you're looking for? I'd love to create a custom piece just for you.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{% url 'contact' %}" class="btn-primary">
+                <a href="{% url 'contact' %}" class="btn btn-primary">
                     Commission Custom Art
                 </a>
-                <a href="{% url 'portfolio' %}" class="btn-outline">
+                <a href="{% url 'portfolio' %}" class="btn btn-secondary">
                     View Full Portfolio
                 </a>
             </div>
@@ -325,57 +327,44 @@
 }
 
 .gallery-grid-large .artwork-item {
-    max-width: 400px;
-    min-width: 280px;
+    /* Dimensions controlled by JavaScript */
 }
 
 .gallery-grid-small .artwork-item {
-    max-width: 220px;
-    min-width: 150px;
+    /* Dimensions controlled by JavaScript */
 }
 
 /* Only force display block when not filtered */
-.gallery-grid-large .artwork-item:not([style*="display: none"]),
-.gallery-grid-small .artwork-item:not([style*="display: none"]) {
+.gallery-grid-large .artwork-item:not(.filter-hidden),
+.gallery-grid-small .artwork-item:not(.filter-hidden) {
     display: block !important;
 }
 
-/* Responsive adjustments - Amazon Style */
+/* Responsive adjustments - dimensions controlled by JavaScript */
 @media (max-width: 640px) {
-    .gallery-grid-large {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
-        gap: 1rem;
-    }
-    
-    .gallery-grid-small {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
-        gap: 0.5rem;
+    .gallery-grid-large .artwork-item,
+    .gallery-grid-small .artwork-item {
+        /* JavaScript calculates responsive widths based on screen size */
     }
 }
 
 @media (min-width: 641px) and (max-width: 768px) {
-    .gallery-grid-large {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
-    }
-    
-    .gallery-grid-small {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+    .gallery-grid-large .artwork-item,
+    .gallery-grid-small .artwork-item {
+        /* JavaScript calculates responsive widths based on screen size */
     }
 }
 
 @media (min-width: 1280px) {
-    .gallery-grid-large {
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
-    }
-    
-    .gallery-grid-small {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+    .gallery-grid-large .artwork-item,
+    .gallery-grid-small .artwork-item {
+        /* JavaScript calculates responsive widths based on screen size */
     }
 }
 
-/* Default aspect ratio for all image containers */
+/* Default aspect ratio for all image containers (disabled for masonry) */
 .artwork-image-container {
-    aspect-ratio: 4/5;
+    /* aspect-ratio: 4/5; - Disabled to allow JavaScript height control */
 }
 
 /* Card styling adjustments for SMALL view - Amazon Style */
@@ -442,13 +431,12 @@
 .gallery-grid-large .artwork-image-container,
 .gallery-grid-small .artwork-image-container {
     max-width: 100%;
+    position: relative;
 }
 
 .artwork-image {
     max-width: 100%;
-    height: auto;
     display: block;
-    width: auto;
 }
 
 /* Smooth transitions for filter changes */
@@ -461,9 +449,9 @@
     display: none;
 }
 
-/* Hide cards until images are loaded */
+/* Show cards by default for debugging */
 .artwork-item {
-    opacity: 0;
+    opacity: 1;
     transition: opacity 0.3s ease;
 }
 
@@ -475,425 +463,279 @@
 .artwork-item.filter-hidden {
     opacity: 0 !important;
 }
+
+/* Initial stacked layout - all cards start in top-left position */
+.artwork-item.initial-stacked {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 320px !important;
+    max-width: 320px !important;
+    opacity: 0.8;
+    transform: scale(0.95);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+}
+
+/* Cards animate to their final positions */
+.artwork-item.positioned {
+    opacity: 1;
+    transform: scale(1);
+    z-index: auto;
+}
+
+/* Responsive initial sizing for stacked cards */
+@media (max-width: 640px) {
+    .artwork-item.initial-stacked {
+        width: 280px !important;
+        max-width: 280px !important;
+    }
+}
+
+@media (min-width: 1280px) {
+    .artwork-item.initial-stacked {
+        width: 350px !important;
+        max-width: 350px !important;
+    }
+}
+
+/* Responsive initial sizing */
+@media (max-width: 640px) {
+    .artwork-item {
+        width: 280px;
+        max-width: 280px;
+    }
+}
+
+@media (min-width: 1280px) {
+    .artwork-item {
+        width: 350px;
+        max-width: 350px;
+    }
+}
 </style>
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
 <script>
-// Enhanced shop loading animations and new filtering system
+// Shop masonry using Gallery's simple approach
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Variable Width Masonry Layout - No Overlaps
+    // Stacked Animation Masonry Layout
     let masonryInProgress = false;
-    let layoutCache = {
-        large: null,
-        small: null,
-        itemCount: 0,
-        containerWidth: 0,
-        cacheTimestamp: 0
-    };
+    let masonryTimeout = null;
     
     function initVariableMasonry() {
-        // Prevent multiple simultaneous runs
+        // Clear any existing timeout
+        if (masonryTimeout) {
+            clearTimeout(masonryTimeout);
+            masonryTimeout = null;
+        }
+        
         if (masonryInProgress) {
-            console.log('Masonry already in progress, skipping...');
-            console.trace('Call stack for blocked masonry call:');
+            console.log('Masonry in progress, queuing...');
+            // Queue another attempt after current one finishes
+            masonryTimeout = setTimeout(initVariableMasonry, 500);
             return;
         }
         
         masonryInProgress = true;
-        console.log('Starting masonry layout...', new Date().toLocaleTimeString());
-        console.trace('Call stack for masonry start:');
         
-        // Emergency timeout to reset flag in case something goes wrong
-        setTimeout(() => {
+        // Emergency timeout to prevent hanging
+        const emergencyTimeout = setTimeout(() => {
             if (masonryInProgress) {
-                console.warn('Masonry timeout - forcing reset of progress flag');
                 masonryInProgress = false;
             }
-        }, 10000); // 10 second emergency timeout
+        }, 5000);
         
-        const container = document.getElementById('shop-gallery-container');
-        const items = Array.from(container.querySelectorAll('.artwork-item:not(.filter-hidden)'));
-        
-        if (items.length === 0) {
-            masonryInProgress = false;
-            return;
-        }
-        
-        const isSmallView = container.classList.contains('gallery-grid-small');
-        const gap = isSmallView ? 12 : 24;
-        const containerWidth = container.offsetWidth;
-        const viewType = isSmallView ? 'small' : 'large';
-        
-        // Check if we can use cached layout
-        const canUseCache = layoutCache[viewType] && 
-                           layoutCache.itemCount === items.length &&
-                           Math.abs(layoutCache.containerWidth - containerWidth) < 50 && // 50px tolerance
-                           Date.now() - layoutCache.cacheTimestamp < 300000; // 5 minute cache expiry
-        
-        if (canUseCache) {
-            console.log(`Using cached ${viewType} layout for ${items.length} items`);
-            applyLayoutFromCache(layoutCache[viewType], container, gap);
-            masonryInProgress = false;
-            return;
-        }
-        
-        console.log(`Calculating new ${viewType} layout for ${items.length} items`);
-        
-        // Force complete reset of all items to prevent stacking
-        console.log(`Resetting ${items.length} items to natural state`);
-        items.forEach((item, index) => {
-            item.style.position = 'static';
-            item.style.width = 'auto';
-            item.style.left = '';
-            item.style.top = '';
-            item.style.height = '';
-            item.style.transform = '';
-            
-            // Debug first few items
-            if (index < 3) {
-                console.log(`Reset item ${index}:`, item.querySelector('h3')?.textContent?.trim());
-            }
-        });
-        
-        // Force container reset
-        container.style.height = '';
-        
-        // Force reflow to ensure reset is applied
-        container.offsetHeight;
-        
-        // Wait for natural sizing, then apply masonry
-        setTimeout(() => {
-            const itemData = [];
-            
-            items.forEach(item => {
-                const img = item.querySelector('.artwork-image');
-                if (!img) return;
-                
-                // Get natural dimensions or use defaults
-                const aspectRatio = (img.naturalWidth && img.naturalHeight) ? 
-                    img.naturalWidth / img.naturalHeight : 1.2;
-                
-                // Store aspect ratio for adaptive sizing
-                itemData.push({
-                    element: item,
-                    aspectRatio: aspectRatio,
-                    baseWidth: isSmallView ? 180 : 320, // Base size for calculations
-                    minWidth: isSmallView ? 120 : 200,
-                    maxWidth: isSmallView ? 250 : 450
-                });
-            });
-            
-            // Don't sort by size - use natural DOM order for more mixed distribution
-            // This prevents tall items from being automatically pushed to the end
-            
-            // Track occupied space to prevent overlaps
-            const occupiedSpaces = [];
-            
-            itemData.forEach((item, index) => {
-                setTimeout(() => {
-                    // Find the best size and position for this item
-                    const bestFit = findBestAdaptiveFit(item, occupiedSpaces, containerWidth, gap, isSmallView);
-                    
-                    // Debug the "Photo" card specifically
-                    const title = item.element.querySelector('h3')?.textContent || 'Unknown';
-                    if (title.includes('Photo')) {
-                        const img = item.element.querySelector('.artwork-image');
-                        console.log('Photo card debug:', {
-                            title: title,
-                            aspectRatio: item.aspectRatio,
-                            naturalWidth: img?.naturalWidth,
-                            naturalHeight: img?.naturalHeight,
-                            calculatedAspectRatio: img?.naturalWidth / img?.naturalHeight,
-                            bestFitWidth: bestFit.width,
-                            expectedImageHeight: bestFit.width / item.aspectRatio
-                        });
-                    }
-                    
-                    // Apply the adaptive sizing and positioning
-                    item.element.style.position = 'absolute';
-                    item.element.style.width = `${bestFit.width}px`;
-                    item.element.style.left = `${bestFit.x}px`;
-                    item.element.style.top = `${bestFit.y}px`;
-                    
-                    // Apply proper aspect ratio handling for all cards while preserving content
-                    const imageContainer = item.element.querySelector('.artwork-image-container, .relative');
-                    const image = item.element.querySelector('.artwork-image');
-                    const contentArea = item.element.querySelector('.p-4, .artwork-info');
-                    
-                    if (imageContainer && image) {
-                        // Only set width and let CSS handle the height naturally to preserve content
-                        imageContainer.style.width = `${bestFit.width}px`;
-                        imageContainer.style.height = 'auto'; // Let CSS determine height
-                        
-                        image.style.width = '100%';
-                        image.style.height = 'auto'; // Maintain aspect ratio naturally
-                        image.style.objectFit = 'cover';
-                        
-                        if (title.includes('Photo')) {
-                            console.log('Photo card natural sizing:', {
-                                containerWidth: bestFit.width,
-                                aspectRatio: item.aspectRatio,
-                                imageNaturalWidth: image.naturalWidth,
-                                imageNaturalHeight: image.naturalHeight
-                            });
-                        }
-                    }
-                    
-                    // Find and ensure ALL content areas are visible with multiple selectors
-                    const possibleContentSelectors = [
-                        '.p-4', 
-                        '.artwork-info', 
-                        '.card-content',
-                        '[class*="p-"]',
-                        '.artwork-card > div:last-child',
-                        '.artwork-card > *:not(.relative):not(.artwork-image-container)'
-                    ];
-                    
-                    let contentFound = false;
-                    
-                    for (const selector of possibleContentSelectors) {
-                        const content = item.element.querySelector(selector);
-                        if (content && !contentFound) {
-                            content.style.display = 'block !important';
-                            content.style.width = '100%';
-                            content.style.position = 'relative';
-                            content.style.zIndex = '10';
-                            content.style.backgroundColor = 'white';
-                            content.style.minHeight = `${isSmallView ? 80 : 100}px`;
-                            contentFound = true;
-                            
-                            if (title.includes('Photo')) {
-                                console.log('Photo card content area found:', selector, content);
-                            }
-                        }
-                    }
-                    
-                    // If no content area found, try to find any text content
-                    if (!contentFound) {
-                        const allDivs = item.element.querySelectorAll('div');
-                        for (const div of allDivs) {
-                            if (div.textContent.trim().length > 0 && 
-                                !div.querySelector('img') && 
-                                !div.classList.contains('artwork-overlay')) {
-                                div.style.display = 'block !important';
-                                div.style.position = 'relative';
-                                div.style.zIndex = '10';
-                                div.style.backgroundColor = 'white';
-                                contentFound = true;
-                                
-                                if (title.includes('Photo')) {
-                                    console.log('Photo card content found in div:', div);
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    
-                    // Wait for DOM to update, then record space
-                    setTimeout(() => {
-                        const actualHeight = item.element.offsetHeight;
-                        
-                        // Record occupied space
-                        occupiedSpaces.push({
-                            left: bestFit.x,
-                            right: bestFit.x + bestFit.width,
-                            top: bestFit.y,
-                            bottom: bestFit.y + actualHeight
-                        });
-                        
-                        // Update container height after last item
-                        if (index === itemData.length - 1) {
-                            setTimeout(() => {
-                                const maxBottom = Math.max(...occupiedSpaces.map(space => space.bottom));
-                                container.style.height = `${maxBottom + gap}px`;
-                                
-                                // Save layout to cache and reset the progress flag
-                                setTimeout(() => {
-                                    saveLayoutToCache(itemData, occupiedSpaces, viewType, containerWidth);
-                                    masonryInProgress = false;
-                                    console.log('Masonry layout completed and cached at', new Date().toLocaleTimeString());
-                                    console.log('Final container height:', container.style.height);
-                                }, 100);
-                            }, 50);
-                        }
-                    }, 15); // Reduced inner timeout for faster DOM updates
-                    
-                }, index * 50); // Increased stagger time
-            });
-            
-        }, 300); // Increased initial delay for proper DOM settling
-        
-        // Find the best adaptive fit for an item
-        function findBestAdaptiveFit(item, occupiedSpaces, containerWidth, gap, isSmallView) {
-            let bestFit = {
-                x: 0,
-                y: 0,
-                width: item.baseWidth,
-                score: Infinity
-            };
-            
-            // Try different sizes within the allowed range
-            for (let width = item.minWidth; width <= item.maxWidth; width += 20) {
-                // Try positions for this size
-                const stepSize = Math.min(gap, 15);
-                
-                for (let y = 0; y < 1500; y += stepSize) {
-                    for (let x = 0; x <= containerWidth - width; x += stepSize) {
-                        
-                        // Estimate height for overlap checking (we'll get actual height later)
-                        const estimatedHeight = (width / item.aspectRatio) + (isSmallView ? 80 : 100);
-                        
-                        // Check if this size and position would overlap
-                        const wouldOverlap = occupiedSpaces.some(space => 
-                            !(x >= space.right + gap || 
-                              x + width + gap <= space.left || 
-                              y >= space.bottom + gap || 
-                              y + estimatedHeight + gap <= space.top)
-                        );
-                        
-                        if (!wouldOverlap) {
-                            // Calculate how well this size and position fits
-                            let score = y * 2; // Prefer higher positions
-                            
-                            // Bonus for filling gaps efficiently
-                            const gapFillBonus = calculateGapFillBonus(x, y, width, estimatedHeight, occupiedSpaces, gap);
-                            score -= gapFillBonus;
-                            
-                            // Small penalty for deviating from base size
-                            const sizeDeviation = Math.abs(width - item.baseWidth) / item.baseWidth;
-                            score += sizeDeviation * 100;
-                            
-                            // Penalty for being far from left edge
-                            score += x * 0.1;
-                            
-                            if (score < bestFit.score) {
-                                bestFit = {
-                                    x: x,
-                                    y: y,
-                                    width: width,
-                                    score: score
-                                };
-                            }
-                        }
-                    }
-                }
+        try {
+            const container = document.getElementById('shop-gallery-container');
+            if (!container) {
+                masonryInProgress = false;
+                clearTimeout(emergencyTimeout);
+                return;
             }
             
-            return bestFit;
-        }
-        
-        // Calculate bonus for filling gaps efficiently
-        function calculateGapFillBonus(x, y, width, height, occupiedSpaces, gap) {
-            let bonus = 0;
-            
-            // Strong bonus for placing directly below existing items in same column
-            const directlyBelow = occupiedSpaces.filter(space => {
-                const sameColumnOverlap = !(x >= space.right || x + width <= space.left);
-                const directlyBelowGap = Math.abs(space.bottom + gap - y) <= gap * 0.2;
-                return sameColumnOverlap && directlyBelowGap;
-            });
-            
-            bonus += directlyBelow.length * 150; // Strong bonus for column stacking
-            
-            // Bonus for being adjacent to existing items
-            const adjacentSpaces = occupiedSpaces.filter(space => {
-                const rightAdjacent = Math.abs(space.right + gap - x) <= gap * 0.3;
-                const leftAdjacent = Math.abs(space.left - gap - (x + width)) <= gap * 0.3;
-                const bottomAdjacent = Math.abs(space.bottom + gap - y) <= gap * 0.3;
-                const topAdjacent = Math.abs(space.top - gap - (y + height)) <= gap * 0.3;
-                
-                return rightAdjacent || leftAdjacent || bottomAdjacent || topAdjacent;
-            });
-            
-            bonus += adjacentSpaces.length * 50;
-            
-            return bonus;
-        }
-        
-        // Save current layout to cache
-        function saveLayoutToCache(itemData, occupiedSpaces, viewType, containerWidth) {
-            const layoutData = itemData.map((item, index) => {
-                const element = item.element;
-                const space = occupiedSpaces.find(space => 
-                    space.left === parseInt(element.style.left) && 
-                    space.top === parseInt(element.style.top)
-                );
-                
-                return {
-                    id: element.dataset.artworkId || element.querySelector('h3')?.textContent?.trim() || index,
-                    width: parseInt(element.style.width),
-                    left: parseInt(element.style.left),
-                    top: parseInt(element.style.top),
-                    height: space ? space.bottom - space.top : element.offsetHeight,
-                    aspectRatio: item.aspectRatio
-                };
-            });
-            
-            layoutCache[viewType] = layoutData;
-            layoutCache.itemCount = itemData.length;
-            layoutCache.containerWidth = containerWidth;
-            layoutCache.cacheTimestamp = Date.now();
-            
-            console.log(`Cached ${layoutData.length} item positions for ${viewType} view`);
-        }
-        
-        // Apply cached layout to items
-        function applyLayoutFromCache(cachedLayout, container, gap) {
             const items = Array.from(container.querySelectorAll('.artwork-item:not(.filter-hidden)'));
             
-            // Create a mapping of current items by their ID
-            const itemMap = new Map();
+            if (items.length === 0) {
+                masonryInProgress = false;
+                clearTimeout(emergencyTimeout);
+                return;
+            }
+            
+            // Set container for absolute positioning
+            container.style.position = 'relative';
+            
+            // Calculate responsive layout
+            const isSmallView = container.classList.contains('gallery-grid-small');
+            const containerWidth = container.offsetWidth;
+            const gap = isSmallView ? 12 : 24;
+            
+            let columns;
+            if (isSmallView) {
+                if (window.innerWidth >= 1280) columns = 6;
+                else if (window.innerWidth >= 1024) columns = 5;
+                else if (window.innerWidth >= 768) columns = 4;
+                else if (window.innerWidth >= 640) columns = 3;
+                else columns = 2;
+            } else {
+                if (window.innerWidth >= 1280) columns = 4;
+                else if (window.innerWidth >= 1024) columns = 3;
+                else if (window.innerWidth >= 640) columns = 2;
+                else columns = 1;
+            }
+            
+            const itemWidth = (containerWidth - (gap * (columns - 1))) / columns;
+            const columnHeights = new Array(columns).fill(0);
+            
+            // STEP 1: Stack all items in top-left position first
             items.forEach((item, index) => {
-                const id = item.dataset.artworkId || item.querySelector('h3')?.textContent?.trim() || index;
-                itemMap.set(id, { element: item, index: index });
+                item.classList.remove('positioned');
+                item.classList.add('initial-stacked');
+                // Add slight staggered z-index for visual stacking effect
+                item.style.zIndex = items.length - index;
             });
             
-            // Apply cached positions by matching IDs
-            let appliedCount = 0;
-            const maxBottom = Math.max(...cachedLayout.map(item => item.top + item.height));
+            // Force reflow to apply stacked styles
+            container.offsetHeight;
             
-            cachedLayout.forEach(cachedItem => {
-                const itemInfo = itemMap.get(cachedItem.id);
-                if (itemInfo) {
-                    const item = itemInfo.element;
-                    item.style.position = 'absolute';
-                    item.style.width = `${cachedItem.width}px`;
-                    item.style.left = `${cachedItem.left}px`;
-                    item.style.top = `${cachedItem.top}px`;
+            // STEP 2: After brief pause, animate items to their final positions
+            setTimeout(() => {
+                positionItemsSequentiallyFromStack(items, container, itemWidth, gap, columns, columnHeights, isSmallView)
+                    .then(() => {
+                        // Set final container height with extra bottom padding to prevent overlap
+                        const maxHeight = Math.max(...columnHeights);
+                        const extraPadding = gap * 2;
+                        const finalHeight = maxHeight + extraPadding;
+                        
+                        container.style.height = `${finalHeight}px`;
+                        container.style.marginBottom = `${gap * 3}px`;
+                        
+                        // Ensure container doesn't overflow
+                        container.style.overflow = 'visible';
+                        container.style.position = 'relative';
+                        container.style.zIndex = '1';
+                        
+                        const minHeight = Math.min(600, finalHeight);
+                        if (finalHeight < minHeight) {
+                            container.style.height = `${minHeight}px`;
+                        }
+                        
+                        masonryInProgress = false;
+                        clearTimeout(emergencyTimeout);
+                    })
+                    .catch(error => {
+                        console.error('Masonry error:', error);
+                        masonryInProgress = false;
+                        clearTimeout(emergencyTimeout);
+                    });
+            }, 200); // Brief pause to show stacking effect
+                
+        } catch (error) {
+            console.error('Masonry initialization error:', error);
+            masonryInProgress = false;
+            clearTimeout(emergencyTimeout);
+        }
+    }
+    
+    async function positionItemsSequentiallyFromStack(items, container, itemWidth, gap, columns, columnHeights, isSmallView) {
+        return new Promise((resolve) => {
+            let processedItems = 0;
+            
+            items.forEach((item, index) => {
+                // Staggered delay for smooth animation from stack to final position
+                setTimeout(() => {
+                    // Remove stacked class and add positioned class
+                    item.classList.remove('initial-stacked');
+                    item.classList.add('positioned');
                     
-                    // Apply proper image sizing based on cached data
-                    const imageContainer = item.querySelector('.artwork-image-container, .relative');
-                    const image = item.querySelector('.artwork-image');
+                    // Position the item in its final location
+                    positionSingleItemFromStack(item, itemWidth, gap, columns, columnHeights, isSmallView);
+                    processedItems++;
                     
-                    if (imageContainer && image && cachedItem.aspectRatio) {
-                        imageContainer.style.width = `${cachedItem.width}px`;
-                        imageContainer.style.height = 'auto';
-                        image.style.width = '100%';
-                        image.style.height = 'auto';
-                        image.style.objectFit = 'cover';
+                    if (processedItems === items.length) {
+                        // All items processed
+                        setTimeout(resolve, 300); // Longer delay for smooth completion
                     }
-                    
-                    appliedCount++;
-                }
+                }, index * 150); // 150ms between each item for visible staggered effect
             });
-            
-            // Set container height from cached data
-            container.style.height = `${maxBottom + gap}px`;
-            
-            console.log(`Applied cached layout to ${appliedCount}/${items.length} items in ${viewType} view`);
+        });
+    }
+
+    function positionSingleItemFromStack(item, itemWidth, gap, columns, columnHeights, isSmallView) {
+        const img = item.querySelector('.artwork-image');
+        
+        // Calculate image height based on aspect ratio
+        let aspectRatio = 1.25; // Default 4:5 ratio
+        if (img && img.naturalWidth && img.naturalHeight) {
+            aspectRatio = img.naturalWidth / img.naturalHeight;
         }
         
-        // Clear cache when items change (for filtering)
-        function clearLayoutCache() {
-            layoutCache.large = null;
-            layoutCache.small = null;
-            layoutCache.itemCount = 0;
-            layoutCache.cacheTimestamp = 0;
-            console.log('Layout cache cleared');
+        const width = itemWidth;
+        const imageHeight = width / aspectRatio;
+        
+        // Find shortest column
+        let shortestColumn = 0;
+        let shortestHeight = columnHeights[0];
+        
+        for (let col = 1; col < columns; col++) {
+            if (columnHeights[col] < shortestHeight) {
+                shortestColumn = col;
+                shortestHeight = columnHeights[col];
+            }
         }
+        
+        // Calculate position
+        const x = shortestColumn * (itemWidth + gap);
+        const y = shortestHeight;
+        
+        // Apply positioning immediately
+        item.style.position = 'absolute';
+        item.style.left = `${x}px`;
+        item.style.top = `${y}px`;
+        item.style.width = `${width}px`;
+        item.style.maxWidth = 'none'; // Override any CSS max-width constraints
+        item.style.minWidth = 'none'; // Override any CSS min-width constraints
+        item.style.transition = 'all 0.3s ease';
+        
+        // Update card container dimensions
+        const artworkCard = item.querySelector('.artwork-card');
+        if (artworkCard) {
+            artworkCard.style.width = '100%';
+            artworkCard.style.maxWidth = 'none';
+        }
+        
+        // Update image container dimensions
+        const imageContainer = item.querySelector('.artwork-image-container');
+        if (imageContainer) {
+            imageContainer.style.width = '100%';
+            imageContainer.style.height = `${imageHeight}px`;
+            imageContainer.style.overflow = 'hidden';
+            imageContainer.style.maxWidth = 'none';
+        }
+        
+        // Set image to fill container
+        if (img) {
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            img.style.display = 'block';
+        }
+        
+        // Calculate total card height including content
+        // Force a reflow to get accurate height measurement
+        item.offsetHeight;
+        
+        // Get actual card height after image container is sized
+        const actualCardHeight = item.offsetHeight;
+        
+        // Use actual measured height instead of just image height
+        const totalHeight = Math.max(actualCardHeight, imageHeight + 100); // min extra space for content
+        
+        // Update column height with actual card height
+        columnHeights[shortestColumn] = y + totalHeight + gap;
+        
     }
     
     // Apply randomized loading to shop cards
@@ -1034,11 +876,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Re-apply variable masonry after filtering (only after initial load is complete)
             if (initialLoadComplete && !masonryInProgress) {
-                console.log('Filtering after initial load, clearing cache and scheduling masonry...');
-                clearLayoutCache();
                 setTimeout(initVariableMasonry, 100);
-            } else {
-                console.log('Filtering during initial load, skipping masonry call');
             }
         }
         
@@ -1072,7 +910,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Apply default filter immediately on page load (but don't trigger masonry yet)
         setTimeout(() => {
-            console.log('Applying initial filters...');
             filterArtworks();
         }, 100);
     }
@@ -1085,7 +922,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Apply saved view preference BEFORE initializing masonry
     const savedView = localStorage.getItem('shop-gallery-view');
     if (savedView) {
-        console.log('Applying saved view preference before masonry:', savedView);
         const galleryContainer = document.getElementById('shop-gallery-container');
         if (savedView === 'small') {
             galleryContainer.classList.remove('gallery-grid-large');
@@ -1100,38 +936,74 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll(`[data-view="${savedView}"]`).forEach(t => t.classList.add('active'));
     }
     
-    // Initialize variable masonry after images load with generous delay
-    console.log('Scheduling initial masonry layout...');
+    // Initialize variable masonry with smooth loading animation
     let initialLoadComplete = false;
     let initialMasonryScheduled = false;
     
-    function scheduleInitialMasonry() {
+    function scheduleInitialMasonryWithAnimation() {
         if (initialMasonryScheduled) {
-            console.log('Initial masonry already scheduled, skipping duplicate call');
             return;
         }
         initialMasonryScheduled = true;
         
+        // Add loading animation to all cards first
+        const allCards = document.querySelectorAll('.artwork-item');
+        allCards.forEach((card, index) => {
+            // Add initial layout class to prevent giant cards
+            card.classList.add('initial-layout');
+            
+            // Start cards with fade-in animation
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.9) translateY(20px)';
+            card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            
+            // Stagger the initial appearance
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1) translateY(0)';
+            }, index * 100); // 100ms delay between each card
+        });
+        
+        // Wait for initial animations to complete, then apply masonry
         setTimeout(() => {
-            console.log('Initial masonry starting...');
+            // Add smooth transition for masonry positioning
+            allCards.forEach(card => {
+                card.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            });
+            
+            // Initialize masonry which will smoothly move cards to final positions
             initVariableMasonry();
+            
+            // Remove initial layout class to allow masonry positioning
+            setTimeout(() => {
+                allCards.forEach((card, index) => {
+                    card.classList.remove('initial-layout');
+                    console.log(`Shop card ${index} initial layout removed, masonry active`);
+                });
+            }, 300); // Allow time for masonry to complete
+            
             // Mark initial load as complete after masonry finishes
             setTimeout(() => {
                 initialLoadComplete = true;
-                console.log('Initial load sequence completed');
-            }, 3000);
-        }, 1500); // Increased delay to ensure everything is ready
+                // Reduce transition duration for future interactions
+                allCards.forEach(card => {
+                    card.style.transition = 'all 0.3s ease';
+                });
+            }, 1500);
+        }, Math.max(allCards.length * 100, 1000)); // Wait for stagger animation to complete
     }
     
-    scheduleInitialMasonry();
+    scheduleInitialMasonryWithAnimation();
     
     // Wishlist states are initialized globally in base.html
     
-    // Re-run on view toggle and resize
+    // Re-run masonry on view toggle and resize
     window.addEventListener('resize', () => {
         setTimeout(() => {
-            setupShopAnimations();
-            initVariableMasonry();
+            if (initialLoadComplete) {
+                setupShopAnimations();
+                initVariableMasonry();
+            }
         }, 100);
     });
 
@@ -1142,7 +1014,6 @@ document.addEventListener('DOMContentLoaded', function() {
     viewToggles.forEach(toggle => {
         toggle.addEventListener('click', function() {
             const view = this.dataset.view;
-            console.log('View toggle clicked:', view, 'currently active:', this.classList.contains('active'));
             
             // Update active state for all view toggles (both sidebar and header)
             document.querySelectorAll('.view-toggle').forEach(t => t.classList.remove('active'));
@@ -1160,8 +1031,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Store user preference
             localStorage.setItem('shop-gallery-view', view);
             
-            // Re-apply variable masonry with extra time for view switching
-            setTimeout(initVariableMasonry, 1000);
+            // Re-apply masonry with smooth animation for view switching
+            if (initialLoadComplete) {
+                setTimeout(initVariableMasonry, 300);
+            }
         });
     });
     

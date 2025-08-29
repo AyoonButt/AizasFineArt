@@ -1,0 +1,115 @@
+/* Optimized Gallery Performance Styles */
+
+/* Use CSS containment for performance isolation */
+.gallery-grid-large,
+.gallery-grid-small {
+    contain: layout style paint;
+    position: relative;
+    width: 100%;
+}
+
+/* Optimize artwork items for GPU acceleration */
+.artwork-item {
+    position: absolute;
+    will-change: transform;
+    backface-visibility: hidden;
+    transform-style: flat;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Optimize image containers */
+.artwork-image-container {
+    contain: layout paint;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+}
+
+/* Optimize images for performance */
+.artwork-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: opacity 0.3s ease;
+    will-change: opacity;
+}
+
+/* Optimized lazy loading states */
+.lazy-image {
+    opacity: 0;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+}
+
+.lazy-image.lazy-loading {
+    animation: shimmer 1.5s infinite;
+}
+
+.lazy-image.lazy-loaded {
+    opacity: 1;
+    background: none;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .artwork-item {
+        transition: none;
+    }
+    
+    .lazy-image.lazy-loading {
+        animation: none;
+        background: #e5e7eb;
+    }
+}
+
+/* Optimize hover effects with GPU layers */
+.artwork-item:hover {
+    transform: translateZ(0) scale(1.02);
+}
+
+.group:hover .artwork-image {
+    transform: translateZ(0) scale(1.05);
+}
+
+/* Performance optimizations for mobile */
+@media (max-width: 768px) {
+    .artwork-item {
+        transition-duration: 0.15s;
+    }
+    
+    /* Disable complex hover effects on mobile */
+    .artwork-item:hover {
+        transform: none;
+    }
+}
+
+/* Critical rendering path optimizations */
+.gallery-skeleton {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.skeleton-item {
+    aspect-ratio: 4/5;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* Optimize filter transitions */
+.filter-transition {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.filter-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.95);
+}

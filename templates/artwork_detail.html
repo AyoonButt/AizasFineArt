@@ -28,7 +28,7 @@
                     <div class="flex flex-col space-y-3 w-20">
                         <!-- Main image thumbnail -->
                         <button onclick="changeMainImage('{{ artwork.gallery_url }}', 'main')" 
-                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-mocha shadow-md transition-all duration-200"
+                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-primary shadow-md transition-all duration-200"
                                 data-image="main">
                             <img src="{{ artwork.thumbnail_url }}" 
                                  alt="{{ artwork.title }} - Main View" 
@@ -42,7 +42,7 @@
                         <!-- Frame thumbnails -->
                         {% if frame_images.frame1.gallery %}
                         <button onclick="changeMainImage('{{ frame_images.frame1.gallery }}', 'frame1')" 
-                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-neutral-200 hover:border-mocha transition-all duration-200"
+                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-muted hover:border-primary transition-all duration-200"
                                 data-image="frame1">
                             <img src="{{ frame_images.frame1.thumbnail }}" 
                                  alt="{{ artwork.title }} - Frame 1" 
@@ -52,8 +52,8 @@
                                  loading="lazy">
                         </button>
                         {% else %}
-                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-gray-100 bg-gray-50 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-muted bg-surface flex items-center justify-center">
+                            <svg class="w-6 h-6 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                         </div>
@@ -61,7 +61,7 @@
                         
                         {% if frame_images.frame2.gallery %}
                         <button onclick="changeMainImage('{{ frame_images.frame2.gallery }}', 'frame2')" 
-                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-neutral-200 hover:border-mocha transition-all duration-200"
+                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-muted hover:border-primary transition-all duration-200"
                                 data-image="frame2">
                             <img src="{{ frame_images.frame2.thumbnail }}" 
                                  alt="{{ artwork.title }} - Frame 2" 
@@ -71,8 +71,8 @@
                                  loading="lazy">
                         </button>
                         {% else %}
-                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-gray-100 bg-gray-50 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-muted bg-surface flex items-center justify-center">
+                            <svg class="w-6 h-6 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                         </div>
@@ -80,7 +80,7 @@
                         
                         {% if frame_images.frame3.gallery %}
                         <button onclick="changeMainImage('{{ frame_images.frame3.gallery }}', 'frame3')" 
-                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-neutral-200 hover:border-mocha transition-all duration-200"
+                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-muted hover:border-primary transition-all duration-200"
                                 data-image="frame3">
                             <img src="{{ frame_images.frame3.thumbnail }}" 
                                  alt="{{ artwork.title }} - Frame 3" 
@@ -90,8 +90,8 @@
                                  loading="lazy">
                         </button>
                         {% else %}
-                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-gray-100 bg-gray-50 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-muted bg-surface flex items-center justify-center">
+                            <svg class="w-6 h-6 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                         </div>
@@ -99,7 +99,7 @@
                         
                         {% if frame_images.frame4.gallery %}
                         <button onclick="changeMainImage('{{ frame_images.frame4.gallery }}', 'frame4')" 
-                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-neutral-200 hover:border-mocha transition-all duration-200"
+                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-muted hover:border-primary transition-all duration-200"
                                 data-image="frame4">
                             <img src="{{ frame_images.frame4.thumbnail }}" 
                                  alt="{{ artwork.title }} - Frame 4" 
@@ -109,8 +109,8 @@
                                  loading="lazy">
                         </button>
                         {% else %}
-                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-gray-100 bg-gray-50 flex items-center justify-center">
-                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-muted bg-surface flex items-center justify-center">
+                            <svg class="w-6 h-6 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                         </div>
@@ -119,7 +119,7 @@
                     
                     <!-- Main Image Display -->
                     <div class="flex-1 relative">
-                        <div class="relative rounded-2xl overflow-hidden shadow-soft group max-w-full max-h-[70vh] flex items-center justify-center bg-neutral-50">
+                        <div class="relative rounded-2xl overflow-hidden shadow-soft group max-w-full max-h-[70vh] flex items-center justify-center bg-muted50">
                             <img src="{{ artwork.gallery_url }}" 
                                  alt="{{ artwork.alt_text|default:artwork.title }}" 
                                  class="artwork-image max-w-full max-h-full w-auto h-auto object-contain"
@@ -129,8 +129,8 @@
                                  loading="eager">
                             
                             <!-- Wishlist Button (hover only) -->
-                            <button onclick="window.toggleWishlist({{ artwork.id }})" 
-                                    class="wishlist-btn absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-sm text-neutral-600 rounded-full flex items-center justify-center hover:bg-white hover:text-red-500 transition-all duration-300 opacity-0 group-hover:opacity-100 z-10" 
+                            <button onclick="window.toggleWishlist('{{ artwork.id }}')" 
+                                    class="wishlist-btn absolute top-4 right-4 w-10 h-10 bg-white/80 backdrop-blur-sm text-secondary rounded-full flex items-center justify-center hover:bg-white hover:text-red-500 transition-all duration-300 opacity-0 group-hover:opacity-100 z-10" 
                                     data-artwork-id="{{ artwork.id }}" 
                                     title="Add to Wishlist">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,21 +146,21 @@
             <div class="reveal-on-scroll">
                 <!-- Breadcrumb -->
                 <nav class="mb-6">
-                    <ol class="flex items-center space-x-2 text-sm text-neutral-600">
+                    <ol class="flex items-center space-x-2 text-sm text-secondary">
                         <li><a href="{% url 'home' %}" class="hover:text-primary transition-colors">Home</a></li>
                         <li><span class="mx-2">/</span></li>
                         <li><a href="{% url 'portfolio' %}" class="hover:text-primary transition-colors">Portfolio</a></li>
                         <li><span class="mx-2">/</span></li>
-                        <li class="text-neutral-800">{{ artwork.title }}</li>
+                        <li class="text-primary">{{ artwork.title }}</li>
                     </ol>
                 </nav>
                 
                 <!-- Title and Status -->
                 <div class="mb-6">
-                    <h1 class="text-h1 font-playfair font-bold text-neutral-800 mb-2">{{ artwork.title }}</h1>
+                    <h1 class="text-page-title font-bold text-primary mb-2">{{ artwork.title }}</h1>
                     <div class="flex items-center space-x-4 mb-4">
                         {% if artwork.is_original_available %}
-                        <span class="bg-mocha text-white text-sm px-3 py-1 rounded-full font-medium">
+                        <span class="bg-primary text-white text-caption px-3 py-1 rounded-full font-medium">
                             Original Available
                         </span>
                         {% elif artwork.type == 'original' and not artwork.original_available %}
@@ -168,7 +168,7 @@
                             Original Sold
                         </span>
                         {% elif artwork.prints_available %}
-                        <span class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full font-medium">
+                        <span class="bg-secondary-20 text-secondary text-sm px-3 py-1 rounded-full font-medium">
                             Prints Only
                         </span>
                         {% endif %}
@@ -186,46 +186,46 @@
                         <!-- Original artwork details -->
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <span class="text-sm font-medium text-neutral-500">Medium</span>
-                                <p class="text-neutral-800">{{ artwork.get_medium_display }}</p>
+                                <span class="text-caption font-medium text-secondary">Medium</span>
+                                <p class="text-primary">{{ artwork.get_medium_display }}</p>
                             </div>
                             <div>
-                                <span class="text-sm font-medium text-neutral-500">Dimensions</span>
-                                <p class="text-neutral-800">{{ artwork.dimensions_display }}</p>
+                                <span class="text-caption font-medium text-secondary">Dimensions</span>
+                                <p class="text-primary">{{ artwork.dimensions_display }}</p>
                             </div>
                         </div>
                         
                         {% if artwork.category %}
                             <div>
-                                <span class="text-sm font-medium text-neutral-500">Category</span>
-                                <p class="text-neutral-800">{{ artwork.category.name }}</p>
+                                <span class="text-caption font-medium text-secondary">Category</span>
+                                <p class="text-primary">{{ artwork.category.name }}</p>
                             </div>
                         {% endif %}
                         
                         {% if artwork.year_created %}
                             <div>
-                                <span class="text-sm font-medium text-neutral-500">Year Created</span>
-                                <p class="text-neutral-800">{{ artwork.year_created }}</p>
+                                <span class="text-caption font-medium text-secondary">Year Created</span>
+                                <p class="text-primary">{{ artwork.year_created }}</p>
                             </div>
                         {% endif %}
                     {% elif artwork.type == 'print' %}
                         <!-- Print artwork details (minimal) -->
                         <div>
                             <span class="text-sm font-medium text-neutral-500">Medium</span>
-                            <p class="text-neutral-800">{{ artwork.get_medium_display }} Print</p>
+                            <p class="text-primary">{{ artwork.get_medium_display }} Print</p>
                         </div>
                         
                         {% if artwork.category %}
                             <div>
-                                <span class="text-sm font-medium text-neutral-500">Category</span>
-                                <p class="text-neutral-800">{{ artwork.category.name }}</p>
+                                <span class="text-caption font-medium text-secondary">Category</span>
+                                <p class="text-primary">{{ artwork.category.name }}</p>
                             </div>
                         {% endif %}
                         
                         {% if artwork.year_created %}
                             <div>
-                                <span class="text-sm font-medium text-neutral-500">Year Created</span>
-                                <p class="text-neutral-800">{{ artwork.year_created }}</p>
+                                <span class="text-caption font-medium text-secondary">Year Created</span>
+                                <p class="text-primary">{{ artwork.year_created }}</p>
                             </div>
                         {% endif %}
                     {% endif %}
@@ -234,23 +234,23 @@
                 <!-- Purchase Options -->
                 {% if artwork.is_original_available or artwork.prints_available %}
                     <div class="space-y-6 mb-8">
-                        <h3 class="text-h2 font-playfair font-semibold text-neutral-800">Purchase Options</h3>
+                        <h3 class="text-section-heading font-semibold text-primary">Purchase Options</h3>
                         
                         {% if artwork.is_original_available %}
                         <!-- Original Artwork Card -->
-                        <div class="bg-white border-2 border-neutral-200 rounded-xl p-6">
+                        <div class="bg-surface border-2 border-muted rounded-xl p-6">
                             <div class="flex items-center justify-between mb-6">
                                 <div class="flex-1">
-                                    <h4 class="text-xl font-playfair font-semibold text-neutral-800 mb-2">One-of-a-Kind Original</h4>
-                                    <p class="text-neutral-600 mb-3">{{ artwork.dimensions_display }} • Signed by artist • Includes certificate of authenticity</p>
+                                    <h4 class="text-artwork-title font-semibold text-primary mb-2">One-of-a-Kind Original</h4>
+                                    <p class="text-secondary mb-3">{{ artwork.dimensions_display }} • Signed by artist • Includes certificate of authenticity</p>
                                     <div class="flex items-center space-x-2">
                                         <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">✓ Ready to Ship</span>
-                                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded">Limited Edition</span>
+                                        <span class="bg-secondary-20 text-secondary text-xs font-medium px-2 py-1 rounded">Limited Edition</span>
                                     </div>
                                 </div>
                                 <div class="text-right">
                                     <span class="text-3xl font-bold text-primary">${{ artwork.original_price }}</span>
-                                    <p class="text-sm text-neutral-500">One-time purchase</p>
+                                    <p class="text-caption text-secondary">One-time purchase</p>
                                 </div>
                             </div>
                             
@@ -259,15 +259,15 @@
                                 <!-- Compact side-by-side buttons with icon emphasis -->
                                 <div class="flex items-center justify-start gap-4">
                                     <button onclick="addOriginalToCart()" 
-                                            class="btn-primary flex flex-col items-center justify-center px-3 py-2">
+                                            class="btn btn-primary flex flex-col items-center justify-center px-3 py-2">
                                         <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
                                         </svg>
                                         <span class="text-xs">Cart</span>
                                     </button>
                                     
-                                    <button onclick="window.toggleWishlist({{ artwork.id }})" 
-                                            class="wishlist-btn btn-outline flex flex-col items-center justify-center px-3 py-2" 
+                                    <button onclick="window.toggleWishlist('{{ artwork.id }}')" 
+                                            class="wishlist-btn btn btn-secondary flex flex-col items-center justify-center px-3 py-2" 
                                             data-artwork-id="{{ artwork.id }}">
                                         <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
@@ -278,7 +278,7 @@
                                 
                                 <!-- Buy Now button remains full width -->
                                 <button onclick="buyOriginalNow()" 
-                                        class="w-full btn-primary">
+                                        class="w-full btn btn-primary">
                                     Buy Now
                                 </button>
                             </div>
@@ -289,81 +289,81 @@
                         <!-- Print Options -->
                         <div>
                             <div class="mb-4">
-                                <h4 class="text-xl font-playfair font-semibold text-neutral-800 mb-2">Fine Art Prints</h4>
-                                <p class="text-neutral-600">High-quality reproduction prints available in multiple sizes.</p>
+                                <h4 class="text-artwork-title font-semibold text-primary mb-2">Fine Art Prints</h4>
+                                <p class="text-secondary">High-quality reproduction prints available in multiple sizes.</p>
                             </div>
                             
                             <!-- Print Options Grid -->
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <!-- 8x10 Print Card -->
                                 <div id="print-8x10-card" 
-                                     class="purchase-card bg-white border-2 border-neutral-200 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:shadow-lg text-center"
+                                     class="purchase-card bg-white border-2 border-muted200 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:shadow-lg text-center"
                                      onclick="selectOption('print-8x10', 45)">
-                                    <h5 class="font-semibold text-neutral-800 mb-1">8" × 10"</h5>
+                                    <h5 class="font-semibold text-primary mb-1">8" × 10"</h5>
                                     <div class="text-lg font-bold text-primary mb-3">$45</div>
                                     <div class="flex items-center justify-center space-x-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-8x10', -1)" 
-                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">−</button>
+                                                class="w-10 h-10 border border-muted300 rounded flex items-center justify-center hover:bg-muted100 text-base font-medium">−</button>
                                         <input type="number" id="qty-print-8x10" value="0" min="0" max="10" 
                                                onclick="event.stopPropagation()" 
                                                oninput="event.stopPropagation(); updateQuantityFromInput('print-8x10', this.value)"
-                                               class="w-14 h-10 text-center font-medium border border-neutral-300 rounded text-base px-2">
+                                               class="w-14 h-10 text-center font-medium border border-muted300 rounded text-base px-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-8x10', 1)" 
-                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">+</button>
+                                                class="w-10 h-10 border border-muted300 rounded flex items-center justify-center hover:bg-muted100 text-base font-medium">+</button>
                                     </div>
                                 </div>
                                 
                                 <!-- 11x14 Print Card -->
                                 <div id="print-11x14-card" 
-                                     class="purchase-card bg-white border-2 border-neutral-200 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:shadow-lg text-center"
+                                     class="purchase-card bg-white border-2 border-muted200 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:shadow-lg text-center"
                                      onclick="selectOption('print-11x14', 65)">
-                                    <h5 class="font-semibold text-neutral-800 mb-1">11" × 14"</h5>
+                                    <h5 class="font-semibold text-primary mb-1">11" × 14"</h5>
                                     <div class="text-lg font-bold text-primary mb-3">$65</div>
                                     <div class="flex items-center justify-center space-x-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-11x14', -1)" 
-                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">−</button>
+                                                class="w-10 h-10 border border-muted300 rounded flex items-center justify-center hover:bg-muted100 text-base font-medium">−</button>
                                         <input type="number" id="qty-print-11x14" value="0" min="0" max="10" 
                                                onclick="event.stopPropagation()" 
                                                oninput="event.stopPropagation(); updateQuantityFromInput('print-11x14', this.value)"
-                                               class="w-14 h-10 text-center font-medium border border-neutral-300 rounded text-base px-2">
+                                               class="w-14 h-10 text-center font-medium border border-muted300 rounded text-base px-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-11x14', 1)" 
-                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">+</button>
+                                                class="w-10 h-10 border border-muted300 rounded flex items-center justify-center hover:bg-muted100 text-base font-medium">+</button>
                                     </div>
                                 </div>
                                 
                                 <!-- 16x20 Print Card -->
                                 <div id="print-16x20-card" 
-                                     class="purchase-card bg-white border-2 border-neutral-200 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:shadow-lg text-center"
+                                     class="purchase-card bg-white border-2 border-muted200 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:shadow-lg text-center"
                                      onclick="selectOption('print-16x20', 95)">
-                                    <h5 class="font-semibold text-neutral-800 mb-1">16" × 20"</h5>
+                                    <h5 class="font-semibold text-primary mb-1">16" × 20"</h5>
                                     <div class="text-lg font-bold text-primary mb-3">$95</div>
                                     <div class="flex items-center justify-center space-x-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-16x20', -1)" 
-                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">−</button>
+                                                class="w-10 h-10 border border-muted300 rounded flex items-center justify-center hover:bg-muted100 text-base font-medium">−</button>
                                         <input type="number" id="qty-print-16x20" value="0" min="0" max="10" 
                                                onclick="event.stopPropagation()" 
                                                oninput="event.stopPropagation(); updateQuantityFromInput('print-16x20', this.value)"
-                                               class="w-14 h-10 text-center font-medium border border-neutral-300 rounded text-base px-2">
+                                               class="w-14 h-10 text-center font-medium border border-muted300 rounded text-base px-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-16x20', 1)" 
-                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">+</button>
+                                                class="w-10 h-10 border border-muted300 rounded flex items-center justify-center hover:bg-muted100 text-base font-medium">+</button>
                                     </div>
                                 </div>
                                 
                                 <!-- 24x30 Print Card -->
                                 <div id="print-24x30-card" 
-                                     class="purchase-card bg-white border-2 border-neutral-200 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:shadow-lg text-center"
+                                     class="purchase-card bg-white border-2 border-muted200 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:shadow-lg text-center"
                                      onclick="selectOption('print-24x30', 155)">
-                                    <h5 class="font-semibold text-neutral-800 mb-1">24" × 30"</h5>
+                                    <h5 class="font-semibold text-primary mb-1">24" × 30"</h5>
                                     <div class="text-lg font-bold text-primary mb-3">$155</div>
                                     <div class="flex items-center justify-center space-x-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-24x30', -1)" 
-                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">−</button>
+                                                class="w-10 h-10 border border-muted300 rounded flex items-center justify-center hover:bg-muted100 text-base font-medium">−</button>
                                         <input type="number" id="qty-print-24x30" value="0" min="0" max="10" 
                                                onclick="event.stopPropagation()" 
                                                oninput="event.stopPropagation(); updateQuantityFromInput('print-24x30', this.value)"
-                                               class="w-14 h-10 text-center font-medium border border-neutral-300 rounded text-base px-2">
+                                               class="w-14 h-10 text-center font-medium border border-muted300 rounded text-base px-2">
                                         <button type="button" onclick="event.stopPropagation(); updateQuantity('print-24x30', 1)" 
-                                                class="w-10 h-10 border border-neutral-300 rounded flex items-center justify-center hover:bg-neutral-100 text-base font-medium">+</button>
+                                                class="w-10 h-10 border border-muted300 rounded flex items-center justify-center hover:bg-muted100 text-base font-medium">+</button>
                                     </div>
                                 </div>
                             </div>
@@ -375,7 +375,7 @@
                         <div class="bg-gradient-to-r from-primary-50 to-secondary-50 rounded-xl p-6">
                             <!-- Total Price (for prints) -->
                             <div class="flex justify-between items-center mb-6">
-                                <span class="text-lg font-semibold text-neutral-800">Total:</span>
+                                <span class="text-lg font-semibold text-primary">Total:</span>
                                 <span id="total-price" class="text-2xl font-bold text-primary">$0.00</span>
                             </div>
                             
@@ -386,15 +386,15 @@
                                     <button id="add-to-cart-btn" 
                                             onclick="addSelectedToCart()" 
                                             disabled 
-                                            class="btn-primary flex flex-col items-center justify-center px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                            class="btn btn-primary flex flex-col items-center justify-center px-3 py-2 disabled:opacity-50 disabled:cursor-not-allowed">
                                         <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/>
                                         </svg>
                                         <span class="text-xs">Cart</span>
                                     </button>
                                     
-                                    <button onclick="window.toggleWishlist({{ artwork.id }})" 
-                                            class="wishlist-btn btn-outline flex flex-col items-center justify-center px-3 py-2" 
+                                    <button onclick="window.toggleWishlist('{{ artwork.id }}')" 
+                                            class="wishlist-btn btn btn-secondary flex flex-col items-center justify-center px-3 py-2" 
                                             data-artwork-id="{{ artwork.id }}">
                                         <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
@@ -407,7 +407,7 @@
                                 <button id="buy-now-btn" 
                                         onclick="buyNowSelected()" 
                                         disabled
-                                        class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
+                                        class="w-full btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
                                     Buy Now
                                 </button>
                             </div>
@@ -424,27 +424,27 @@
                         
                     </div>
                 {% elif not artwork.original_available and artwork.prints_available %}
-                    <div class="bg-neutral-100 rounded-xl p-6 mb-8">
-                        <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-2">Original Sold</h3>
-                        <p class="text-neutral-600 mb-4">
+                    <div class="bg-muted100 rounded-xl p-6 mb-8">
+                        <h3 class="text-artwork-title font-semibold text-primary mb-2">Original Sold</h3>
+                        <p class="text-secondary mb-4">
                             This original artwork has found its home, but prints are still available! I'd also be happy to create something similar or discuss a custom commission.
                         </p>
-                        <a href="{% url 'contact' %}" class="btn-outline">
+                        <a href="{% url 'contact' %}" class="btn btn-secondary">
                             Commission Similar Work
                         </a>
                     </div>
                 {% else %}
                     <!-- Neither original nor prints available -->
-                    <div class="bg-neutral-100 rounded-xl p-6 mb-8">
-                        <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-2">Original Sold</h3>
-                        <p class="text-neutral-600 mb-4">
+                    <div class="bg-muted100 rounded-xl p-6 mb-8">
+                        <h3 class="text-artwork-title font-semibold text-primary mb-2">Original Sold</h3>
+                        <p class="text-secondary mb-4">
                             This original artwork has found its forever home. I'd be delighted to create something similar for you or discuss a custom commission that captures the same spirit.
                         </p>
                         <div class="flex space-x-4">
-                            <a href="/commissions/" class="btn-primary">
+                            <a href="/commissions/" class="btn btn-primary">
                                 Request Commission
                             </a>
-                            <a href="{% url 'portfolio' %}" class="btn-outline">
+                            <a href="{% url 'portfolio' %}" class="btn btn-secondary">
                                 View Similar Works
                             </a>
                         </div>
@@ -454,8 +454,8 @@
                 <!-- Description -->
                 {% if artwork.description %}
                     <div class="mb-8">
-                        <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-4">About This Piece</h3>
-                        <div class="prose text-neutral-600">
+                        <h3 class="text-artwork-title font-semibold text-primary mb-4">About This Piece</h3>
+                        <div class="prose text-secondary">
                             {{ artwork.description|linebreaks }}
                         </div>
                     </div>
@@ -463,17 +463,17 @@
                 
                 <!-- Artist Note -->
                 {% if artwork.artist_notes %}
-                    <div class="bg-neutral-50 rounded-xl p-6 mb-8">
-                        <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-4">Artist's Note</h3>
-                        <div class="prose text-neutral-600">
+                    <div class="bg-muted50 rounded-xl p-6 mb-8">
+                        <h3 class="text-artwork-title font-semibold text-primary mb-4">Artist's Note</h3>
+                        <div class="prose text-secondary">
                             {{ artwork.artist_notes|linebreaks }}
                         </div>
                     </div>
                 {% endif %}
                 
                 <!-- Share -->
-                <div class="border-t border-neutral-200 pt-6">
-                    <h3 class="font-medium text-neutral-800 mb-4">Share This Artwork</h3>
+                <div class="border-t border-muted200 pt-6">
+                    <h3 class="font-medium text-primary mb-4">Share This Artwork</h3>
                     <div class="flex space-x-4">
                         <button onclick="shareOnFacebook()" 
                                 class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors">
@@ -497,7 +497,7 @@
                         </button>
                         
                         <button onclick="copyLink()" 
-                                class="w-10 h-10 bg-neutral-600 text-white rounded-full flex items-center justify-center hover:bg-neutral-700 transition-colors">
+                                class="w-10 h-10 bg-muted600 text-white rounded-full flex items-center justify-center hover:bg-muted700 transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
                             </svg>
@@ -511,11 +511,11 @@
 
 <!-- Related Artworks -->
 {% if related_artworks %}
-    <section class="py-16 bg-neutral-50">
+    <section class="py-16 bg-muted50">
         <div class="container mx-auto px-4">
             <div class="text-center mb-12 reveal-on-scroll">
-                <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-4">You Might Also Like</h2>
-                <p class="text-body-lg text-neutral-600">
+                <h2 class="text-section-heading font-semibold text-primary mb-4">You Might Also Like</h2>
+                <p class="text-body-lg text-secondary">
                     Similar works that share this piece's medium or artistic style.
                 </p>
             </div>
@@ -531,7 +531,7 @@
                                 
                                 <div class="artwork-overlay">
                                     <div class="absolute bottom-4 left-4 text-white">
-                                        <h3 class="font-playfair font-semibold text-lg mb-1">{{ related.title }}</h3>
+                                        <h3 class="text-artwork-title font-semibold mb-1">{{ related.title }}</h3>
                                         <p class="text-sm opacity-90">{{ related.get_medium_display }}</p>
                                     </div>
                                     
@@ -548,7 +548,7 @@
             </div>
             
             <div class="text-center mt-12 reveal-on-scroll">
-                <a href="{% url 'portfolio' %}" class="btn-primary">
+                <a href="{% url 'portfolio' %}" class="btn btn-primary">
                     View Complete Portfolio
                 </a>
             </div>
@@ -569,15 +569,15 @@ function changeMainImage(src, imageType) {
     // Update active thumbnail
     const thumbnails = document.querySelectorAll('.image-thumbnail');
     thumbnails.forEach(thumb => {
-        thumb.classList.remove('border-mocha', 'shadow-lg');
-        thumb.classList.add('border-neutral-200');
+        thumb.classList.remove('border-primary', 'shadow-lg');
+        thumb.classList.add('border-muted200');
     });
     
     // Set active state for clicked thumbnail
     const activeThumb = document.querySelector(`[data-image="${imageType}"]`);
     if (activeThumb) {
-        activeThumb.classList.remove('border-neutral-200');
-        activeThumb.classList.add('border-mocha', 'shadow-lg');
+        activeThumb.classList.remove('border-muted200');
+        activeThumb.classList.add('border-primary', 'shadow-lg');
     }
 }
 
@@ -619,14 +619,14 @@ function toggleWishlist(artworkId) {
                 if (isIcon) {
                     // Image overlay button - filled heart with red colors
                     button.classList.add('bg-red-500', 'text-white', 'hover:bg-red-600');
-                    button.classList.remove('text-neutral-600', 'hover:text-red-500');
+                    button.classList.remove('text-secondary', 'hover:text-red-500');
                     button.innerHTML = `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>`;
                 } else {
                     // Text button - filled heart with red styling
                     button.classList.add('border-red-500', 'bg-red-50', 'text-red-600');
-                    button.classList.remove('border-neutral-300', 'text-neutral-600', 'hover:border-primary');
+                    button.classList.remove('border-muted300', 'text-secondary', 'hover:border-primary');
                     button.innerHTML = `<svg class="w-5 h-5 mb-1" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>
@@ -640,14 +640,14 @@ function toggleWishlist(artworkId) {
                 if (isIcon) {
                     // Image overlay button - outline heart with neutral colors
                     button.classList.remove('bg-red-500', 'text-white', 'hover:bg-red-600');
-                    button.classList.add('text-neutral-600', 'hover:text-red-500');
+                    button.classList.add('text-secondary', 'hover:text-red-500');
                     button.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                     </svg>`;
                 } else {
                     // Text button - outline heart with neutral styling
                     button.classList.remove('border-red-500', 'bg-red-50', 'text-red-600');
-                    button.classList.add('border-neutral-300', 'text-neutral-600', 'hover:border-primary');
+                    button.classList.add('border-muted300', 'text-secondary', 'hover:border-primary');
                     button.innerHTML = `<svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                     </svg>
@@ -722,8 +722,8 @@ function getCookie(name) {
 document.addEventListener('DOMContentLoaded', function() {
     const mainThumb = document.querySelector('[data-image="main"]');
     if (mainThumb) {
-        mainThumb.classList.add('border-mocha', 'shadow-lg');
-        mainThumb.classList.remove('border-neutral-200');
+        mainThumb.classList.add('border-primary', 'shadow-lg');
+        mainThumb.classList.remove('border-muted');
     }
     
     // Load cart state (wishlist state is initialized globally in base.html)
@@ -738,7 +738,7 @@ let cartState = {
 
 // Price lookup table
 const ITEM_PRICES = {
-    'original': {{ artwork.original_price|default:0 }},
+    'original': '{{ artwork.original_price|default:"0" }}',
     'print-8x10': 45,
     'print-11x14': 65,
     'print-16x20': 95,
@@ -749,7 +749,7 @@ const ITEM_PRICES = {
 function selectOption(itemId, price) {
     // For originals, directly go to purchase
     if (itemId === 'original') {
-        window.location.href = `/purchase/original/{{ artwork.id }}/`;
+        window.location.href = `/purchase/original/{{ artwork.id|safe }}/`;
         return;
     }
     
@@ -760,7 +760,7 @@ function selectOption(itemId, price) {
         // Already selected, deselect it
         delete cartState.items[itemId];
         card.classList.remove('border-primary', 'bg-primary-50');
-        card.classList.add('border-neutral-200');
+        card.classList.add('border-muted200');
         
         // Reset quantity to 0 for prints
         if (qtyInput && itemId !== 'original') {
@@ -779,7 +779,7 @@ function selectOption(itemId, price) {
         }
         
         // Highlight the card
-        card.classList.remove('border-neutral-200');
+        card.classList.remove('border-muted200');
         card.classList.add('border-primary', 'bg-primary-50');
     }
     
@@ -806,13 +806,13 @@ function updateQuantity(itemId, change) {
             quantity: newQuantity, 
             price: ITEM_PRICES[itemId] 
         };
-        card.classList.remove('border-neutral-200');
+        card.classList.remove('border-muted200');
         card.classList.add('border-primary', 'bg-primary-50');
     } else {
         // Deselect the card and remove from cart state
         delete cartState.items[itemId];
         card.classList.remove('border-primary', 'bg-primary-50');
-        card.classList.add('border-neutral-200');
+        card.classList.add('border-muted200');
     }
     
     updateOrderSummary();
@@ -839,13 +839,13 @@ function updateQuantityFromInput(itemId, value) {
             quantity: newQuantity, 
             price: ITEM_PRICES[itemId] 
         };
-        card.classList.remove('border-neutral-200');
+        card.classList.remove('border-muted200');
         card.classList.add('border-primary', 'bg-primary-50');
     } else {
         // Deselect the card and remove from cart state
         delete cartState.items[itemId];
         card.classList.remove('border-primary', 'bg-primary-50');
-        card.classList.add('border-neutral-200');
+        card.classList.add('border-muted200');
     }
     
     updateOrderSummary();
@@ -890,7 +890,7 @@ function addOriginalToCart() {
             'X-CSRFToken': getCookie('csrftoken'),
         },
         body: JSON.stringify({
-            artwork_id: {{ artwork.id }},
+            artwork_id: '{{ artwork.id }}',
             item_type: 'original',
             quantity: 1
         })
@@ -913,7 +913,7 @@ function addOriginalToCart() {
 // Buy original artwork now (from card button)
 function buyOriginalNow() {
     // Redirect directly to checkout with original artwork
-    window.location.href = `/checkout/?artwork_id={{ artwork.id }}&item_type=original&quantity=1`;
+    window.location.href = `/checkout/?artwork_id={{ artwork.id|safe }}&item_type=original&quantity=1`;
 }
 
 // Add selected items to cart
@@ -932,7 +932,7 @@ function addSelectedToCart() {
     
     // Prepare cart data
     const cartItems = Object.entries(cartState.items).map(([itemId, item]) => ({
-        artwork_id: {{ artwork.id }},
+        artwork_id: '{{ artwork.id }}',
         item_type: itemId,
         quantity: item.quantity,
         price: item.price
@@ -956,7 +956,7 @@ function addSelectedToCart() {
             button.innerHTML = `<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
             </svg>Added to Cart!`;
-            button.classList.remove('btn-primary');
+            button.classList.remove('btn btn-primary');
             button.classList.add('bg-green-500', 'text-white', 'hover:bg-green-600');
             
             // Update cart count
@@ -970,7 +970,7 @@ function addSelectedToCart() {
                 resetPurchaseForm();
                 button.innerHTML = originalHTML;
                 button.classList.remove('bg-green-500', 'text-white', 'hover:bg-green-600');
-                button.classList.add('btn-primary');
+                button.classList.add('btn btn-primary');
                 button.disabled = false;
             }, 2000);
         } else {
@@ -1003,7 +1003,7 @@ function buyNowSelected() {
     
     // Prepare direct checkout data
     const directCheckoutItems = Object.entries(cartState.items).map(([itemId, item]) => ({
-        artwork_id: {{ artwork.id }},
+        artwork_id: '{{ artwork.id }}',
         item_type: itemId,
         quantity: item.quantity,
         price: item.price
@@ -1052,7 +1052,7 @@ function resetPurchaseForm() {
     // Reset all purchase cards to unselected state
     document.querySelectorAll('.purchase-card').forEach(card => {
         card.classList.remove('border-primary', 'bg-primary-50');
-        card.classList.add('border-neutral-200');
+        card.classList.add('border-muted200');
     });
     
     // Reset all quantity displays to 0
@@ -1124,7 +1124,7 @@ window.toggleWishlist = toggleWishlist;
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
     loadCartCount();
-    loadWishlistState({{ artwork.id }});
+    loadWishlistState('{{ artwork.id }}');
 });
 
 </script>

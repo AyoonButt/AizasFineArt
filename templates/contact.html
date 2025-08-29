@@ -8,48 +8,56 @@
 
 {% block content %}
 <!-- Contact Hero Section -->
-<section class="relative py-20 bg-gradient-to-br from-primary-50 to-secondary-50 overflow-hidden">
-    <div class="container mx-auto px-4 text-center">
+<section class="relative section-padding bg-gradient-contact overflow-hidden">
+    <div class="container text-center">
         <div class="max-w-4xl mx-auto">
-            <h1 class="text-display font-playfair font-bold text-neutral-800 mb-6">
-                <span class="text-gradient">Let's Connect</span>
-            </h1>
-            <p class="text-body-lg text-neutral-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-                I'd love to hear from you! Whether you're interested in commissioning a custom piece, 
-                have questions about existing artwork, or just want to say hello, I'm here to help.
-            </p>
+            <div class="animate-on-scroll">
+                <h1 class="text-page-title text-primary mb-6">
+                    Let's Connect
+                </h1>
+                <p class="text-body text-vintage-rosewood mb-8 max-w-2xl mx-auto">
+                    I'd love to hear from you! Whether you're interested in commissioning a custom piece, 
+                    have questions about existing artwork, or just want to say hello, I'm here to help.
+                </p>
+            </div>
             
             <!-- Quick Contact Info -->
             <div class="grid md:grid-cols-3 gap-6 mt-12">
-                <div class="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-soft">
-                    <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
+                <div class="card animate-on-scroll scale" data-animation-delay="100">
+                    <div class="p-6">
+                        <div class="w-12 h-12 bg-primary-10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-artwork-title text-primary mb-2">Email</h3>
+                        <p class="text-caption text-deep-ash">aizasfineart@gmail.com</p>
                     </div>
-                    <h3 class="font-semibold text-neutral-800 mb-2">Email</h3>
-                    <p class="text-sm text-neutral-600">{{ contact_info.email }}</p>
                 </div>
                 
-                <div class="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-soft">
-                    <div class="w-12 h-12 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
+                <div class="card animate-on-scroll scale" data-animation-delay="200">
+                    <div class="p-6">
+                        <div class="w-12 h-12 bg-secondary-10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-artwork-title text-primary mb-2">Location</h3>
+                        <p class="text-caption text-deep-ash">Fort Worth, Texas</p>
                     </div>
-                    <h3 class="font-semibold text-neutral-800 mb-2">Location</h3>
-                    <p class="text-sm text-neutral-600">{{ contact_info.location }}</p>
                 </div>
                 
-                <div class="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-soft">
-                    <div class="w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
+                <div class="card animate-on-scroll scale" data-animation-delay="300">
+                    <div class="p-6">
+                        <div class="w-12 h-12 bg-primary-10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-artwork-title text-primary mb-2">Response Time</h3>
+                        <p class="text-caption text-deep-ash">Within 24 hours</p>
                     </div>
-                    <h3 class="font-semibold text-neutral-800 mb-2">Response Time</h3>
-                    <p class="text-sm text-neutral-600">Within 24 hours</p>
                 </div>
             </div>
         </div>
@@ -57,49 +65,49 @@
 </section>
 
 <!-- Contact Forms Section -->
-<section class="py-20 bg-white">
-    <div class="container mx-auto px-4">
+<section class="section-padding bg-surface section-border-top from-contact-section watercolor-natural">
+    <div class="container">
         <div class="grid lg:grid-cols-2 gap-12">
             <!-- Commission Form -->
-            <div class="reveal-on-scroll">
-                <div class="bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl p-8 h-full">
+            <div class="animate-on-scroll slide-left">
+                <div class="bg-gradient-to-br from-primary-10 to-secondary-10 rounded-xl p-8 h-full">
                     <div class="flex items-center space-x-3 mb-6">
-                        <div class="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center">
+                        <div class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                             </svg>
                         </div>
                         <div>
-                            <h2 class="text-h2 font-playfair font-semibold text-neutral-800">Commission Inquiry</h2>
-                            <p class="text-sm text-neutral-600">Custom artwork tailored to your vision</p>
+                            <h2 class="text-section-heading text-primary">Commission Inquiry</h2>
+                            <p class="text-caption text-vintage-rosewood">Custom artwork tailored to your vision</p>
                         </div>
                     </div>
                     
                     <form id="commission-form" class="space-y-6">
                         <div class="grid md:grid-cols-2 gap-4">
                             <div>
-                                <label for="commission-name" class="block text-sm font-medium text-neutral-700 mb-2">
+                                <label for="commission-name" class="form-label">
                                     Name *
                                 </label>
                                 <input type="text" id="commission-name" name="name" required
-                                       class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                       class="form-input">
                             </div>
                             <div>
-                                <label for="commission-email" class="block text-sm font-medium text-neutral-700 mb-2">
+                                <label for="commission-email" class="form-label">
                                     Email *
                                 </label>
                                 <input type="email" id="commission-email" name="email" required
-                                       class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                       class="form-input">
                             </div>
                         </div>
                         
                         <div class="grid md:grid-cols-2 gap-4">
                             <div>
-                                <label for="commission-medium" class="block text-sm font-medium text-neutral-700 mb-2">
+                                <label for="commission-medium" class="form-label">
                                     Preferred Medium
                                 </label>
                                 <select id="commission-medium" name="medium"
-                                        class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                        class="form-input">
                                     <option value="">No preference</option>
                                     <option value="watercolor">Watercolor</option>
                                     <option value="oil">Oil painting</option>
@@ -107,11 +115,11 @@
                                 </select>
                             </div>
                             <div>
-                                <label for="commission-size" class="block text-sm font-medium text-neutral-700 mb-2">
+                                <label for="commission-size" class="form-label">
                                     Approximate Size
                                 </label>
                                 <select id="commission-size" name="size"
-                                        class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                        class="form-input">
                                     <option value="">Flexible</option>
                                     <option value="small">Small (8x10" to 11x14")</option>
                                     <option value="medium">Medium (16x20" to 18x24")</option>
@@ -121,11 +129,11 @@
                         </div>
                         
                         <div>
-                            <label for="commission-budget" class="block text-sm font-medium text-neutral-700 mb-2">
+                            <label for="commission-budget" class="form-label">
                                 Budget Range
                             </label>
                             <select id="commission-budget" name="budget"
-                                    class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    class="form-input">
                                 <option value="">Prefer to discuss</option>
                                 <option value="under-500">Under $500</option>
                                 <option value="500-1000">$500 - $1,000</option>
@@ -135,11 +143,11 @@
                         </div>
                         
                         <div>
-                            <label for="commission-timeline" class="block text-sm font-medium text-neutral-700 mb-2">
+                            <label for="commission-timeline" class="form-label">
                                 Desired Timeline
                             </label>
                             <select id="commission-timeline" name="timeline"
-                                    class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    class="form-input">
                                 <option value="">Flexible</option>
                                 <option value="rush">2-4 weeks (rush - additional fee applies)</option>
                                 <option value="standard">6-8 weeks (standard)</option>
@@ -148,15 +156,15 @@
                         </div>
                         
                         <div>
-                            <label for="commission-description" class="block text-sm font-medium text-neutral-700 mb-2">
+                            <label for="commission-description" class="form-label">
                                 Describe Your Vision *
                             </label>
                             <textarea id="commission-description" name="description" rows="5" required
                                       placeholder="Tell me about what you'd like me to create. Include details about subject matter, colors, mood, or any specific elements you'd like included..."
-                                      class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"></textarea>
+                                      class="form-input"></textarea>
                         </div>
                         
-                        <button type="submit" class="w-full btn-primary py-4 text-lg">
+                        <button type="submit" class="w-full btn btn-primary py-4">
                             Submit Commission Inquiry
                         </button>
                     </form>
@@ -164,44 +172,44 @@
             </div>
             
             <!-- General Contact Form -->
-            <div class="reveal-on-scroll">
-                <div class="bg-gradient-to-br from-secondary-50 to-secondary-100 rounded-2xl p-8 h-full">
+            <div class="animate-on-scroll slide-right">
+                <div class="bg-gradient-to-br from-secondary-10 to-primary-10 rounded-xl p-8 h-full">
                     <div class="flex items-center space-x-3 mb-6">
-                        <div class="w-12 h-12 bg-secondary-500 rounded-full flex items-center justify-center">
+                        <div class="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                             </svg>
                         </div>
                         <div>
-                            <h2 class="text-h2 font-playfair font-semibold text-neutral-800">General Inquiry</h2>
-                            <p class="text-sm text-neutral-600">Questions about artwork, prints, or just to say hello</p>
+                            <h2 class="text-section-heading text-primary">General Inquiry</h2>
+                            <p class="text-caption text-vintage-rosewood">Questions about artwork, prints, or just to say hello</p>
                         </div>
                     </div>
                     
                     <form id="general-form" class="space-y-6">
                         <div class="grid md:grid-cols-2 gap-4">
                             <div>
-                                <label for="general-name" class="block text-sm font-medium text-neutral-700 mb-2">
+                                <label for="general-name" class="form-label">
                                     Name *
                                 </label>
                                 <input type="text" id="general-name" name="name" required
-                                       class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-secondary-500 focus:border-secondary-500">
+                                       class="form-input">
                             </div>
                             <div>
-                                <label for="general-email" class="block text-sm font-medium text-neutral-700 mb-2">
+                                <label for="general-email" class="form-label">
                                     Email *
                                 </label>
                                 <input type="email" id="general-email" name="email" required
-                                       class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-secondary-500 focus:border-secondary-500">
+                                       class="form-input">
                             </div>
                         </div>
                         
                         <div>
-                            <label for="general-subject" class="block text-sm font-medium text-neutral-700 mb-2">
+                            <label for="general-subject" class="form-label">
                                 Subject *
                             </label>
                             <select id="general-subject" name="subject" required
-                                    class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-secondary-500 focus:border-secondary-500">
+                                    class="form-input">
                                 <option value="">Select a subject</option>
                                 <option value="artwork-inquiry">Artwork Inquiry</option>
                                 <option value="print-question">Print Questions</option>
@@ -214,15 +222,15 @@
                         </div>
                         
                         <div>
-                            <label for="general-message" class="block text-sm font-medium text-neutral-700 mb-2">
+                            <label for="general-message" class="form-label">
                                 Message *
                             </label>
                             <textarea id="general-message" name="message" rows="8" required
                                       placeholder="What can I help you with today?"
-                                      class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-secondary-500 focus:border-secondary-500"></textarea>
+                                      class="form-input"></textarea>
                         </div>
                         
-                        <button type="submit" class="w-full btn-secondary py-4 text-lg">
+                        <button type="submit" class="w-full btn btn-secondary py-4">
                             Send Message
                         </button>
                     </form>
@@ -233,11 +241,11 @@
 </section>
 
 <!-- FAQ Section -->
-<section class="py-20 bg-neutral-50">
-    <div class="container mx-auto px-4">
-        <div class="text-center mb-16 reveal-on-scroll">
-            <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-6">Frequently Asked Questions</h2>
-            <p class="text-body-lg text-neutral-600 max-w-2xl mx-auto">
+<section class="section-padding bg-gradient-hero section-border-top from-surface-section watercolor-natural">
+    <div class="container">
+        <div class="text-center mb-16 animate-on-scroll">
+            <h2 class="text-section-heading text-white mb-6">Frequently Asked Questions</h2>
+            <p class="text-body text-secondary max-w-2xl mx-auto">
                 Common questions about commissioning artwork, purchasing, and working with me.
             </p>
         </div>
@@ -245,85 +253,93 @@
         <div class="max-w-4xl mx-auto">
             <div class="space-y-6">
                 <!-- FAQ Item 1 -->
-                <div class="bg-white rounded-xl p-6 shadow-soft reveal-on-scroll">
-                    <button class="faq-toggle w-full text-left flex items-center justify-between" 
-                            onclick="toggleFAQ(this)">
-                        <h3 class="font-playfair font-semibold text-lg text-neutral-800">
-                            How long does a commission typically take?
-                        </h3>
-                        <svg class="w-5 h-5 text-neutral-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div class="faq-content hidden mt-4">
-                        <p class="text-neutral-600 leading-relaxed">
-                            Standard commissions typically take 6-8 weeks from initial consultation to completion. 
-                            This includes time for planning, sketches, approval, and the painting process. Rush orders 
-                            (2-4 weeks) are available for an additional fee, while extended timelines (10-12 weeks) 
-                            may be preferred for larger or more complex pieces.
-                        </p>
+                <div class="card animate-on-scroll" data-animation-delay="100">
+                    <div class="p-6">
+                        <button class="faq-toggle w-full text-left flex items-center justify-between" 
+                                onclick="toggleFAQ(this)">
+                            <h3 class="text-artwork-title text-primary">
+                                How long does a commission typically take?
+                            </h3>
+                            <svg class="w-5 h-5 text-secondary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-content hidden mt-4">
+                            <p class="text-body text-deep-ash">
+                                Standard commissions typically take 6-8 weeks from initial consultation to completion. 
+                                This includes time for planning, sketches, approval, and the painting process. Rush orders 
+                                (2-4 weeks) are available for an additional fee, while extended timelines (10-12 weeks) 
+                                may be preferred for larger or more complex pieces.
+                            </p>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- FAQ Item 2 -->
-                <div class="bg-white rounded-xl p-6 shadow-soft reveal-on-scroll">
-                    <button class="faq-toggle w-full text-left flex items-center justify-between" 
-                            onclick="toggleFAQ(this)">
-                        <h3 class="font-playfair font-semibold text-lg text-neutral-800">
-                            What are your commission prices?
-                        </h3>
-                        <svg class="w-5 h-5 text-neutral-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div class="faq-content hidden mt-4">
-                        <p class="text-neutral-600 leading-relaxed">
-                            Commission prices vary based on size, medium, and complexity. Watercolor pieces typically 
-                            start at $300 for smaller works (8x10"), while oil paintings start at $500. Larger pieces 
-                            and complex compositions are priced accordingly. I always provide a detailed quote before 
-                            beginning any work, and a 50% deposit is required to start.
-                        </p>
+                <div class="card animate-on-scroll" data-animation-delay="200">
+                    <div class="p-6">
+                        <button class="faq-toggle w-full text-left flex items-center justify-between" 
+                                onclick="toggleFAQ(this)">
+                            <h3 class="text-artwork-title text-primary">
+                                What are your commission prices?
+                            </h3>
+                            <svg class="w-5 h-5 text-secondary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-content hidden mt-4">
+                            <p class="text-body text-deep-ash">
+                                Commission prices vary based on size, medium, and complexity. Watercolor pieces typically 
+                                start at $300 for smaller works (8x10"), while oil paintings start at $500. Larger pieces 
+                                and complex compositions are priced accordingly. I always provide a detailed quote before 
+                                beginning any work, and a 50% deposit is required to start.
+                            </p>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- FAQ Item 3 -->
-                <div class="bg-white rounded-xl p-6 shadow-soft reveal-on-scroll">
-                    <button class="faq-toggle w-full text-left flex items-center justify-between" 
-                            onclick="toggleFAQ(this)">
-                        <h3 class="font-playfair font-semibold text-lg text-neutral-800">
-                            Do you ship internationally?
-                        </h3>
-                        <svg class="w-5 h-5 text-neutral-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div class="faq-content hidden mt-4">
-                        <p class="text-neutral-600 leading-relaxed">
-                            Yes! I ship both original artworks and prints worldwide. Shipping costs vary by destination 
-                            and artwork size. Original paintings are carefully packaged with professional materials and 
-                            insured for their full value. International shipments may be subject to customs duties 
-                            determined by the recipient's country.
-                        </p>
+                <div class="card animate-on-scroll" data-animation-delay="300">
+                    <div class="p-6">
+                        <button class="faq-toggle w-full text-left flex items-center justify-between" 
+                                onclick="toggleFAQ(this)">
+                            <h3 class="text-artwork-title text-primary">
+                                Do you ship internationally?
+                            </h3>
+                            <svg class="w-5 h-5 text-secondary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-content hidden mt-4">
+                            <p class="text-body text-deep-ash">
+                                Yes! I ship both original artworks and prints worldwide. Shipping costs vary by destination 
+                                and artwork size. Original paintings are carefully packaged with professional materials and 
+                                insured for their full value. International shipments may be subject to customs duties 
+                                determined by the recipient's country.
+                            </p>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- FAQ Item 4 -->
-                <div class="bg-white rounded-xl p-6 shadow-soft reveal-on-scroll">
-                    <button class="faq-toggle w-full text-left flex items-center justify-between" 
-                            onclick="toggleFAQ(this)">
-                        <h3 class="font-playfair font-semibold text-lg text-neutral-800">
-                            Can I visit your studio?
-                        </h3>
-                        <svg class="w-5 h-5 text-neutral-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
-                    <div class="faq-content hidden mt-4">
-                        <p class="text-neutral-600 leading-relaxed">
-                            Absolutely! I welcome studio visits by appointment. It's a wonderful way to see works in 
-                            person, discuss potential commissions, and experience the creative space where your artwork 
-                            will be born. Please contact me to schedule a visit that works for both of our schedules.
-                        </p>
+                <div class="card animate-on-scroll" data-animation-delay="400">
+                    <div class="p-6">
+                        <button class="faq-toggle w-full text-left flex items-center justify-between" 
+                                onclick="toggleFAQ(this)">
+                            <h3 class="text-artwork-title text-primary">
+                                Can I visit your studio?
+                            </h3>
+                            <svg class="w-5 h-5 text-secondary transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-content hidden mt-4">
+                            <p class="text-body text-deep-ash">
+                                Absolutely! I welcome studio visits by appointment. It's a wonderful way to see works in 
+                                person, discuss potential commissions, and experience the creative space where your artwork 
+                                will be born. Please contact me to schedule a visit that works for both of our schedules.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -332,52 +348,66 @@
 </section>
 
 <!-- Social Media & Follow -->
-<section class="py-16 bg-white">
-    <div class="container mx-auto px-4 text-center">
-        <div class="max-w-3xl mx-auto reveal-on-scroll">
-            <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-6">
+<section class="section-padding-sm bg-black section-border-top from-hero-section watercolor-natural">
+    <div class="container text-center">
+        <div class="max-w-3xl mx-auto animate-on-scroll">
+            <h2 class="text-section-heading text-white mb-6">
                 Stay Connected
             </h2>
-            <p class="text-body-lg text-neutral-600 mb-8">
+            <p class="text-body text-white mb-8">
                 Follow my artistic journey and get behind-the-scenes glimpses of new works in progress.
             </p>
             
             <div class="flex justify-center space-x-6 mb-8">
-                <a href="https://instagram.com/{{ contact_info.instagram }}" 
-                   class="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center hover:bg-primary-500 hover:text-white transition-all duration-300">
+                <a href="https://instagram.com/aizasfineart" 
+                   class="w-14 h-14 bg-primary rounded-xl flex items-center justify-center text-white hover:bg-white hover:text-primary transition-all group">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                     </svg>
                 </a>
                 
-                <a href="https://facebook.com/{{ contact_info.facebook }}" 
-                   class="w-14 h-14 bg-secondary-100 rounded-full flex items-center justify-center hover:bg-secondary-500 hover:text-white transition-all duration-300">
+                <a href="https://facebook.com/aizasfineart" 
+                   class="w-14 h-14 bg-secondary rounded-xl flex items-center justify-center text-white hover:bg-white hover:text-secondary transition-all group">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                     </svg>
                 </a>
                 
-                <a href="https://tiktok.com/{{ contact_info.tiktok }}" 
-                   class="w-14 h-14 bg-accent-100 rounded-full flex items-center justify-center hover:bg-accent-500 hover:text-white transition-all duration-300">
+                <a href="https://tiktok.com/aizasfineart" 
+                   class="w-14 h-14 bg-deep-ash rounded-xl flex items-center justify-center text-white hover:bg-white hover:text-deep-ash transition-all group">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
                     </svg>
                 </a>
                 
-                <a href="https://youtube.com/{{ contact_info.youtube }}" 
-                   class="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center hover:bg-primary-500 hover:text-white transition-all duration-300">
+                <a href="https://youtube.com/aizasfineart" 
+                   class="w-14 h-14 bg-mauve-plum rounded-xl flex items-center justify-center text-white hover:bg-white hover:text-mauve-plum transition-all group">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                     </svg>
                 </a>
             </div>
             
-            <p class="text-neutral-600">
+            <p class="text-body text-white">
                 Or sign up for my newsletter to receive updates on new works and exclusive offers.
             </p>
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Force form labels to rosewood color */
+.form-label {
+    color: #9C6B68 !important;
+}
+
+/* Social media icon hover states */
+.group:hover svg {
+    color: inherit !important;
+}
+</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -437,4 +467,6 @@ function toggleFAQ(button) {
     }
 }
 </script>
+
+<script src="{% static 'src/js/animations.js' %}"></script>
 {% endblock %}

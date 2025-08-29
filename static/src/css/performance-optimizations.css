@@ -1,0 +1,144 @@
+/* Performance Optimizations for Gallery and Shop Pages */
+
+/* GPU Acceleration for smooth animations */
+.artwork-card,
+.artwork-image,
+.card {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Optimized Masonry Grid */
+.gallery-grid-large {
+  contain: layout style paint;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  grid-auto-rows: 10px;
+}
+
+.artwork-item {
+  contain: layout paint;
+  grid-row-end: span var(--grid-rows, 20);
+}
+
+/* Lazy Loading Styles */
+.lazy-load {
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  transition: opacity 0.3s ease;
+}
+
+.lazy-load[data-src] {
+  opacity: 0.7;
+}
+
+.lazy-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.lazy-loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Optimized Scroll Animations */
+[data-scroll-item] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-item-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .artwork-card,
+  .artwork-image,
+  [data-scroll-item] {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* Critical rendering path optimization */
+.gallery-grid-large,
+.artwork-card {
+  content-visibility: auto;
+  contain-intrinsic-size: 300px 400px;
+}
+
+/* Optimize hover states */
+.artwork-card:hover {
+  transform: translateY(-2px) translateZ(0);
+  transition: transform 0.2s ease;
+}
+
+/* Loading skeleton for better perceived performance */
+.artwork-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Optimize image containers */
+.artwork-image-container {
+  contain: layout paint;
+  aspect-ratio: 4/5;
+}
+
+/* Performance-focused responsive design */
+@media (max-width: 768px) {
+  .gallery-grid-large {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .artwork-item {
+    contain: strict;
+  }
+}
+
+/* Optimize filter animations */
+.gallery-filter-component {
+  contain: layout paint;
+}
+
+/* Smooth scrolling optimization */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Critical CSS for above-the-fold content */
+.hero-section,
+.gallery-filter-component {
+  contain: layout paint;
+}
+
+/* Optimize paint containment for cards */
+.card {
+  contain: paint layout;
+  isolation: isolate;
+}

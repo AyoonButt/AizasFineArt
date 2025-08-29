@@ -2,73 +2,114 @@
 module.exports = {
   content: [
     './templates/**/*.html',
-    './static/src/**/*.{js,jsx}',
+    './static/src/js/**/*.js',
     './artwork/templates/**/*.html',
     './userprofiles/templates/**/*.html',
     './orders/templates/**/*.html',
     './blog/templates/**/*.html',
+    './dashboard/templates/**/*.html',
+    './components/templates/**/*.html',
   ],
   theme: {
     extend: {
       colors: {
-        // Updated Color Palette - Digital Lavender Primary, Mocha Mousse Secondary
+        // Complete Sea Glass & Rosewood 6-Color Palette
         primary: {
-          50: '#f5f3ff',
-          100: '#ede9fe',
-          200: '#ddd6fe',
-          300: '#c4b5fd',
-          400: '#a78bfa',
-          500: '#A78BFA', // Digital Lavender - Primary
-          600: '#8b5cf6',
-          700: '#7c3aed',
-          800: '#6d28d9',
-          900: '#5b21b6',
+          DEFAULT: '#9C6B68', // Vintage Rosewood (original)
+          50: '#faf9f9',
+          100: '#f4f1f1',
+          200: '#e9e1e1',
+          300: '#d6c9c8',
+          400: '#b59490',
+          500: '#9C6B68', // Base Vintage Rosewood
+          600: '#8a5f5c',
+          700: '#73504e',
+          800: '#5f4341',
+          900: '#4f3836',
+          10: 'rgba(156, 107, 104, 0.1)',
+          20: 'rgba(156, 107, 104, 0.2)',
         },
         secondary: {
-          50: '#faf8f5',
-          100: '#f4f0ea',
-          200: '#e8ddd0',
-          300: '#d6c4ad',
-          400: '#c2a589',
-          500: '#A67C52', // Mocha Mousse - Secondary
-          600: '#946a47',
-          700: '#7c583c',
-          800: '#654833',
-          900: '#533c2b',
+          DEFAULT: '#C5D6D2', // Sea Glass
+          50: '#f9fafa',
+          100: '#f2f5f4',
+          200: '#e5ebe9',
+          300: '#d1dbd8',
+          400: '#b8c8c4',
+          500: '#C5D6D2', // Base Sea Glass
+          600: '#a6b8b3',
+          700: '#8b9c97',
+          800: '#73827e',
+          900: '#5e6b67',
+          10: 'rgba(197, 214, 210, 0.1)',
+          20: 'rgba(197, 214, 210, 0.2)',
         },
-        // Color aliases for easier use
-        lavender: '#A78BFA', // Primary 500
-        mocha: '#A67C52', // Secondary 500
-        accent: {
-          50: '#fef3f2',
-          100: '#fee4e2',
-          200: '#fecdca',
-          300: '#fdaaa6',
-          400: '#f97972',
-          500: '#E2725B', // Terracotta Red - Accent
-          600: '#dc2626',
-          700: '#b91c1c',
-          800: '#991b1b',
-          900: '#7f1d1d',
+        // Full Palette Colors
+        'pale-blush': {
+          DEFAULT: '#F6ECEA',
+          50: '#fefcfb',
+          100: '#fdf7f5',
+          200: '#F6ECEA', // Base
+          300: '#f0e1dc',
+          400: '#e8d3cc',
+          500: '#dec0b6',
+          600: '#d0a899',
+          700: '#bc8c78',
+          800: '#9d735e',
+          900: '#7f5c49',
         },
-        neutral: {
-          50: '#ffffff', // Crisp White
-          100: '#f9fafb',
-          200: '#f4f5f7',
-          300: '#e5e7eb',
-          400: '#9ca3af',
-          500: '#6b7280',
-          600: '#4b5563',
-          700: '#374151',
-          800: '#1f2937',
-          900: '#111827',
+        'mauve-plum': {
+          DEFAULT: '#A38194', // Mauve Plum (original)
+          50: '#faf9fa',
+          100: '#f4f1f3',
+          200: '#e8e1e6',
+          300: '#d5c9d1',
+          400: '#bea9b5',
+          500: '#A38194', // Base Mauve Plum
+          600: '#8e6d81',
+          700: '#775a6c',
+          800: '#634b59',
+          900: '#523e49',
         },
+        'mist-blue': {
+          DEFAULT: '#DCE3E8',
+          50: '#fcfdfd',
+          100: '#f8fafb',
+          200: '#f1f5f7',
+          300: '#e6ecf0',
+          400: '#DCE3E8', // Base
+          500: '#c8d4db',
+          600: '#b0c0ca',
+          700: '#92a5b2',
+          800: '#788a96',
+          900: '#63737d',
+        },
+        'deep-ash': {
+          DEFAULT: '#2F2F2F',
+          50: '#f7f7f7',
+          100: '#e3e3e3',
+          200: '#c8c8c8',
+          300: '#a4a4a4',
+          400: '#818181',
+          500: '#666666',
+          600: '#515151',
+          700: '#434343',
+          800: '#383838',
+          900: '#2F2F2F', // Base
+        },
+        // Semantic aliases
+        surface: '#FEFCFA', // Warm White
+        muted: '#DCE3E8', // Mist Blue for borders/subtle elements
+        // Strategic text colors using palette colors
+        'text-secondary': '#9C6B68', // Vintage rosewood for warm accent text (original)
+        'text-muted': '#2F2F2F', // Deep ash for high contrast body text
       },
       fontFamily: {
-        // Classic Elegance Typography
-        'playfair': ['Playfair Display', 'serif'], // Headlines
-        'dm-sans': ['DM Sans', 'sans-serif'], // Body
-        'league-spartan': ['League Spartan', 'sans-serif'], // Accents
+        // Sea Glass & Rosewood Typography
+        'logo': ['Nadeko', 'serif'], // Logo font
+        'heading': ['Colton', 'serif'], // Headings
+        'body': ['Karla', 'sans-serif'], // Body text
+        'decorative': ['Baar Sophia', 'serif'], // Decorative accents
       },
       fontSize: {
         'display': ['4rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],

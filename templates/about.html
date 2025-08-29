@@ -7,50 +7,50 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="relative py-20 bg-gradient-to-br from-secondary-50 to-primary-50 overflow-hidden">
-    <div class="container mx-auto px-4">
+<section class="relative section-padding bg-gradient-about overflow-hidden">
+    <div class="container">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
             <!-- Artist Photo -->
-            <div class="reveal-on-scroll">
+            <div class="animate-on-scroll slide-left">
                 <div class="relative max-w-lg mx-auto lg:mx-0">
-                    <div class="aspect-square rounded-3xl overflow-hidden shadow-soft">
+                    <div class="aspect-square rounded-xl overflow-hidden">
                         <img src="{% static 'dist/images/profile pic_square_less contrast.png' %}" 
                              alt="Aiza - Artist Portrait" 
                              class="w-full h-full object-cover">
                     </div>
                     
                     <!-- Decorative elements -->
-                    <div class="absolute -top-6 -right-6 w-32 h-32 bg-primary/20 rounded-full blur-2xl"></div>
-                    <div class="absolute -bottom-8 -left-8 w-40 h-40 bg-accent/15 rounded-full blur-3xl"></div>
+                    <div class="absolute -top-6 -right-6 w-32 h-32 bg-primary-10 rounded-full blur-2xl"></div>
+                    <div class="absolute -bottom-8 -left-8 w-40 h-40 bg-secondary-10 rounded-full blur-3xl"></div>
                 </div>
             </div>
             
             <!-- Introduction -->
-            <div class="reveal-on-scroll">
-                <div class="accent-font text-primary text-sm mb-4">Meet the Artist</div>
-                <h1 class="text-display font-playfair font-bold text-neutral-800 mb-6 leading-tight">
-                    <span class="text-gradient">Hello, I'm</span><br>
+            <div class="animate-on-scroll slide-right">
+                <div class="text-decorative text-accent mb-4">Meet the Artist</div>
+                <h1 class="text-page-title text-primary mb-6 leading-tight">
+                    <span class="text-decorative text-accent block text-lg mb-2">Hello, I'm</span>
                     <span>Aiza</span>
                 </h1>
                 
-                <p class="text-body-lg text-neutral-600 mb-6 leading-relaxed">
+                <p class="text-body text-primary mb-6">
                     From chemistry labs to artist studios, my journey has been one of discovery, 
                     healing, and finding beauty in unexpected places. Based in Fort Worth, Texas, 
                     I create watercolor and oil paintings that capture the quiet moments and 
                     vibrant emotions that make life extraordinary.
                 </p>
                 
-                <p class="text-body text-neutral-600 mb-8 leading-relaxed">
+                <p class="text-body text-vintage-rosewood mb-8">
                     Art became my sanctuary during challenging times, and now I share that 
                     same sense of peace and wonder through every brushstroke. Each painting 
                     tells a story—sometimes mine, sometimes yours, always authentic.
                 </p>
                 
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="{% url 'portfolio' %}" class="btn-primary">
-                        View My Portfolio
+                    <a href="{% url 'gallery' %}" class="btn btn-primary">
+                        View Gallery
                     </a>
-                    <a href="{% url 'contact' %}" class="btn-outline">
+                    <a href="{% url 'contact' %}" class="btn btn-secondary">
                         Work With Me
                     </a>
                 </div>
@@ -60,12 +60,12 @@
 </section>
 
 <!-- Artist Journey -->
-<section class="py-20 bg-white">
-    <div class="container mx-auto px-4">
+<section class="section-padding bg-pale-blush section-border-top from-about-section watercolor-natural">
+    <div class="container">
         <div class="max-w-4xl mx-auto">
-            <div class="text-center mb-16 reveal-on-scroll">
-                <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-6">My Artistic Journey</h2>
-                <p class="text-body-lg text-neutral-600 max-w-2xl mx-auto">
+            <div class="text-center mb-16 animate-on-scroll">
+                <h2 class="text-section-heading text-vintage-rosewood mb-6">My Artistic Journey</h2>
+                <p class="text-body text-vintage-rosewood max-w-2xl mx-auto">
                     Every artist has a story. Mine began in the structured world of science 
                     and evolved into the fluid, expressive realm of watercolor and oils.
                 </p>
@@ -74,20 +74,20 @@
             <!-- Timeline -->
             <div class="space-y-12">
                 <!-- Education & Early Years -->
-                <div class="flex flex-col lg:flex-row gap-8 items-center reveal-on-scroll">
+                <div class="flex flex-col lg:flex-row gap-8 items-center animate-on-scroll" data-animation-delay="100">
                     <div class="lg:w-1/3">
-                        <div class="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto lg:mx-0 mb-4">
+                        <div class="w-20 h-20 bg-primary-10 rounded-xl flex items-center justify-center mx-auto lg:mx-0 mb-4">
                             <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                             </svg>
                         </div>
-                        <h3 class="font-playfair font-semibold text-xl text-neutral-800 mb-2 text-center lg:text-left">
+                        <h3 class="text-artwork-title text-vintage-rosewood mb-2 text-center lg:text-left">
                             Academic Foundation
                         </h3>
-                        <p class="text-sm text-primary font-medium text-center lg:text-left">Texas Christian University</p>
+                        <p class="text-caption text-vintage-rosewood text-center lg:text-left">Texas Christian University</p>
                     </div>
                     <div class="lg:w-2/3 text-center lg:text-left">
-                        <p class="text-neutral-600 leading-relaxed">
+                        <p class="text-body text-vintage-rosewood">
                             My journey began at TCU, where I pursued Chemistry. The precision and methodology 
                             of scientific study taught me discipline and attention to detail—qualities that 
                             would later become fundamental to my artistic practice. During this time, 
@@ -97,20 +97,20 @@
                 </div>
                 
                 <!-- Transition to Art -->
-                <div class="flex flex-col lg:flex-row-reverse gap-8 items-center reveal-on-scroll">
+                <div class="flex flex-col lg:flex-row-reverse gap-8 items-center animate-on-scroll" data-animation-delay="200">
                     <div class="lg:w-1/3">
-                        <div class="w-20 h-20 bg-secondary-100 rounded-full flex items-center justify-center mx-auto lg:mx-0 mb-4">
+                        <div class="w-20 h-20 bg-secondary-10 rounded-xl flex items-center justify-center mx-auto lg:mx-0 mb-4">
                             <svg class="w-10 h-10 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                             </svg>
                         </div>
-                        <h3 class="font-playfair font-semibold text-xl text-neutral-800 mb-2 text-center lg:text-left">
+                        <h3 class="text-artwork-title text-vintage-rosewood mb-2 text-center lg:text-left">
                             Finding Healing
                         </h3>
-                        <p class="text-sm text-secondary font-medium text-center lg:text-left">Art as Therapy</p>
+                        <p class="text-caption text-vintage-rosewood text-center lg:text-left">Art as Therapy</p>
                     </div>
                     <div class="lg:w-2/3 text-center lg:text-left">
-                        <p class="text-neutral-600 leading-relaxed">
+                        <p class="text-body text-vintage-rosewood">
                             Life presented challenges that science couldn't solve. During a particularly 
                             difficult period, I turned to painting not just as a hobby, but as a lifeline. 
                             Watercolors became my language for emotions I couldn't express in words. 
@@ -120,20 +120,20 @@
                 </div>
                 
                 <!-- Professional Artist -->
-                <div class="flex flex-col lg:flex-row gap-8 items-center reveal-on-scroll">
+                <div class="flex flex-col lg:flex-row gap-8 items-center animate-on-scroll" data-animation-delay="300">
                     <div class="lg:w-1/3">
-                        <div class="w-20 h-20 bg-accent-100 rounded-full flex items-center justify-center mx-auto lg:mx-0 mb-4">
-                            <svg class="w-10 h-10 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-20 h-20 bg-primary-10 rounded-xl flex items-center justify-center mx-auto lg:mx-0 mb-4">
+                            <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"></path>
                             </svg>
                         </div>
-                        <h3 class="font-playfair font-semibold text-xl text-neutral-800 mb-2 text-center lg:text-left">
+                        <h3 class="text-artwork-title text-vintage-rosewood mb-2 text-center lg:text-left">
                             Professional Practice
                         </h3>
-                        <p class="text-sm text-accent font-medium text-center lg:text-left">Fort Worth Studio</p>
+                        <p class="text-caption text-vintage-rosewood text-center lg:text-left">Fort Worth Studio</p>
                     </div>
                     <div class="lg:w-2/3 text-center lg:text-left">
-                        <p class="text-neutral-600 leading-relaxed">
+                        <p class="text-body text-vintage-rosewood">
                             What began as personal healing evolved into a calling to share that same 
                             sense of peace and beauty with others. Today, from my Fort Worth studio, 
                             I create original works and custom commissions, each piece infused with 
@@ -147,22 +147,22 @@
 </section>
 
 <!-- Artistic Philosophy -->
-<section class="py-20 bg-gradient-to-br from-neutral-50 to-secondary-50">
-    <div class="container mx-auto px-4">
+<section class="section-padding bg-gradient-hero section-border-top watercolor-border-blush watercolor-natural">
+    <div class="container">
         <div class="max-w-4xl mx-auto text-center">
-            <div class="reveal-on-scroll">
-                <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-8">My Artistic Philosophy</h2>
+            <div class="animate-on-scroll">
+                <h2 class="text-section-heading text-white mb-8">My Artistic Philosophy</h2>
                 
-                <blockquote class="text-body-lg text-neutral-700 italic leading-relaxed mb-8 relative">
-                    <div class="text-6xl text-primary/20 absolute -top-4 -left-4">"</div>
+                <blockquote class="text-body text-white italic mb-8 relative">
+                    <div class="text-6xl text-white/30 absolute -top-4 -left-4">"</div>
                     Art is not about perfection—it's about connection. Every painting I create 
                     is an invitation to pause, breathe, and find beauty in the present moment. 
                     Whether it's the delicate petals of a flower or the vast expanse of a landscape, 
                     I strive to capture not just what I see, but what I feel.
-                    <div class="text-6xl text-primary/20 absolute -bottom-8 -right-4">"</div>
+                    <div class="text-6xl text-white/30 absolute -bottom-8 -right-4">"</div>
                 </blockquote>
                 
-                <p class="text-neutral-600 leading-relaxed">
+                <p class="text-body text-white">
                     My work bridges the gap between scientific precision and artistic intuition. 
                     Each piece is carefully planned yet spontaneously executed, allowing for 
                     those magical accidents that make watercolor so captivating.
@@ -173,11 +173,11 @@
 </section>
 
 <!-- Process & Techniques -->
-<section class="py-20 bg-white">
-    <div class="container mx-auto px-4">
-        <div class="text-center mb-16 reveal-on-scroll">
-            <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-6">Creative Process</h2>
-            <p class="text-body-lg text-neutral-600 max-w-2xl mx-auto">
+<section class="section-padding bg-vintage-rosewood section-border-top watercolor-border-hero watercolor-natural">
+    <div class="container">
+        <div class="text-center mb-16 animate-on-scroll">
+            <h2 class="text-section-heading text-deep-ash mb-6">Creative Process</h2>
+            <p class="text-body text-deep-ash max-w-2xl mx-auto">
                 Behind every painting is a thoughtful process that combines technical skill 
                 with emotional expression.
             </p>
@@ -185,56 +185,56 @@
         
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <!-- Inspiration -->
-            <div class="text-center reveal-on-scroll">
-                <div class="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="text-center animate-on-scroll scale" data-animation-delay="100">
+                <div class="w-16 h-16 bg-primary-10 rounded-xl flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-deep-ash" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
                     </svg>
                 </div>
-                <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-3">Inspiration</h3>
-                <p class="text-neutral-600 text-sm leading-relaxed">
+                <h3 class="text-artwork-title text-deep-ash mb-3">Inspiration</h3>
+                <p class="text-body text-deep-ash">
                     Every piece begins with a moment of connection—a play of light, 
                     an emotional memory, or the simple beauty of nature.
                 </p>
             </div>
             
             <!-- Planning -->
-            <div class="text-center reveal-on-scroll">
-                <div class="w-16 h-16 bg-secondary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="text-center animate-on-scroll scale" data-animation-delay="200">
+                <div class="w-16 h-16 bg-secondary-10 rounded-xl flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-deep-ash" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                     </svg>
                 </div>
-                <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-3">Planning</h3>
-                <p class="text-neutral-600 text-sm leading-relaxed">
+                <h3 class="text-artwork-title text-deep-ash mb-3">Planning</h3>
+                <p class="text-body text-deep-ash">
                     Careful composition and color studies ensure each element 
                     serves the overall emotional impact of the piece.
                 </p>
             </div>
             
             <!-- Execution -->
-            <div class="text-center reveal-on-scroll">
-                <div class="w-16 h-16 bg-accent-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="text-center animate-on-scroll scale" data-animation-delay="300">
+                <div class="w-16 h-16 bg-primary-10 rounded-xl flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-deep-ash" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"></path>
                     </svg>
                 </div>
-                <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-3">Execution</h3>
-                <p class="text-neutral-600 text-sm leading-relaxed">
+                <h3 class="text-artwork-title text-deep-ash mb-3">Execution</h3>
+                <p class="text-body text-deep-ash">
                     Layer by layer, each brushstroke is deliberate yet spontaneous, 
                     allowing the medium to guide the final expression.
                 </p>
             </div>
             
             <!-- Reflection -->
-            <div class="text-center reveal-on-scroll">
-                <div class="w-16 h-16 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="text-center animate-on-scroll scale" data-animation-delay="400">
+                <div class="w-16 h-16 bg-secondary-10 rounded-xl flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-deep-ash" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                     </svg>
                 </div>
-                <h3 class="font-playfair font-semibold text-lg text-neutral-800 mb-3">Reflection</h3>
-                <p class="text-neutral-600 text-sm leading-relaxed">
+                <h3 class="text-artwork-title text-deep-ash mb-3">Reflection</h3>
+                <p class="text-body text-deep-ash">
                     Each completed work becomes part of a larger conversation 
                     about beauty, healing, and human connection.
                 </p>
@@ -244,19 +244,19 @@
 </section>
 
 <!-- Studio & Location -->
-<section class="py-20 bg-neutral-50">
-    <div class="container mx-auto px-4">
+<section class="section-padding bg-gradient-contact section-border-top watercolor-border-rosewood watercolor-natural">
+    <div class="container">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
-            <div class="reveal-on-scroll">
-                <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-6">Fort Worth Studio</h2>
-                <p class="text-body-lg text-neutral-600 mb-6 leading-relaxed">
+            <div class="animate-on-scroll slide-left">
+                <h2 class="text-section-heading text-vintage-rosewood mb-6">Fort Worth Studio</h2>
+                <p class="text-body text-vintage-rosewood mb-6">
                     Nestled in the heart of Fort Worth, Texas, my studio is where creativity 
                     meets tranquility. Natural light floods the space throughout the day, 
                     providing the perfect environment for capturing the subtle nuances of color 
                     and light that define my work.
                 </p>
                 
-                <p class="text-body text-neutral-600 mb-8 leading-relaxed">
+                <p class="text-body text-vintage-rosewood mb-8">
                     The studio is open for private viewings and commission consultations by 
                     appointment. I believe in the importance of connecting with collectors 
                     personally, understanding their vision, and creating pieces that truly 
@@ -265,45 +265,45 @@
                 
                 <div class="space-y-4">
                     <div class="flex items-center space-x-3">
-                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-vintage-rosewood" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         </svg>
-                        <span class="text-neutral-700">Fort Worth, Texas</span>
+                        <span class="text-vintage-rosewood">Fort Worth, Texas</span>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-vintage-rosewood" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <span class="text-neutral-700">Studio visits by appointment</span>
+                        <span class="text-vintage-rosewood">Studio visits by appointment</span>
                     </div>
                     <div class="flex items-center space-x-3">
-                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-vintage-rosewood" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                         </svg>
-                        <span class="text-neutral-700">aizasfineart@gmail.com</span>
+                        <span class="text-vintage-rosewood">aizasfineart@gmail.com</span>
                     </div>
                 </div>
             </div>
             
             <!-- Studio Image Placeholder -->
-            <div class="reveal-on-scroll">
+            <div class="animate-on-scroll slide-right">
                 <div class="relative">
-                    <div class="aspect-[4/3] bg-gradient-to-br from-primary-100 to-secondary-100 rounded-2xl overflow-hidden shadow-soft">
+                    <div class="aspect-[4/3] bg-gradient-to-br from-primary-10 to-secondary-10 rounded-xl overflow-hidden">
                         <!-- Studio photo would go here -->
                         <div class="w-full h-full flex items-center justify-center">
                             <div class="text-center">
-                                <svg class="w-20 h-20 text-primary-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-20 h-20 text-primary/50 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2V7zm14 4h.01"></path>
                                 </svg>
-                                <p class="text-primary-600 font-medium">Studio Photo Coming Soon</p>
+                                <p class="text-primary font-medium">Studio Photo Coming Soon</p>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Decorative elements -->
-                    <div class="absolute -top-4 -right-4 w-24 h-24 bg-accent/20 rounded-full blur-xl"></div>
-                    <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-primary/15 rounded-full blur-2xl"></div>
+                    <div class="absolute -top-4 -right-4 w-24 h-24 bg-secondary-10 rounded-full blur-xl"></div>
+                    <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-primary-10 rounded-full blur-2xl"></div>
                 </div>
             </div>
         </div>
@@ -311,27 +311,32 @@
 </section>
 
 <!-- Call to Action -->
-<section class="py-20 bg-gradient-to-br from-primary-50 to-accent-50">
-    <div class="container mx-auto px-4 text-center">
-        <div class="max-w-3xl mx-auto reveal-on-scroll">
-            <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-6">
+<section class="section-padding" style="background-color: var(--color-deep-ash);">
+    <div class="container text-center">
+        <div class="max-w-3xl mx-auto animate-on-scroll">
+            <h2 class="text-section-heading mb-6" style="color: white;">
                 Let's Create Something Beautiful Together
             </h2>
-            <p class="text-body-lg text-neutral-600 mb-8 leading-relaxed">
+            <p class="text-body mb-8" style="color: rgba(255, 255, 255, 0.8);">
                 Whether you're drawn to an existing piece or have a vision for something entirely new, 
                 I'd love to help bring more beauty into your world. Every commission is a collaboration, 
                 every artwork a shared journey.
             </p>
             
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{% url 'contact' %}" class="btn-primary">
+                <a href="{% url 'contact' %}" class="btn btn-primary">
                     Start a Conversation
                 </a>
-                <a href="{% url 'shop' %}" class="btn-outline">
+                <a href="{% url 'shop' %}" class="btn border-2 border-pale-blush text-pale-blush hover:bg-pale-blush hover:text-deep-ash transition-all">
                     Browse Available Works
                 </a>
             </div>
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block page_scripts %}
+<!-- Load animations only on about page -->
+<script src="{% static 'src/js/animations.js' %}"></script>
 {% endblock %}

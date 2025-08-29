@@ -1,3 +1,4 @@
+
 """
 All Django components for Aiza's Fine Art website
 """

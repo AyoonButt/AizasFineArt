@@ -9,6 +9,30 @@
   --color-success: #10B981;
   --color-error: #EF4444;
   --color-heart: #EF4444;
+  /* Current Sea Glass & Rosewood Palette */
+  --primary: #9C6B68; /* Vintage Rosewood */
+  --secondary: #C5D6D2; /* Sea Glass */
+  --pale-blush: #F6ECEA;
+  --mauve-plum: #A38194;
+  --mist-blue: #DCE3E8;
+  --deep-ash: #2F2F2F;
+  --surface: #FEFCFA;
+  --muted: #DCE3E8;
+  /* Legacy variable mappings */
+  --digital-lavender: var(--primary);
+  --digital-lavender-light: rgba(156, 107, 104, 0.1);
+  --mocha-mousse: var(--secondary);
+  --terracotta-red: #A38194; /* Use mauve-plum for error states */
+  --gray-50: #f9fafa;
+  --gray-100: #f4f1f1;
+  --gray-200: #e5ebe9;
+  --gray-300: #d1dbd8;
+  --gray-400: #b8c8c4;
+  --gray-500: #a6b8b3;
+  --gray-600: #8b9c97;
+  --gray-700: #73827e;
+  --gray-800: #5e6b67;
+  --gray-900: #2F2F2F;
 }
 
 /* ===== SHOP PAGE LAYOUT ===== */

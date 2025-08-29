@@ -18,4 +18,4 @@ supabase>=1.0.3
 python-dotenv>=1.0.0
 stripe>=7.0.0
 requests>=2.31.0
-django-csp>=3.7
+django-csp>=4.0

@@ -1,16 +1,23 @@
 <!-- Original Artwork Card Component -->
 <div class="artwork-card card group relative overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300" data-gsap="scaleIn" onclick="window.location.href='{% if artwork.get_absolute_url %}{{ artwork.get_absolute_url }}{% else %}#{% endif %}'">
     <!-- Image Container -->
-        <div class="relative overflow-hidden">
+        <div class="artwork-image-container relative overflow-hidden">
             {% if artwork.gallery_url %}
                 <img src="{{ artwork.gallery_url }}" 
                      alt="{{ artwork.alt_text|default:artwork.title }}"
-                     class="artwork-image object-cover"
-                     loading="lazy">
+                     class="artwork-image object-cover">
+            {% elif artwork.image_url %}
+                <img src="{{ artwork.image_url }}" 
+                     alt="{{ artwork.alt_text|default:artwork.title }}"
+                     class="artwork-image object-cover">
+            {% elif artwork.main_image_url %}
+                <img src="{{ artwork.main_image_url }}" 
+                     alt="{{ artwork.alt_text|default:artwork.title }}"
+                     class="artwork-image object-cover">
             {% else %}
                 <!-- Placeholder Image -->
-                <div class="w-full h-full bg-neutral-200 flex items-center justify-center">
-                    <svg class="w-16 h-16 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-full h-full bg-mist-blue flex items-center justify-center">
+                    <svg class="w-16 h-16 text-mauve-plum" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
                 </div>
@@ -18,7 +25,7 @@
             
             <!-- Original Badge -->
             <div class="absolute top-3 left-3">
-                <span class="bg-mocha text-white text-xs font-semibold px-2 py-1 rounded-full">
+                <span class="bg-primary text-white text-xs font-semibold px-2 py-1 rounded-full">
                     Original
                 </span>
             </div>
@@ -50,17 +57,17 @@
         <div class="p-4">
             <!-- Title and Medium -->
             <div class="mb-2">
-                <h3 class="font-playfair font-semibold text-lg text-neutral-800 group-hover:text-mocha transition-colors">
+                <h3 class="text-artwork-title font-semibold text-deep-ash group-hover:text-primary transition-colors">
                     {{ artwork.title }}
                 </h3>
                 {% if artwork.medium %}
-                    <p class="text-sm text-neutral-600">{{ artwork.get_medium_display|default:artwork.medium }}</p>
+                    <p class="text-caption text-mauve-plum">{{ artwork.get_medium_display|default:artwork.medium }}</p>
                 {% endif %}
             </div>
             
             <!-- Dimensions -->
             {% if artwork.dimensions_width and artwork.dimensions_height %}
-                <p class="text-sm text-neutral-500 mb-2">
+                <p class="text-caption text-mist-blue-700 mb-2">
                     {{ artwork.dimensions_width }}" × {{ artwork.dimensions_height }}"
                 </p>
             {% endif %}
@@ -68,16 +75,16 @@
             <!-- Price and Status -->
             <div class="flex items-center justify-between mt-3">
                 {% if artwork.is_original_available %}
-                    <div class="price-display text-mocha font-semibold">
+                    <div class="price-display text-primary font-semibold">
                         ${{ artwork.original_price|floatformat:0 }}
                     </div>
-                    <span class="status-available bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Available</span>
+                    <span class="status-available bg-secondary-20 text-secondary-800 text-xs px-2 py-1 rounded-full">Available</span>
                 {% elif artwork.prints_available %}
-                    <span class="status-prints-only bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Prints Only</span>
+                    <span class="status-prints-only bg-mist-blue text-mauve-plum text-xs px-2 py-1 rounded-full">Prints Only</span>
                 {% else %}
-                    <div class="text-neutral-500 text-sm">
+                    <div class="text-mauve-plum text-caption">
                         <p class="mb-1">This original has been sold</p>
-                        <a href="/commissions/" class="text-mocha hover:underline">Request a Commission</a>
+                        <a href="/commissions/" class="text-primary hover:underline">Request a Commission</a>
                     </div>
                 {% endif %}
             </div>

@@ -7,56 +7,27 @@
 
 {% block content %}
 <!-- Gallery Hero Section with Breadcrumbs -->
-<section class="hero-section relative py-16 bg-gradient-to-br from-neutral-50 to-primary-50 overflow-hidden">
-    <div class="container mx-auto px-4">
-        <!-- Breadcrumbs -->
-        <nav class="text-sm mb-8" aria-label="Breadcrumb">
-            <ol class="flex items-center space-x-2 text-neutral-600">
-                <li><a href="{% url 'home' %}" class="hover:text-primary-600 transition-colors">Home</a></li>
-                <li><span class="mx-2">/</span></li>
-                <li><a href="{% url 'gallery' %}" class="hover:text-primary-600 transition-colors">Gallery</a></li>
-                {% if breadcrumb_medium %}
-                <li><span class="mx-2">/</span></li>
-                <li class="text-primary-600 font-medium">{{ breadcrumb_medium }}</li>
-                {% endif %}
-            </ol>
-        </nav>
+<section class="hero-section relative section-padding bg-gradient-hero overflow-hidden">
+    <div class="container">
         
         <div class="text-center max-w-4xl mx-auto">
-            <h1 class="text-display font-playfair font-bold text-neutral-800 mb-6">
-                <span class="text-gradient">{{ page_title }}</span>
-            </h1>
-            <p class="text-body-lg text-neutral-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-                {% if breadcrumb_medium %}
-                    Discover my {{ breadcrumb_medium|lower }} paintings, where {{ breadcrumb_medium|lower|slice:":1" }}{% if breadcrumb_medium == "Watercolors" %}ach piece captures the flowing beauty of water-based pigments{% elif breadcrumb_medium == "Oil Paintings" %}ach work explores rich textures and vibrant colors{% else %}ach creation combines multiple artistic techniques{% endif %}.
-                {% else %}
-                    Discover the complete collection of my watercolor and oil paintings. Each piece captures 
-                    a unique moment through the interplay of light, color, and emotion.
-                {% endif %}
-            </p>
-            
-            <!-- Medium Navigation Pills -->
-            <div class="flex flex-wrap gap-3 justify-center mb-8">
-                <a href="{% url 'gallery' %}" 
-                   class="medium-pill {% if not current_medium %}active{% endif %}">
-                    All Artworks
-                </a>
-                <a href="{% url 'gallery_medium' 'watercolors' %}" 
-                   class="medium-pill {% if current_medium == 'watercolors' %}active{% endif %}">
-                    Watercolors
-                </a>
-                <a href="{% url 'gallery_medium' 'oils' %}" 
-                   class="medium-pill {% if current_medium == 'oils' %}active{% endif %}">
-                    Oil Paintings
-                </a>
-                <a href="{% url 'gallery_medium' 'mixed-media' %}" 
-                   class="medium-pill {% if current_medium == 'mixed-media' %}active{% endif %}">
-                    Mixed Media
-                </a>
+            <div>
+                <h1 class="text-page-title text-white mb-6">
+                    {{ page_title }}
+                </h1>
+                <p class="text-body text-white mb-8 max-w-2xl mx-auto leading-relaxed">
+                    {% if breadcrumb_medium %}
+                        Discover my {{ breadcrumb_medium|lower }} paintings, where {{ breadcrumb_medium|lower|slice:":1" }}{% if breadcrumb_medium == "Watercolors" %}ach piece captures the flowing beauty of water-based pigments{% elif breadcrumb_medium == "Oil Paintings" %}ach work explores rich textures and vibrant colors{% else %}ach creation combines multiple artistic techniques{% endif %}.
+                    {% else %}
+                        Discover the complete collection of my watercolor and oil paintings. Each piece captures 
+                        a unique moment through the interplay of light, color, and emotion.
+                    {% endif %}
+                </p>
             </div>
             
+            
             <!-- Gallery Filter Component -->
-            <div class="gallery-filter-component bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-soft">
+            <div class="gallery-filter-component bg-surface/80 backdrop-blur-sm rounded-2xl p-6 shadow-soft">
                 <!-- Medium Filter Pills -->
                 <div class="flex flex-wrap gap-3 justify-center mb-6">
                     <button class="medium-filter-pill active" data-medium="all">
@@ -76,17 +47,17 @@
                 <!-- Search Bar -->
                 <div class="flex items-center justify-center space-x-4">
                     <div class="flex items-center space-x-2">
-                        <label class="text-sm font-medium text-neutral-700">Search:</label>
+                        <label class="text-caption font-medium text-primary">Search:</label>
                         <input type="search" 
                                id="gallery-search-input" 
                                placeholder="Search artworks..." 
-                               class="px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-w-48">
+                               class="form-input min-w-48">
                     </div>
                     
                     <label class="flex items-center space-x-2">
                         <input type="checkbox" id="featured-filter" 
-                               class="rounded border-neutral-300 text-primary-600 focus:ring-primary-500">
-                        <span class="text-sm font-medium text-neutral-700">Featured Only</span>
+                               class="rounded border-muted text-primary focus:ring-primary">
+                        <span class="text-caption font-medium text-primary">Featured Only</span>
                     </label>
                 </div>
             </div>
@@ -95,22 +66,22 @@
 </section>
 
 <!-- Gallery Results Header -->
-<section class="py-8 bg-white border-b border-neutral-200">
-    <div class="container mx-auto px-4">
+<section class="py-8 bg-surface border-b border-muted section-border-top from-hero-section watercolor-natural">
+    <div class="container">
         <div class="flex justify-between items-center">
-            <div class="text-neutral-600">
+            <div class="text-secondary">
                 Showing {{ artworks|length }} of {{ paginator.count }} artworks
                 {% if current_filters.search %} for "{{ current_filters.search }}"{% endif %}
             </div>
             <div class="flex items-center gap-4">
                 <!-- View Toggle -->
-                <div class="flex items-center bg-neutral-100 rounded-lg p-1">
-                    <button class="view-toggle active px-3 py-2 rounded text-sm font-medium" data-view="large" title="Large Cards">
+                <div class="flex items-center bg-muted rounded-lg p-1">
+                    <button class="view-toggle active px-3 py-2 rounded text-caption font-medium" data-view="large" title="Large Cards">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
                         </svg>
                     </button>
-                    <button class="view-toggle px-3 py-2 rounded text-sm font-medium" data-view="small" title="Small Cards">
+                    <button class="view-toggle px-3 py-2 rounded text-caption font-medium" data-view="small" title="Small Cards">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
                         </svg>
@@ -122,8 +93,9 @@
 </section>
 
 <!-- Gallery Grid -->
-<section class="py-16 bg-white">
-    <div class="container mx-auto px-4">
+<section class="section-padding bg-surface">
+    <div class="container">
+        <!-- Gallery Grid using Masonry Layout -->
         <div id="gallery-container" class="gallery-grid-large">
             {% for artwork in artworks %}
             <div class="artwork-item group relative overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300"
@@ -132,21 +104,20 @@
                  data-created="{{ artwork.created_at|date:'c' }}"
                  onclick="window.location.href='{{ artwork.get_absolute_url }}'">
                 
-                <!-- Image Only -->
+                <!-- Image Container with Loading State -->
                 <div class="artwork-image-container relative overflow-hidden">
-                    {% if artwork.main_image_url %}
+                    {% if artwork.image_url %}
                         <img src="{{ artwork.image_url }}" 
                              alt="{{ artwork.alt_text|default:artwork.title }}"
-                             class="artwork-image w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                             loading="lazy">
+                             class="artwork-image w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
                     {% else %}
                         <!-- Placeholder Image -->
-                        <div class="w-full h-full bg-neutral-200 flex items-center justify-center">
+                        <div class="w-full h-full bg-muted flex items-center justify-center">
                             <div class="text-center">
-                                <svg class="w-16 h-16 text-neutral-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-16 h-16 text-muted mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
-                                <span class="text-sm text-neutral-400">{{ artwork.title }}</span>
+                                <span class="text-caption text-muted">{{ artwork.title }}</span>
                             </div>
                         </div>
                     {% endif %}
@@ -154,10 +125,10 @@
                     <!-- Title Overlay on Hover -->
                     <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <h3 class="font-playfair font-bold text-lg mb-1 text-white text-outline">{{ artwork.title }}</h3>
-                            <p class="text-sm text-white text-outline">{{ artwork.get_medium_display }}</p>
+                            <h3 class="text-artwork-title mb-1 text-white text-outline">{{ artwork.title }}</h3>
+                            <p class="text-caption text-white text-outline">{{ artwork.get_medium_display }}</p>
                             {% if artwork.is_featured %}
-                            <span class="inline-block mt-2 bg-primary-500 text-white text-xs px-2 py-1 rounded-full font-medium shadow-lg">
+                            <span class="inline-block mt-2 bg-primary text-white text-caption px-2 py-1 rounded-full font-medium shadow-lg">
                                 Featured
                             </span>
                             {% endif %}
@@ -166,7 +137,7 @@
                     
                     <!-- Wishlist Button -->
                     <button class="absolute top-3 right-3 w-8 h-8 bg-black/80 hover:bg-black backdrop-blur-md rounded-full flex items-center justify-center shadow-xl border border-white/20 transition-all duration-300 opacity-0 group-hover:opacity-100"
-                            onclick="event.stopPropagation(); toggleWishlist({{ artwork.id }})"
+                            onclick="event.stopPropagation(); toggleWishlist('{{ artwork.id }}');"
                             title="Add to Wishlist">
                         <svg class="w-4 h-4 text-white hover:text-red-400 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
@@ -177,8 +148,8 @@
             {% empty %}
             <div class="col-span-full text-center py-12">
                 <div class="text-6xl mb-4">🎨</div>
-                <h3 class="text-xl font-playfair font-semibold mb-2">No artworks found</h3>
-                <p class="text-neutral-600 mb-6">
+                <h3 class="text-artwork-title text-primary font-semibold mb-2">No artworks found</h3>
+                <p class="text-body text-secondary mb-6">
                     {% if current_filters.search %}
                         No artworks match your search "{{ current_filters.search }}". Try different keywords or 
                     {% endif %}
@@ -186,9 +157,9 @@
                 </p>
                 <div class="flex gap-4 justify-center">
                     {% if current_filters.search or current_filters.status or current_filters.featured %}
-                    <button onclick="clearFilters()" class="btn-primary">Clear Filters</button>
+                    <button onclick="clearFilters()" class="btn btn-primary">Clear Filters</button>
                     {% endif %}
-                    <a href="{% url 'gallery' %}" class="btn-outline">Browse All Artworks</a>
+                    <a href="{% url 'gallery' %}" class="btn btn-secondary">Browse All Artworks</a>
                 </div>
             </div>
             {% endfor %}
@@ -198,7 +169,7 @@
         {% if page_obj.has_next %}
         <div class="text-center mt-12">
             <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" 
-               class="btn-primary">
+               class="btn btn-primary">
                 Load More Artworks
             </a>
         </div>
@@ -210,21 +181,21 @@
             <div class="flex items-center space-x-2">
                 {% if page_obj.has_previous %}
                     <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}" 
-                       class="px-3 py-2 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors">Previous</a>
+                       class="px-3 py-2 border border-muted rounded-lg hover:bg-muted transition-colors">Previous</a>
                 {% endif %}
 
                 {% for page_num in paginator.page_range %}
                     {% if page_num == page_obj.number %}
-                        <span class="px-3 py-2 bg-primary-500 text-white rounded-lg">{{ page_num }}</span>
+                        <span class="px-3 py-2 bg-primary text-white rounded-lg">{{ page_num }}</span>
                     {% else %}
                         <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_num }}" 
-                           class="px-3 py-2 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors">{{ page_num }}</a>
+                           class="px-3 py-2 border border-muted rounded-lg hover:bg-muted transition-colors">{{ page_num }}</a>
                     {% endif %}
                 {% endfor %}
 
                 {% if page_obj.has_next %}
                     <a href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" 
-                       class="px-3 py-2 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors">Next</a>
+                       class="px-3 py-2 border border-muted rounded-lg hover:bg-muted transition-colors">Next</a>
                 {% endif %}
             </div>
         </nav>
@@ -233,17 +204,17 @@
 </section>
 
 <!-- Call to Action -->
-<section class="py-16 bg-gradient-to-br from-primary-50 to-accent-50">
-    <div class="container mx-auto px-4 text-center">
+<section class="section-padding bg-mist-blue section-border-top from-surface-section watercolor-natural">
+    <div class="container text-center">
         <div class="max-w-3xl mx-auto">
-            <h2 class="text-h1 font-playfair font-semibold text-neutral-800 mb-6">
+            <h2 class="text-section-heading text-primary mb-6">
                 {% if breadcrumb_medium %}
                     Love {{ breadcrumb_medium }}? 
                 {% else %}
                     Found Something You Love?
                 {% endif %}
             </h2>
-            <p class="text-body-lg text-neutral-600 mb-8">
+            <p class="text-body text-vintage-rosewood mb-8">
                 {% if breadcrumb_medium %}
                     Explore other mediums or commission a custom {{ breadcrumb_medium|lower }} piece just for you.
                 {% else %}
@@ -251,15 +222,15 @@
                 {% endif %}
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{% url 'contact' %}" class="btn-primary">
+                <a href="{% url 'contact' %}" class="btn bg-mauve-plum text-white hover:bg-mauve-plum-600">
                     Commission Custom Art
                 </a>
                 {% if breadcrumb_medium %}
-                <a href="{% url 'gallery' %}" class="btn-outline">
+                <a href="{% url 'gallery' %}" class="btn btn-secondary">
                     View All Artworks
                 </a>
                 {% else %}
-                <a href="{% url 'shop' %}" class="btn-outline">
+                <a href="{% url 'shop' %}" class="btn btn-primary">
                     Shop Available Works
                 </a>
                 {% endif %}
@@ -274,7 +245,7 @@
 /* Medium Navigation Pills */
 .medium-pill {
     @apply px-6 py-3 rounded-full text-sm font-medium transition-all duration-200;
-    @apply bg-white text-neutral-600 border border-neutral-200;
+    @apply bg-surface text-secondary border border-muted;
     @apply hover:bg-primary-50 hover:text-primary-700 hover:border-primary-200;
 }
 
@@ -309,107 +280,44 @@
     @apply bg-white text-primary-600 shadow-sm;
 }
 
-/* Gallery Layout Systems - Masonry Style */
-.gallery-grid-large {
-    position: relative;
-}
-
+/* Gallery Layout Systems - Variable Width Masonry (from shop) */
+.gallery-grid-large,
 .gallery-grid-small {
     position: relative;
+    width: 100%;
+    min-height: 400px;
 }
 
-/* Artwork items positioned by JavaScript */
+/* Variable width masonry items */
 .gallery-grid-large .artwork-item,
 .gallery-grid-small .artwork-item {
     position: absolute;
     transition: all 0.3s ease;
-    border-radius: 8px;
-    overflow: hidden;
 }
 
-/* Large view styling - bigger cards with more spacing */
-.gallery-grid-large .artwork-item {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+/* Only force display block when not filtered */
+.gallery-grid-large .artwork-item:not(.filter-hidden),
+.gallery-grid-small .artwork-item:not(.filter-hidden) {
+    display: block !important;
 }
 
-.gallery-grid-large .artwork-item:hover {
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
-}
-
-/* Small view styling - tighter spacing, smaller shadows */
-.gallery-grid-small .artwork-item {
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-    border-radius: 4px;
-}
-
-.gallery-grid-small .artwork-item:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transform: translateY(-0.5px);
-}
-
-/* Overlay text sizing differences */
-.gallery-grid-large .artwork-item h3 {
-    font-size: 1.125rem; /* text-lg */
-    font-weight: 600;
-}
-
-.gallery-grid-small .artwork-item h3 {
-    font-size: 0.75rem; /* text-xs */
-    font-weight: 500;
-}
-
-.gallery-grid-large .artwork-item p {
-    font-size: 0.875rem;
-}
-
-.gallery-grid-small .artwork-item p {
-    font-size: 0.6875rem; /* text-xs - smaller */
-}
-
-/* Overlay padding differences */
-.gallery-grid-large .artwork-item .absolute.bottom-0 {
-    padding: 1rem;
-}
-
-.gallery-grid-small .artwork-item .absolute.bottom-0 {
-    padding: 0.5rem;
-}
-
-/* Wishlist button sizing */
-.gallery-grid-large .artwork-item button {
-    width: 2rem;
-    height: 2rem;
-}
-
-.gallery-grid-small .artwork-item button {
-    width: 1.25rem;
-    height: 1.25rem;
-    top: 0.5rem;
-    right: 0.5rem;
-}
-
-.gallery-grid-small .artwork-item button svg {
-    width: 0.75rem;
-    height: 0.75rem;
+/* Natural dimensions for masonry layout */
+.artwork-image-container,
+.gallery-grid-large .artwork-image-container,
+.gallery-grid-small .artwork-image-container {
+    max-width: 100%;
+    position: relative;
 }
 
 .artwork-image {
     max-width: 100%;
-    height: auto;
     display: block;
-    width: auto;
-}
-
-/* Text outline for enhanced readability on any background */
-.text-outline {
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 /* Gallery Filter Pills */
 .medium-filter-pill {
     @apply px-6 py-3 rounded-full text-sm font-medium transition-all duration-200;
-    @apply bg-white text-neutral-600 border border-neutral-200;
+    @apply bg-surface text-secondary border border-muted;
     @apply hover:bg-primary-50 hover:text-primary-700 hover:border-primary-200;
     @apply cursor-pointer;
 }
@@ -421,11 +329,54 @@
 
 /* Filter transitions */
 .artwork-item {
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .artwork-item.filter-hidden {
+    display: none;
+}
+
+/* Text outline for enhanced readability */
+.text-outline {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Initial stacked layout - all cards start in top-left position */
+.artwork-item.initial-stacked {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 320px !important;
+    max-width: 320px !important;
+    display: inline-block !important;
+    vertical-align: top !important;
+    margin: 0 1.5rem 1.5rem 0 !important;
+    opacity: 0.8;
     transform: scale(0.95);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+}
+
+/* Cards animate to their final positions */
+.artwork-item.positioned {
+    opacity: 1;
+    transform: scale(1);
+    z-index: auto;
+}
+
+/* Responsive initial sizing for stacked cards - matching shop */
+@media (max-width: 640px) {
+    .artwork-item.initial-stacked {
+        width: 280px !important;
+        max-width: 280px !important;
+    }
+}
+
+@media (min-width: 1280px) {
+    .artwork-item.initial-stacked {
+        width: 350px !important;
+        max-width: 350px !important;
+    }
 }
 
 </style>
@@ -433,7 +384,257 @@
 
 {% block extra_js %}
 <script>
-// Gallery Filtering System (similar to shop)
+// Gallery masonry using complete shop implementation
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Stacked Animation Masonry Layout (from shop)
+    let masonryInProgress = false;
+    let masonryTimeout = null;
+    
+    function initVariableMasonry() {
+        // Clear any existing timeout
+        if (masonryTimeout) {
+            clearTimeout(masonryTimeout);
+            masonryTimeout = null;
+        }
+        
+        if (masonryInProgress) {
+            console.log('Masonry in progress, queuing...');
+            // Queue another attempt after current one finishes
+            masonryTimeout = setTimeout(initVariableMasonry, 500);
+            return;
+        }
+        
+        masonryInProgress = true;
+        
+        // Emergency timeout to prevent hanging
+        const emergencyTimeout = setTimeout(() => {
+            if (masonryInProgress) {
+                masonryInProgress = false;
+            }
+        }, 5000);
+        
+        try {
+            const container = document.getElementById('gallery-container');
+            if (!container) {
+                masonryInProgress = false;
+                clearTimeout(emergencyTimeout);
+                return;
+            }
+            
+            const items = Array.from(container.querySelectorAll('.artwork-item:not(.filter-hidden)'));
+            
+            if (items.length === 0) {
+                masonryInProgress = false;
+                clearTimeout(emergencyTimeout);
+                return;
+            }
+            
+            // Set container for absolute positioning
+            container.style.position = 'relative';
+            
+            // Calculate responsive layout
+            const isSmallView = container.classList.contains('gallery-grid-small');
+            const containerWidth = container.offsetWidth;
+            const gap = isSmallView ? 12 : 24;
+            
+            let columns;
+            if (isSmallView) {
+                if (window.innerWidth >= 1280) columns = 6;
+                else if (window.innerWidth >= 1024) columns = 5;
+                else if (window.innerWidth >= 768) columns = 4;
+                else if (window.innerWidth >= 640) columns = 3;
+                else columns = 2;
+            } else {
+                if (window.innerWidth >= 1280) columns = 4;
+                else if (window.innerWidth >= 1024) columns = 3;
+                else if (window.innerWidth >= 640) columns = 2;
+                else columns = 1;
+            }
+            
+            const itemWidth = (containerWidth - (gap * (columns - 1))) / columns;
+            const columnHeights = new Array(columns).fill(0);
+            
+            // STEP 1: Stack all items in top-left position first
+            items.forEach((item, index) => {
+                item.classList.remove('positioned');
+                item.classList.add('initial-stacked');
+                // Add slight staggered z-index for visual stacking effect
+                item.style.zIndex = items.length - index;
+            });
+            
+            // Force reflow to apply stacked styles
+            container.offsetHeight;
+            
+            // STEP 2: After brief pause, animate items to their final positions
+            setTimeout(() => {
+                positionItemsSequentiallyFromStack(items, container, itemWidth, gap, columns, columnHeights, isSmallView)
+                    .then(() => {
+                        // Set final container height with extra bottom padding to prevent overlap
+                        const maxHeight = Math.max(...columnHeights);
+                        const extraPadding = gap * 2;
+                        const finalHeight = maxHeight + extraPadding;
+                        
+                        container.style.height = `${finalHeight}px`;
+                        container.style.marginBottom = `${gap * 3}px`;
+                        
+                        // Ensure container doesn't overflow
+                        container.style.overflow = 'visible';
+                        container.style.position = 'relative';
+                        container.style.zIndex = '1';
+                        
+                        const minHeight = Math.min(600, finalHeight);
+                        if (finalHeight < minHeight) {
+                            container.style.height = `${minHeight}px`;
+                        }
+                        
+                        masonryInProgress = false;
+                        clearTimeout(emergencyTimeout);
+                    })
+                    .catch(error => {
+                        console.error('Masonry error:', error);
+                        masonryInProgress = false;
+                        clearTimeout(emergencyTimeout);
+                    });
+            }, 200); // Brief pause to show stacking effect
+                
+        } catch (error) {
+            console.error('Masonry initialization error:', error);
+            masonryInProgress = false;
+            clearTimeout(emergencyTimeout);
+        }
+    }
+    
+    async function positionItemsSequentiallyFromStack(items, container, itemWidth, gap, columns, columnHeights, isSmallView) {
+        return new Promise((resolve) => {
+            let processedItems = 0;
+            
+            items.forEach((item, index) => {
+                // Staggered delay for smooth animation from stack to final position
+                setTimeout(() => {
+                    // Remove stacked class and add positioned class
+                    item.classList.remove('initial-stacked');
+                    item.classList.add('positioned');
+                    
+                    // Position the item in its final location
+                    positionSingleItemFromStack(item, itemWidth, gap, columns, columnHeights, isSmallView);
+                    processedItems++;
+                    
+                    if (processedItems === items.length) {
+                        // All items processed
+                        setTimeout(resolve, 300); // Longer delay for smooth completion
+                    }
+                }, index * 150); // 150ms between each item for visible staggered effect
+            });
+        });
+    }
+
+    function positionSingleItemFromStack(item, itemWidth, gap, columns, columnHeights, isSmallView) {
+        const img = item.querySelector('.artwork-image');
+        
+        // Calculate image height based on aspect ratio
+        let aspectRatio = 1.25; // Default 4:5 ratio
+        if (img && img.naturalWidth && img.naturalHeight) {
+            aspectRatio = img.naturalWidth / img.naturalHeight;
+        }
+        
+        const width = itemWidth;
+        const imageHeight = width / aspectRatio;
+        
+        // Find shortest column
+        let shortestColumn = 0;
+        let shortestHeight = columnHeights[0];
+        
+        for (let col = 1; col < columns; col++) {
+            if (columnHeights[col] < shortestHeight) {
+                shortestColumn = col;
+                shortestHeight = columnHeights[col];
+            }
+        }
+        
+        // Calculate position
+        const x = shortestColumn * (itemWidth + gap);
+        const y = shortestHeight;
+        
+        // Apply positioning immediately
+        item.style.position = 'absolute';
+        item.style.left = `${x}px`;
+        item.style.top = `${y}px`;
+        item.style.width = `${width}px`;
+        item.style.transition = 'all 0.3s ease';
+        
+        // Update image container dimensions
+        const imageContainer = item.querySelector('.artwork-image-container');
+        if (imageContainer) {
+            imageContainer.style.width = `${width}px`;
+            imageContainer.style.height = `${imageHeight}px`;
+        }
+        
+        // Set image to fill container
+        if (img) {
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+        }
+        
+        // Update column height
+        columnHeights[shortestColumn] = y + imageHeight + gap;
+    }
+    
+    // View toggle functionality
+    const viewToggles = document.querySelectorAll('.view-toggle');
+    const galleryContainer = document.getElementById('gallery-container');
+    
+    viewToggles.forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const view = this.dataset.view;
+            
+            // Update active state
+            viewToggles.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Update gallery layout
+            if (view === 'small') {
+                galleryContainer.classList.remove('gallery-grid-large');
+                galleryContainer.classList.add('gallery-grid-small');
+            } else {
+                galleryContainer.classList.remove('gallery-grid-small');
+                galleryContainer.classList.add('gallery-grid-large');
+            }
+            
+            // Store user preference
+            localStorage.setItem('gallery-view', view);
+            
+            // Re-run masonry layout
+            setTimeout(() => {
+                initVariableMasonry();
+            }, 100);
+        });
+    });
+    
+    // Restore user preference
+    const savedView = localStorage.getItem('gallery-view');
+    if (savedView) {
+        const targetToggle = document.querySelector(`[data-view="${savedView}"]`);
+        if (targetToggle) {
+            targetToggle.click();
+        }
+    }
+    
+    // Initialize gallery filtering
+    setupGalleryFiltering();
+    
+    // Initialize masonry on load
+    setTimeout(() => {
+        initVariableMasonry();
+    }, 100);
+    
+    // Re-run on resize
+    window.addEventListener('resize', () => {
+        setTimeout(initVariableMasonry, 100);
+    });
+});
+
 function setupGalleryFiltering() {
     // Medium filter pills
     const mediumPills = document.querySelectorAll('.medium-filter-pill');
@@ -447,8 +648,8 @@ function setupGalleryFiltering() {
             mediumPills.forEach(p => p.classList.remove('active'));
             this.classList.add('active');
             
-            // Apply filters
-            filterGalleryArtworks();
+            // Apply filters with loading state
+            filterGalleryArtworksWithLoading();
         });
     });
     
@@ -457,13 +658,13 @@ function setupGalleryFiltering() {
     searchInput.addEventListener('input', function() {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
-            filterGalleryArtworks();
+            filterGalleryArtworksWithLoading();
         }, 300);
     });
     
     // Featured filter handling
     featuredFilter.addEventListener('change', function() {
-        filterGalleryArtworks();
+        filterGalleryArtworksWithLoading();
     });
 }
 
@@ -478,7 +679,7 @@ function filterGalleryArtworks() {
     items.forEach(item => {
         const medium = item.dataset.medium ? item.dataset.medium.toLowerCase() : '';
         const title = item.dataset.title ? item.dataset.title.toLowerCase() : '';
-        const isFeatured = item.querySelector('.bg-primary-500'); // Check for featured badge
+        const isFeatured = item.querySelector('.bg-primary'); // Check for featured badge
         
         let shouldShow = true;
         
@@ -516,225 +717,41 @@ function filterGalleryArtworks() {
     }, 100);
     
     // Update results count (if exists)
-    const resultsElement = document.querySelector('.text-neutral-600');
-    if (resultsElement) {
+    const resultsElement = document.querySelector('.text-secondary');
+    if (resultsElement && resultsElement.textContent.includes('Showing')) {
         resultsElement.textContent = `Showing ${visibleCount} artworks`;
     }
 }
 
-// View toggle functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const viewToggles = document.querySelectorAll('.view-toggle');
-    const galleryContainer = document.getElementById('gallery-container');
+// Optimized filter function with minimal loading states
+function filterGalleryArtworksWithLoading() {
+    const gallery = document.getElementById('gallery-container');
     
-    viewToggles.forEach(toggle => {
-        toggle.addEventListener('click', function() {
-            const view = this.dataset.view;
-            
-            // Update active state
-            viewToggles.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Update gallery layout
-            if (view === 'small') {
-                galleryContainer.classList.remove('gallery-grid-large');
-                galleryContainer.classList.add('gallery-grid-small');
-            } else {
-                galleryContainer.classList.remove('gallery-grid-small');
-                galleryContainer.classList.add('gallery-grid-large');
-            }
-            
-            // Store user preference
-            localStorage.setItem('gallery-view', view);
-            
-            // Re-run masonry layout
-            setTimeout(initVariableMasonry, 100);
-        });
-    });
+    // Only show loading state for complex filters, not simple ones
+    const searchTerm = document.getElementById('gallery-search-input').value;
+    const showFeaturedOnly = document.getElementById('featured-filter').checked;
+    const isComplexFilter = searchTerm.length > 0 || showFeaturedOnly;
     
-    // Restore user preference
-    const savedView = localStorage.getItem('gallery-view');
-    if (savedView) {
-        const targetToggle = document.querySelector(`[data-view="${savedView}"]`);
-        if (targetToggle) {
-            targetToggle.click();
-        }
+    if (isComplexFilter) {
+        // Brief loading indication for complex filters
+        gallery.style.transition = 'opacity 0.15s ease';
+        gallery.style.opacity = '0.8';
     }
     
-    // Initialize gallery filtering
-    setupGalleryFiltering();
+    // Apply filters immediately
+    filterGalleryArtworks();
     
-    // Wishlist states are initialized globally in base.html
-    
-    // Initialize gallery masonry
-    setTimeout(() => {
+    // Re-layout with minimal delay
+    requestAnimationFrame(() => {
         initVariableMasonry();
-    }, 500);
-    
-    // Re-run on resize
-    window.addEventListener('resize', () => {
-        setTimeout(initVariableMasonry, 100);
-    });
-    
-    // Wishlist functionality
-    document.querySelectorAll('.wishlist-toggle').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const artworkId = this.dataset.artworkId;
-            toggleWishlist(artworkId);
-        });
-    });
-});
-
-// Wishlist initialization is now handled globally in base.html
-
-// Variable Masonry Layout with Animation (from shop)
-let masonryInProgress = false;
-
-function initVariableMasonry() {
-    if (masonryInProgress) return;
-    masonryInProgress = true;
-    
-    const container = document.getElementById('gallery-container');
-    const items = Array.from(container.querySelectorAll('.artwork-item:not(.filter-hidden)'));
-    
-    if (items.length === 0) {
-        masonryInProgress = false;
-        return;
-    }
-    
-    // Set container to relative positioning for absolute item positioning
-    container.style.position = 'relative';
-    
-    // Calculate responsive dimensions
-    const isSmallView = container.classList.contains('gallery-grid-small');
-    const containerWidth = container.offsetWidth;
-    let columns, gap, minItemWidth;
-    
-    if (isSmallView) {
-        gap = 12;
-        minItemWidth = 180;
-        if (window.innerWidth >= 1280) columns = Math.floor(containerWidth / (minItemWidth + gap));
-        else if (window.innerWidth >= 1024) columns = Math.min(5, Math.floor(containerWidth / (minItemWidth + gap)));
-        else if (window.innerWidth >= 768) columns = Math.min(4, Math.floor(containerWidth / (minItemWidth + gap)));
-        else if (window.innerWidth >= 640) columns = 3;
-        else columns = 2;
-    } else {
-        gap = 24;
-        minItemWidth = 280;
-        if (window.innerWidth >= 1280) columns = Math.min(4, Math.floor(containerWidth / (minItemWidth + gap)));
-        else if (window.innerWidth >= 1024) columns = Math.min(3, Math.floor(containerWidth / (minItemWidth + gap)));
-        else if (window.innerWidth >= 640) columns = 2;
-        else columns = 1;
-    }
-    
-    // Calculate actual item width
-    const itemWidth = (containerWidth - (gap * (columns - 1))) / columns;
-    
-    // Initialize column heights
-    const columnHeights = new Array(columns).fill(0);
-    
-    // Track positioned items for collision detection
-    const placedItems = [];
-    
-    // Position each item with collision avoidance
-    items.forEach((item, index) => {
-        const img = item.querySelector('.artwork-image');
         
-        // Calculate item dimensions
-        let aspectRatio = 1.25; // Default aspect ratio
-        if (img && img.naturalWidth && img.naturalHeight) {
-            aspectRatio = img.naturalWidth / img.naturalHeight;
+        if (isComplexFilter) {
+            // Quick restore for complex filters
+            setTimeout(() => {
+                gallery.style.opacity = '1';
+            }, 100);
         }
-        
-        const width = itemWidth;
-        const height = width / aspectRatio;
-        
-        // Find best column (shortest with collision check)
-        let bestColumn = 0;
-        let bestY = columnHeights[0];
-        
-        for (let col = 0; col < columns; col++) {
-            const testY = columnHeights[col];
-            const testX = col * (itemWidth + gap);
-            
-            // Check for collisions with already placed items
-            let hasCollision = false;
-            for (const placedItem of placedItems) {
-                if (testX < placedItem.x + placedItem.width + gap &&
-                    testX + width + gap > placedItem.x &&
-                    testY < placedItem.y + placedItem.height + gap &&
-                    testY + height + gap > placedItem.y) {
-                    hasCollision = true;
-                    break;
-                }
-            }
-            
-            if (!hasCollision && testY < bestY) {
-                bestColumn = col;
-                bestY = testY;
-            }
-        }
-        
-        const x = bestColumn * (itemWidth + gap);
-        const y = bestY;
-        
-        // Apply positioning with smooth transition
-        item.style.position = 'absolute';
-        item.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-        item.style.width = `${width}px`;
-        
-        // Staggered positioning for smooth animation
-        setTimeout(() => {
-            item.style.left = `${x}px`;
-            item.style.top = `${y}px`;
-            
-            // Update image container
-            const imageContainer = item.querySelector('.artwork-image-container');
-            if (imageContainer) {
-                imageContainer.style.width = `${width}px`;
-                imageContainer.style.height = `${height}px`;
-            }
-            
-            // Set image dimensions
-            if (img) {
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.objectFit = 'cover';
-            }
-        }, index * 50); // Staggered by 50ms per item
-        
-        // Update column height and track placed item
-        columnHeights[bestColumn] = y + height + gap;
-        placedItems.push({ x, y, width, height });
     });
-    
-    // Set container height
-    setTimeout(() => {
-        const maxHeight = Math.max(...columnHeights);
-        container.style.height = `${maxHeight}px`;
-        masonryInProgress = false;
-    }, items.length * 50 + 300);
-}
-
-// Utility functions
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 ${
-        type === 'success' ? 'bg-green-500 text-white' : 
-        type === 'error' ? 'bg-red-500 text-white' : 
-        'bg-blue-500 text-white'
-    }`;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.classList.add('opacity-0', 'translate-x-full');
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
 }
 </script>
 {% endblock %}
