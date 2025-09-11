@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, api_views
 
 app_name = 'orders'
 
@@ -30,6 +30,10 @@ urlpatterns = [
     # API endpoints for Stripe integration
     path('api/create-payment-intent/', views.create_payment_intent, name='create_payment_intent'),
     
+    # Order tracking API endpoints
+    path('api/<str:order_number>/status/', api_views.order_status_api, name='order_status_api'),
+    path('api/<str:order_number>/refresh/', api_views.refresh_order_status, name='refresh_order_status'),
+    
     # Webhook endpoints
-    path('webhooks/luma-prints/', views.luma_prints_webhook, name='luma_prints_webhook'),
+    path('webhooks/luma-prints/', api_views.luma_prints_webhook, name='luma_prints_webhook'),
 ]

@@ -5,15 +5,15 @@
 
 {% block meta_description %}{{ artwork.meta_description|default:artwork.description|truncatewords:30 }}{% endblock %}
 
-{% block og_image %}{{ artwork.gallery_url }}{% endblock %}
+{% block og_image %}{{ cached_main_image|default:artwork.image_url }}{% endblock %}
 
 {% block extra_css %}
-<!-- Preload critical images -->
-<link rel="preload" as="image" href="{{ artwork.gallery_url }}" importance="high">
-<link rel="preload" as="image" href="{{ artwork.thumbnail_url }}" importance="high">
-{% if frame_images.frame1.gallery %}
-<link rel="preload" as="image" href="{{ frame_images.frame1.thumbnail }}" importance="low">
+<!-- Critical image preload with URL validation -->
+{% with main_img_url=cached_main_image|default:artwork.image_url %}
+{% if main_img_url and 'supabase.co' in main_img_url %}
+<link rel="preload" as="image" href="{{ main_img_url }}" crossorigin="anonymous">
 {% endif %}
+{% endwith %}
 {% endblock %}
 
 {% block content %}
@@ -27,33 +27,28 @@
                     <!-- Thumbnail Column -->
                     <div class="flex flex-col space-y-3 w-20">
                         <!-- Main image thumbnail -->
-                        <button onclick="changeMainImage('{{ artwork.gallery_url }}', 'main')" 
+                        <button onclick="changeMainImage('{{ cached_main_image|default:artwork.image_url }}', 'main')" 
                                 class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-primary shadow-md transition-all duration-200"
                                 data-image="main">
-                            <img src="{{ artwork.thumbnail_url }}" 
+                            <img src="{{ cached_main_image|default:artwork.image_url }}" 
                                  alt="{{ artwork.title }} - Main View" 
                                  class="artwork-image w-full h-full object-cover"
-                                 data-lazy="true"
-                                 data-aspect-ratio="1/1"
-                                 data-priority="high"
                                  loading="eager">
                         </button>
                         
                         <!-- Frame thumbnails -->
                         {% if frame_images.frame1.gallery %}
                         <button onclick="changeMainImage('{{ frame_images.frame1.gallery }}', 'frame1')" 
-                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-muted hover:border-primary transition-all duration-200"
+                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-muted200 hover:border-primary transition-all duration-200"
                                 data-image="frame1">
-                            <img src="{{ frame_images.frame1.thumbnail }}" 
+                            <img src="{{ frame_images.frame1.gallery }}" 
                                  alt="{{ artwork.title }} - Frame 1" 
                                  class="artwork-image w-full h-full object-cover"
-                                 data-lazy="true"
-                                 data-aspect-ratio="1/1"
-                                 loading="lazy">
+                                 loading="eager">
                         </button>
                         {% else %}
-                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-muted bg-surface flex items-center justify-center">
-                            <svg class="w-6 h-6 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-gray-100 bg-gray-50 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                         </div>
@@ -61,18 +56,16 @@
                         
                         {% if frame_images.frame2.gallery %}
                         <button onclick="changeMainImage('{{ frame_images.frame2.gallery }}', 'frame2')" 
-                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-muted hover:border-primary transition-all duration-200"
+                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-muted200 hover:border-primary transition-all duration-200"
                                 data-image="frame2">
-                            <img src="{{ frame_images.frame2.thumbnail }}" 
+                            <img src="{{ frame_images.frame2.gallery }}" 
                                  alt="{{ artwork.title }} - Frame 2" 
                                  class="artwork-image w-full h-full object-cover"
-                                 data-lazy="true"
-                                 data-aspect-ratio="1/1"
-                                 loading="lazy">
+                                 loading="eager">
                         </button>
                         {% else %}
-                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-muted bg-surface flex items-center justify-center">
-                            <svg class="w-6 h-6 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-gray-100 bg-gray-50 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                         </div>
@@ -80,18 +73,16 @@
                         
                         {% if frame_images.frame3.gallery %}
                         <button onclick="changeMainImage('{{ frame_images.frame3.gallery }}', 'frame3')" 
-                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-muted hover:border-primary transition-all duration-200"
+                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-muted200 hover:border-primary transition-all duration-200"
                                 data-image="frame3">
-                            <img src="{{ frame_images.frame3.thumbnail }}" 
+                            <img src="{{ frame_images.frame3.gallery }}" 
                                  alt="{{ artwork.title }} - Frame 3" 
                                  class="artwork-image w-full h-full object-cover"
-                                 data-lazy="true"
-                                 data-aspect-ratio="1/1"
-                                 loading="lazy">
+                                 loading="eager">
                         </button>
                         {% else %}
-                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-muted bg-surface flex items-center justify-center">
-                            <svg class="w-6 h-6 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-gray-100 bg-gray-50 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                         </div>
@@ -99,18 +90,16 @@
                         
                         {% if frame_images.frame4.gallery %}
                         <button onclick="changeMainImage('{{ frame_images.frame4.gallery }}', 'frame4')" 
-                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-muted hover:border-primary transition-all duration-200"
+                                class="image-thumbnail aspect-square rounded-lg overflow-hidden border-2 border-muted200 hover:border-primary transition-all duration-200"
                                 data-image="frame4">
-                            <img src="{{ frame_images.frame4.thumbnail }}" 
+                            <img src="{{ frame_images.frame4.gallery }}" 
                                  alt="{{ artwork.title }} - Frame 4" 
                                  class="artwork-image w-full h-full object-cover"
-                                 data-lazy="true"
-                                 data-aspect-ratio="1/1"
-                                 loading="lazy">
+                                 loading="eager">
                         </button>
                         {% else %}
-                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-muted bg-surface flex items-center justify-center">
-                            <svg class="w-6 h-6 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-gray-100 bg-gray-50 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
                         </div>
@@ -119,12 +108,10 @@
                     
                     <!-- Main Image Display -->
                     <div class="flex-1 relative">
-                        <div class="relative rounded-2xl overflow-hidden shadow-soft group max-w-full max-h-[70vh] flex items-center justify-center bg-muted50">
-                            <img src="{{ artwork.gallery_url }}" 
+                        <div class="relative rounded-2xl overflow-hidden shadow-soft group">
+                            <img src="{{ cached_main_image|default:artwork.image_url }}" 
                                  alt="{{ artwork.alt_text|default:artwork.title }}" 
-                                 class="artwork-image max-w-full max-h-full w-auto h-auto object-contain"
-                                 data-lazy="true"
-                                 data-priority="high"
+                                 class="artwork-image w-full h-auto object-cover"
                                  id="main-artwork-image"
                                  loading="eager">
                             
@@ -159,7 +146,7 @@
                 <div class="mb-6">
                     <h1 class="text-page-title font-bold text-primary mb-2">{{ artwork.title }}</h1>
                     <div class="flex items-center space-x-4 mb-4">
-                        {% if artwork.is_original_available %}
+                        {% if artwork.original_available %}
                         <span class="bg-primary text-white text-caption px-3 py-1 rounded-full font-medium">
                             Original Available
                         </span>
@@ -167,7 +154,7 @@
                         <span class="bg-red-100 text-red-800 text-sm px-3 py-1 rounded-full font-medium">
                             Original Sold
                         </span>
-                        {% elif artwork.prints_available %}
+                        {% elif artwork.type == 'print' %}
                         <span class="bg-secondary-20 text-secondary text-sm px-3 py-1 rounded-full font-medium">
                             Prints Only
                         </span>
@@ -232,11 +219,11 @@
                 </div>
                 
                 <!-- Purchase Options -->
-                {% if artwork.is_original_available or artwork.prints_available %}
+                {% if artwork.type == 'print' or artwork.original_available %}
                     <div class="space-y-6 mb-8">
                         <h3 class="text-section-heading font-semibold text-primary">Purchase Options</h3>
                         
-                        {% if artwork.is_original_available %}
+                        {% if artwork.original_available and artwork.type != 'print' %}
                         <!-- Original Artwork Card -->
                         <div class="bg-surface border-2 border-muted rounded-xl p-6">
                             <div class="flex items-center justify-between mb-6">
@@ -423,7 +410,7 @@
                         {% endif %}
                         
                     </div>
-                {% elif not artwork.original_available and artwork.prints_available %}
+                {% elif not artwork.original_available and artwork.type == 'print' %}
                     <div class="bg-muted100 rounded-xl p-6 mb-8">
                         <h3 class="text-artwork-title font-semibold text-primary mb-2">Original Sold</h3>
                         <p class="text-secondary mb-4">
@@ -720,13 +707,20 @@ function getCookie(name) {
 
 // Initialize main image as active thumbnail and wishlist state on page load
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize main image as active thumbnail
     const mainThumb = document.querySelector('[data-image="main"]');
     if (mainThumb) {
+        mainThumb.classList.remove('border-muted200');
         mainThumb.classList.add('border-primary', 'shadow-lg');
-        mainThumb.classList.remove('border-muted');
     }
     
-    // Load cart state (wishlist state is initialized globally in base.html)
+    // Ensure main image is properly displayed 
+    const mainImage = document.getElementById('main-artwork-image');
+    if (mainImage && mainImage.src) {
+        console.log('Main image initialized:', mainImage.src.substring(0, 50) + '...');
+    }
+    
+    // Load cart state
     loadCartCount();
 });
 
@@ -1106,7 +1100,7 @@ function shareOnTwitter() {
 
 function shareOnPinterest() {
     const url = encodeURIComponent(window.location.href);
-    const media = encodeURIComponent('{{ artwork.gallery_url }}');
+    const media = encodeURIComponent('{{ cached_gallery_url|default:artwork.gallery_url }}');
     const description = encodeURIComponent('{{ artwork.title }} by Aiza - {{ artwork.description|truncatewords:20 }}');
     window.open(`https://pinterest.com/pin/create/button/?url=${url}&media=${media}&description=${description}`, '_blank', 'width=600,height=400');
 }
@@ -1122,10 +1116,6 @@ function copyLink() {
 window.toggleWishlist = toggleWishlist;
 
 // Initialize page
-document.addEventListener('DOMContentLoaded', function() {
-    loadCartCount();
-    loadWishlistState('{{ artwork.id }}');
-});
 
 </script>
 {% endblock %}

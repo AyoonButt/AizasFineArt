@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load webpack_loader %}
 
 {% block title %}Aiza's Fine Art - Original Watercolor & Oil Paintings from Fort Worth, TX{% endblock %}
 
@@ -57,154 +58,8 @@
             </div>
         </div>
         
-        <!-- Featured Gallery Grid -->
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            <!-- Placeholder for featured artworks -->
-            {% comment %}
-            <!-- This will be populated with actual artwork data -->
-            {% for artwork in featured_artworks %}
-                <div class="artwork-card card overflow-hidden reveal-on-scroll">
-                    <a href="{{ artwork.get_absolute_url }}" class="block">
-                        <div class="relative overflow-hidden">
-                            <img src="{{ artwork.primary_image.url }}" 
-                                 alt="{{ artwork.alt_text }}" 
-                                 class="artwork-image w-full h-80 object-cover">
-                            <div class="artwork-overlay">
-                                <div class="absolute bottom-6 left-6 text-pale-blush">
-                                    <h3 class="font-playfair font-semibold text-xl mb-2">{{ artwork.title }}</h3>
-                                    <p class="text-sm opacity-90">{{ artwork.medium }} • {{ artwork.dimensions_display }}</p>
-                                </div>
-                                <div class="absolute top-6 right-6 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
-                                    <span class="text-white font-medium">{{ artwork.price_display }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            {% endfor %}
-            {% endcomment %}
-            
-            <!-- Featured Artworks with Real Images -->
-            <div class="card artwork-card">
-                <div class="relative overflow-hidden rounded-lg">
-                    <img src="{% static 'dist/images/Shop/Magnolias/magnolias_lowres.jpg' %}" 
-                         alt="Magnolias watercolor painting" 
-                         class="w-full h-80 object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-deep-ash/70 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-6 left-6 text-pale-blush">
-                        <h3 class="text-artwork-title mb-2">Magnolias</h3>
-                        <p class="text-caption opacity-90">Watercolor • Various Sizes Available</p>
-                    </div>
-                    <div class="absolute top-6 right-6">
-                        <button class="wishlist-btn p-2 bg-pale-blush/20 backdrop-blur-sm rounded-full text-pale-blush hover:bg-pale-blush/40 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card artwork-card">
-                <div class="relative overflow-hidden rounded-lg">
-                    <img src="{% static 'dist/images/Shop/The Quiet Coast/thequietcoast_mockup_nb.jpg' %}" 
-                         alt="The Quiet Coast landscape painting" 
-                         class="w-full h-80 object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-deep-ash/70 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-6 left-6 text-pale-blush">
-                        <h3 class="text-artwork-title mb-2">The Quiet Coast</h3>
-                        <p class="text-caption opacity-90">Landscape • Print Available</p>
-                    </div>
-                    <div class="absolute top-6 right-6">
-                        <button class="wishlist-btn p-2 bg-pale-blush/20 backdrop-blur-sm rounded-full text-pale-blush hover:bg-pale-blush/40 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card artwork-card">
-                <div class="relative overflow-hidden rounded-lg">
-                    <img src="{% static 'dist/images/Shop/Snowdrops/snowdrops_lowres.jpg' %}" 
-                         alt="Snowdrops floral painting" 
-                         class="w-full h-80 object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-deep-ash/70 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-6 left-6 text-pale-blush">
-                        <h3 class="text-artwork-title mb-2">Snowdrops</h3>
-                        <p class="text-caption opacity-90">Watercolor • Limited Edition Print</p>
-                    </div>
-                    <div class="absolute top-6 right-6">
-                        <button class="wishlist-btn p-2 bg-pale-blush/20 backdrop-blur-sm rounded-full text-pale-blush hover:bg-pale-blush/40 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card artwork-card">
-                <div class="relative overflow-hidden rounded-lg">
-                    <img src="{% static 'dist/images/Shop/Hibiscus/hibiscus_mockup_nb.jpg' %}" 
-                         alt="Hibiscus botanical painting" 
-                         class="w-full h-80 object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-deep-ash/70 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-6 left-6 text-pale-blush">
-                        <h3 class="text-artwork-title mb-2">Hibiscus</h3>
-                        <p class="text-caption opacity-90">Botanical • Multiple Sizes</p>
-                    </div>
-                    <div class="absolute top-6 right-6">
-                        <button class="wishlist-btn p-2 bg-pale-blush/20 backdrop-blur-sm rounded-full text-pale-blush hover:bg-pale-blush/40 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card artwork-card">
-                <div class="relative overflow-hidden rounded-lg">
-                    <img src="{% static 'dist/images/Shop/Kingfisher/kingfisher_mockup_nb.jpg' %}" 
-                         alt="Kingfisher bird painting" 
-                         class="w-full h-80 object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-deep-ash/70 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-6 left-6 text-pale-blush">
-                        <h3 class="text-artwork-title mb-2">Kingfisher</h3>
-                        <p class="text-caption opacity-90">Wildlife • Fine Art Print</p>
-                    </div>
-                    <div class="absolute top-6 right-6">
-                        <button class="wishlist-btn p-2 bg-pale-blush/20 backdrop-blur-sm rounded-full text-pale-blush hover:bg-pale-blush/40 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card artwork-card">
-                <div class="relative overflow-hidden rounded-lg">
-                    <img src="{% static 'dist/images/Shop/Velka Fatra/velkafatra_mockup.jpg' %}" 
-                         alt="Velka Fatra mountain landscape" 
-                         class="w-full h-80 object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-deep-ash/70 via-transparent to-transparent"></div>
-                    <div class="absolute bottom-6 left-6 text-pale-blush">
-                        <h3 class="text-artwork-title mb-2">Velka Fatra</h3>
-                        <p class="text-caption opacity-90">Landscape • Mountain Series</p>
-                    </div>
-                    <div class="absolute top-6 right-6">
-                        <button class="wishlist-btn p-2 bg-pale-blush/20 backdrop-blur-sm rounded-full text-pale-blush hover:bg-pale-blush/40 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!-- React Featured Slider -->
+        <div data-react-component="featured-slider" id="featured-artworks-slider" class="mb-12"></div>
         
         <div class="text-center">
             <a href="{% url 'shop' %}" class="btn btn-primary">Shop All Artworks</a>
@@ -399,4 +254,6 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- React Bundle Loading -->
+{% render_bundle 'main' %}
 {% endblock %}

@@ -5,16 +5,8 @@
         
         <!-- Image Container -->
         <div class="artwork-image-container relative overflow-hidden">
-            {% if artwork.gallery_url %}
-                <img src="{{ artwork.gallery_url }}" 
-                     alt="{{ artwork.alt_text|default:artwork.title }}"
-                     class="artwork-image object-cover">
-            {% elif artwork.image_url %}
+            {% if artwork.main_image_url %}
                 <img src="{{ artwork.image_url }}" 
-                     alt="{{ artwork.alt_text|default:artwork.title }}"
-                     class="artwork-image object-cover">
-            {% elif artwork.main_image_url %}
-                <img src="{{ artwork.main_image_url }}" 
                      alt="{{ artwork.alt_text|default:artwork.title }}"
                      class="artwork-image object-cover">
             {% else %}

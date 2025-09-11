@@ -601,7 +601,7 @@ class OrderDetailView(View):
     
     @method_decorator(login_required)
     def get(self, request, order_number):
-        """Show detailed order information"""
+        """Show detailed order information with tracking data"""
         order = get_object_or_404(Order, order_number=order_number)
         
         # Security: only show to order owner or admin
@@ -609,11 +609,48 @@ class OrderDetailView(View):
             messages.error(request, 'Order not found.')
             return redirect('orders:history')
         
-        context = {
-            'order': order,
+        # Prepare order tracking data for React component
+        # Handle tracking stages with proper datetime serialization
+        tracking_stages = []
+        for stage in order.tracking_stages:
+            stage_data = {
+                'key': stage['key'],
+                'title': stage['title'],
+                'description': stage['description'],
+                'completed': stage['completed'],
+                'timestamp': stage['timestamp'].isoformat() if stage['timestamp'] else None,
+                'icon': stage['icon']
+            }
+            tracking_stages.append(stage_data)
+        
+        order_tracking_data = {
+            'order_number': order.order_number,
+            'status': order.status,
+            'tracking_number': order.tracking_number or '',
+            'carrier': order.carrier or '',
+            'carrier_tracking_url': order.get_carrier_tracking_url(),
+            'tracking_percentage': order.tracking_percentage,
+            'tracking_stages': tracking_stages,
+            'luma_prints_status': order.luma_prints_status or '',
+            'luma_prints_tracking_url': order.luma_prints_tracking_url or '',
+            'luma_prints_updated_at': order.luma_prints_updated_at.isoformat() if order.luma_prints_updated_at else None,
+            'estimated_delivery': order.estimated_delivery.isoformat() if order.estimated_delivery else None,
+            'status_updates': [
+                {
+                    'id': update.id,
+                    'new_status': update.new_status,
+                    'notes': update.notes,
+                    'timestamp': update.timestamp.isoformat(),
+                } for update in order.status_updates.all()[:10]  # Latest 10 updates
+            ]
         }
         
-        return render(request, 'orders/detail.html', context)
+        context = {
+            'order': order,
+            'order_tracking_data': json.dumps(order_tracking_data),
+        }
+        
+        return render(request, 'orders/order_detail_tracking.html', context)
 
 
 @login_required

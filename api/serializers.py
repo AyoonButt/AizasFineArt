@@ -12,33 +12,44 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ArtworkListSerializer(serializers.ModelSerializer):
-    """Serializer for artwork list view with 5-image support"""
+    """Serializer for artwork list view with basic image support"""
     category = CategorySerializer(read_only=True)
     image_thumbnail = serializers.SerializerMethodField()
-    image_gallery = serializers.SerializerMethodField()
-    price_display = serializers.ReadOnlyField()
-    dimensions_display = serializers.ReadOnlyField()
-    aspect_ratio = serializers.ReadOnlyField()
-    all_images = serializers.ReadOnlyField()  # Raw URLs for reference
-    all_images_transformed = serializers.ReadOnlyField()  # Transformed URLs for display
-    all_images_thumbnails = serializers.ReadOnlyField()  # Thumbnail URLs for navigation
+    image_gallery = serializers.SerializerMethodField() 
+    image_url = serializers.SerializerMethodField()
+    price_display = serializers.SerializerMethodField()
+    aspect_ratio = serializers.SerializerMethodField()
     
     class Meta:
         model = Artwork
         fields = [
             'id', 'title', 'slug', 'category', 'medium', 'year_created',
             'original_price', 'price_display', 'is_featured', 'dimensions_width', 'dimensions_height',
-            'image_thumbnail', 'image_gallery', 'dimensions_display',
-            'aspect_ratio', 'alt_text', 'views',
-            'main_image_url', 'frame1_image_url', 'frame2_image_url', 'frame3_image_url', 'frame4_image_url',
-            'all_images', 'all_images_transformed', 'all_images_thumbnails'
+            'image_thumbnail', 'image_gallery', 'image_url',
+            'aspect_ratio', 'alt_text', 'views'
         ]
     
     def get_image_thumbnail(self, obj):
-        return obj.get_image('thumbnail')
+        """Get cached image URL for thumbnails - fast performance"""
+        return obj.get_simple_signed_url()
     
     def get_image_gallery(self, obj):
-        return obj.get_image('gallery')
+        """Get cached image URL for gallery - fast performance"""
+        return obj.get_simple_signed_url()
+    
+    def get_image_url(self, obj):
+        """Get cached image URL - fast performance"""
+        return obj.get_simple_signed_url()
+    
+    def get_price_display(self, obj):
+        if obj.original_price:
+            return f"${obj.original_price:,.0f}"
+        return "Price on request"
+    
+    def get_aspect_ratio(self, obj):
+        if obj.dimensions_width and obj.dimensions_height:
+            return float(obj.dimensions_width) / float(obj.dimensions_height)
+        return 1.25
 
 
 class ArtworkDetailSerializer(serializers.ModelSerializer):

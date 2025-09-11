@@ -1,0 +1,313 @@
+{
+  "timestamp": "2025-08-29T23:17:19.720657",
+  "base_url": "http://localhost:8001",
+  "static_assets": {
+    "/static/dist/css/main.css": {
+      "status": 200,
+      "load_time": 0.09079527854919434,
+      "size": 75450,
+      "content_type": "text/css"
+    },
+    "/static/src/css/design-system.css": {
+      "status": 200,
+      "load_time": 0.07231760025024414,
+      "size": 16452,
+      "content_type": "text/css"
+    },
+    "/static/src/js/loading-optimizer.js": {
+      "status": 200,
+      "load_time": 0.06422710418701172,
+      "size": 13124,
+      "content_type": "text/javascript"
+    },
+    "/static/src/js/lazy-loader.js": {
+      "status": 200,
+      "load_time": 0.07223629951477051,
+      "size": 5394,
+      "content_type": "text/javascript"
+    },
+    "/static/src/js/performance-monitor.js": {
+      "status": 200,
+      "load_time": 0.06772732734680176,
+      "size": 7889,
+      "content_type": "text/javascript"
+    },
+    "/static/sw.js": {
+      "status": 200,
+      "load_time": 0.05598044395446777,
+      "size": 8276,
+      "content_type": "text/javascript"
+    }
+  },
+  "page_tests": {
+    "home": {
+      "page": "home",
+      "url": "/",
+      "iterations": 5,
+      "avg_time": 0.01797804832458496,
+      "median_time": 0.009156942367553711,
+      "min_time": 0.008218765258789062,
+      "max_time": 0.05231070518493652,
+      "std_deviation": 0.019246084595072484,
+      "avg_response_size": 55011,
+      "status_codes": [
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "grade": "EXCELLENT",
+      "raw_times": [
+        0.05231070518493652,
+        0.00839996337890625,
+        0.009156942367553711,
+        0.011803865432739258,
+        0.008218765258789062
+      ],
+      "concurrent_test": {
+        "concurrent_users": 5,
+        "avg_response_time": 0.0662714958190918,
+        "total_time": 0.08531975746154785,
+        "successful_requests": 5,
+        "errors": 0
+      }
+    },
+    "gallery": {
+      "page": "gallery",
+      "url": "/gallery/",
+      "iterations": 5,
+      "avg_time": 0.18387742042541505,
+      "median_time": 0.16556048393249512,
+      "min_time": 0.1525883674621582,
+      "max_time": 0.23403167724609375,
+      "std_deviation": 0.03725666742889436,
+      "avg_response_size": 87849,
+      "status_codes": [
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "grade": "EXCELLENT",
+      "raw_times": [
+        0.21294713020324707,
+        0.16556048393249512,
+        0.15425944328308105,
+        0.1525883674621582,
+        0.23403167724609375
+      ],
+      "concurrent_test": {
+        "concurrent_users": 5,
+        "avg_response_time": 0.4351653099060059,
+        "total_time": 0.46003103256225586,
+        "successful_requests": 5,
+        "errors": 0
+      }
+    },
+    "shop": {
+      "page": "shop",
+      "url": "/shop/",
+      "iterations": 5,
+      "avg_time": 0.30243573188781736,
+      "median_time": 0.2776210308074951,
+      "min_time": 0.2754642963409424,
+      "max_time": 0.34905195236206055,
+      "std_deviation": 0.03603566480354266,
+      "avg_response_size": 121952,
+      "status_codes": [
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "grade": "EXCELLENT",
+      "raw_times": [
+        0.2761709690093994,
+        0.2776210308074951,
+        0.2754642963409424,
+        0.33387041091918945,
+        0.34905195236206055
+      ],
+      "concurrent_test": {
+        "concurrent_users": 5,
+        "avg_response_time": 0.5256316184997558,
+        "total_time": 0.5612437725067139,
+        "successful_requests": 5,
+        "errors": 0
+      }
+    },
+    "about": {
+      "page": "about",
+      "url": "/about/",
+      "iterations": 5,
+      "avg_time": 0.00973963737487793,
+      "median_time": 0.009547710418701172,
+      "min_time": 0.006547212600708008,
+      "max_time": 0.012755632400512695,
+      "std_deviation": 0.002575624064114841,
+      "avg_response_size": 50509,
+      "status_codes": [
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "grade": "EXCELLENT",
+      "raw_times": [
+        0.012755632400512695,
+        0.006547212600708008,
+        0.009547710418701172,
+        0.008033990859985352,
+        0.011813640594482422
+      ]
+    },
+    "contact": {
+      "page": "contact",
+      "url": "/contact/",
+      "iterations": 5,
+      "avg_time": 0.008993291854858398,
+      "median_time": 0.008398771286010742,
+      "min_time": 0.006687164306640625,
+      "max_time": 0.013184785842895508,
+      "std_deviation": 0.002639643945038986,
+      "avg_response_size": 57275,
+      "status_codes": [
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "grade": "EXCELLENT",
+      "raw_times": [
+        0.013184785842895508,
+        0.009725809097290039,
+        0.008398771286010742,
+        0.006687164306640625,
+        0.006969928741455078
+      ]
+    },
+    "portfolio": {
+      "page": "portfolio",
+      "url": "/portfolio/",
+      "iterations": 5,
+      "avg_time": 0.06103057861328125,
+      "median_time": 0.056351423263549805,
+      "min_time": 0.045993804931640625,
+      "max_time": 0.08740019798278809,
+      "std_deviation": 0.015911777709746215,
+      "avg_response_size": 71641,
+      "status_codes": [
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "grade": "EXCELLENT",
+      "raw_times": [
+        0.056351423263549805,
+        0.06256413459777832,
+        0.045993804931640625,
+        0.052843332290649414,
+        0.08740019798278809
+      ]
+    },
+    "artwork_detail": {
+      "page": "artwork_detail",
+      "url": "/art/wide-images-2025/",
+      "iterations": 5,
+      "avg_time": 0.5152464389801026,
+      "median_time": 0.5281891822814941,
+      "min_time": 0.32723236083984375,
+      "max_time": 0.8094131946563721,
+      "std_deviation": 0.19079493990689,
+      "avg_response_size": 80168,
+      "status_codes": [
+        200,
+        200,
+        200,
+        200,
+        200
+      ],
+      "grade": "GOOD",
+      "raw_times": [
+        0.8094131946563721,
+        0.3649570941925049,
+        0.5281891822814941,
+        0.5464403629302979,
+        0.32723236083984375
+      ]
+    }
+  },
+  "summary": {
+    "total_pages_tested": 7,
+    "overall_avg_time": 0.15704302106584822,
+    "fastest_page": [
+      "contact",
+      {
+        "page": "contact",
+        "url": "/contact/",
+        "iterations": 5,
+        "avg_time": 0.008993291854858398,
+        "median_time": 0.008398771286010742,
+        "min_time": 0.006687164306640625,
+        "max_time": 0.013184785842895508,
+        "std_deviation": 0.002639643945038986,
+        "avg_response_size": 57275,
+        "status_codes": [
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "grade": "EXCELLENT",
+        "raw_times": [
+          0.013184785842895508,
+          0.009725809097290039,
+          0.008398771286010742,
+          0.006687164306640625,
+          0.006969928741455078
+        ]
+      }
+    ],
+    "slowest_page": [
+      "artwork_detail",
+      {
+        "page": "artwork_detail",
+        "url": "/art/wide-images-2025/",
+        "iterations": 5,
+        "avg_time": 0.5152464389801026,
+        "median_time": 0.5281891822814941,
+        "min_time": 0.32723236083984375,
+        "max_time": 0.8094131946563721,
+        "std_deviation": 0.19079493990689,
+        "avg_response_size": 80168,
+        "status_codes": [
+          200,
+          200,
+          200,
+          200,
+          200
+        ],
+        "grade": "GOOD",
+        "raw_times": [
+          0.8094131946563721,
+          0.3649570941925049,
+          0.5281891822814941,
+          0.5464403629302979,
+          0.32723236083984375
+        ]
+      }
+    ],
+    "grade_distribution": {
+      "EXCELLENT": 6,
+      "GOOD": 1
+    }
+  }
+}

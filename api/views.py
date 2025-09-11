@@ -27,30 +27,56 @@ class ArtworkListAPIView(generics.ListAPIView):
     permission_classes = [AllowAny]
     
     def get_queryset(self):
+        # Base queryset with performance optimizations
         queryset = Artwork.objects.filter(is_active=True).select_related('category')
         
         # Apply filters
         medium = self.request.query_params.get('medium')
-        status = self.request.query_params.get('status')
         category = self.request.query_params.get('category')
         featured = self.request.query_params.get('featured')
         price_min = self.request.query_params.get('price_min')
         price_max = self.request.query_params.get('price_max')
+        fields = self.request.query_params.get('fields')
         
+        # Apply other filters first
         if medium:
             queryset = queryset.filter(medium=medium)
-        if status:
-            queryset = queryset.filter(status=status)
         if category:
             queryset = queryset.filter(category__slug=category)
+        if price_min:
+            queryset = queryset.filter(original_price__gte=price_min)
+        if price_max:
+            queryset = queryset.filter(original_price__lte=price_max)
+        
+        # Apply ordering
+        queryset = queryset.order_by('-is_featured', '-created_at')
+        
+        # Performance optimization for featured artworks - apply after ordering
         if featured == 'true':
             queryset = queryset.filter(is_featured=True)
-        if price_min:
-            queryset = queryset.filter(price__gte=price_min)
-        if price_max:
-            queryset = queryset.filter(price__lte=price_max)
+            # Limit featured artworks for performance and pre-warm cache
+            queryset = queryset[:10]
             
-        return queryset.order_by('-is_featured', 'display_order', '-created_at')
+            # Pre-warm URL cache for featured artworks to avoid API delays
+            self._prewarm_url_cache(queryset)
+            
+        return queryset
+    
+    def _prewarm_url_cache(self, queryset):
+        """Pre-warm URL cache for better performance"""
+        from django.utils import timezone
+        
+        for artwork in queryset:
+            # Check if cache needs refreshing
+            now = timezone.now()
+            cache_expired = (not artwork._cached_image_url or 
+                           not artwork._url_cache_expires or 
+                           now > (artwork._url_cache_expires - timezone.timedelta(minutes=5)))
+            
+            if cache_expired:
+                # Warm the cache by calling get_simple_signed_url
+                # This will cache URLs for both full-size and thumbnail access
+                artwork.get_simple_signed_url()
 
 
 class ArtworkDetailAPIView(generics.RetrieveAPIView):

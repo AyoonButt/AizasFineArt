@@ -346,6 +346,7 @@ class ArtworkForm(forms.ModelForm):
         
         if commit:
             # Skip model validation since we already handled it in _post_clean
+            # LumaPrints sync is now handled automatically in the model's save method
             instance.save(skip_validation=True)
             # Handle many-to-many relationships (like tags)
             self.save_m2m()

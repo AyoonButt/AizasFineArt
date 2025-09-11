@@ -162,10 +162,8 @@ function createWishlistItemElement(item, index) {
             <img src="${artwork.image_gallery || artwork.image_thumbnail || artwork.main_image_url || '/static/images/placeholder.jpg'}" 
                  alt="${artwork.title}" 
                  class="artwork-image w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
-                 data-lazy="true"
-                 data-aspect-ratio="4/5"
-                 data-priority="${index < 6 ? 'high' : 'normal'}"
-                 loading="${index < 6 ? 'eager' : 'lazy'}">
+                 loading="${index < 6 ? 'eager' : 'lazy'}"
+                 decoding="async">
             
             <!-- Remove Button (hover only) -->
             <button onclick="event.stopPropagation(); removeFromWishlist('${item.id}');" 

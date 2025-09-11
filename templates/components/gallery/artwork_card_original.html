@@ -2,16 +2,8 @@
 <div class="artwork-card card group relative overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300" data-gsap="scaleIn" onclick="window.location.href='{% if artwork.get_absolute_url %}{{ artwork.get_absolute_url }}{% else %}#{% endif %}'">
     <!-- Image Container -->
         <div class="artwork-image-container relative overflow-hidden">
-            {% if artwork.gallery_url %}
-                <img src="{{ artwork.gallery_url }}" 
-                     alt="{{ artwork.alt_text|default:artwork.title }}"
-                     class="artwork-image object-cover">
-            {% elif artwork.image_url %}
+            {% if artwork.main_image_url %}
                 <img src="{{ artwork.image_url }}" 
-                     alt="{{ artwork.alt_text|default:artwork.title }}"
-                     class="artwork-image object-cover">
-            {% elif artwork.main_image_url %}
-                <img src="{{ artwork.main_image_url }}" 
                      alt="{{ artwork.alt_text|default:artwork.title }}"
                      class="artwork-image object-cover">
             {% else %}

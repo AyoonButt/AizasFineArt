@@ -155,6 +155,93 @@ class LumaPrintsAPI:
         except requests.exceptions.RequestException as e:
             raise LumaPrintsAPIError(f"Failed to get product catalog: {str(e)}")
     
+    def create_product(self, artwork_data: Dict) -> Dict:
+        """
+        Create a new print product in LumaPrints catalog
+        
+        Args:
+            artwork_data: Dict containing artwork information
+            
+        Returns:
+            Dict with LumaPrints product response including product_id
+        """
+        try:
+            # Prepare product payload
+            payload = self._prepare_product_payload(artwork_data)
+            
+            # Make API request
+            endpoint = f"{self.base_url}/products"
+            response = requests.post(
+                endpoint,
+                headers=self.headers,
+                json=payload,
+                timeout=30
+            )
+            
+            response.raise_for_status()
+            return response.json()
+            
+        except requests.exceptions.RequestException as e:
+            raise LumaPrintsAPIError(f"Failed to create product: {str(e)}")
+        except Exception as e:
+            raise LumaPrintsAPIError(f"Unexpected error creating product: {str(e)}")
+    
+    def update_product(self, product_id: str, artwork_data: Dict) -> Dict:
+        """
+        Update an existing print product in LumaPrints catalog
+        
+        Args:
+            product_id: LumaPrints product ID
+            artwork_data: Dict containing updated artwork information
+            
+        Returns:
+            Dict with LumaPrints product response
+        """
+        try:
+            # Prepare product payload
+            payload = self._prepare_product_payload(artwork_data)
+            
+            # Make API request
+            endpoint = f"{self.base_url}/products/{product_id}"
+            response = requests.put(
+                endpoint,
+                headers=self.headers,
+                json=payload,
+                timeout=30
+            )
+            
+            response.raise_for_status()
+            return response.json()
+            
+        except requests.exceptions.RequestException as e:
+            raise LumaPrintsAPIError(f"Failed to update product: {str(e)}")
+        except Exception as e:
+            raise LumaPrintsAPIError(f"Unexpected error updating product: {str(e)}")
+    
+    def delete_product(self, product_id: str) -> Dict:
+        """
+        Delete a print product from LumaPrints catalog
+        
+        Args:
+            product_id: LumaPrints product ID
+            
+        Returns:
+            Dict with deletion response
+        """
+        try:
+            endpoint = f"{self.base_url}/products/{product_id}"
+            response = requests.delete(
+                endpoint,
+                headers=self.headers,
+                timeout=30
+            )
+            
+            response.raise_for_status()
+            return response.json()
+            
+        except requests.exceptions.RequestException as e:
+            raise LumaPrintsAPIError(f"Failed to delete product: {str(e)}")
+    
     def _prepare_order_payload(self, order_data: Dict) -> Dict:
         """
         Prepare order data for Luma Prints API
@@ -258,6 +345,69 @@ class LumaPrintsAPI:
         }
         
         return size_map.get(item_type, {'width': 8, 'height': 10})
+    
+    def _prepare_product_payload(self, artwork_data: Dict) -> Dict:
+        """
+        Prepare artwork data for LumaPrints product creation
+        
+        Args:
+            artwork_data: Dict containing artwork information
+            
+        Returns:
+            Dict formatted for LumaPrints product API
+        """
+        artwork = artwork_data['artwork']
+        image_url = artwork_data.get('image_url', artwork.get_simple_signed_url())
+        
+        # Prepare product payload
+        payload = {
+            'name': artwork.title,
+            'description': artwork.description or f"Fine art print of {artwork.title}",
+            'external_id': str(artwork.id),  # Our artwork ID for reference
+            'artwork_url': image_url,
+            'artist_name': 'Aiza',
+            'artwork_metadata': {
+                'title': artwork.title,
+                'medium': artwork.get_medium_display(),
+                'year_created': artwork.year_created,
+                'dimensions': f"{artwork.dimensions_width}\" × {artwork.dimensions_height}\"",
+                'category': artwork.category.name if artwork.category else '',
+            },
+            'print_options': [
+                {
+                    'size': '8x10',
+                    'material': 'fine_art_paper',
+                    'finish': 'matte',
+                    'price': 45.00,
+                    'sku': f'PRINT_8X10_{artwork.id}'
+                },
+                {
+                    'size': '11x14',
+                    'material': 'fine_art_paper',
+                    'finish': 'matte',
+                    'price': 65.00,
+                    'sku': f'PRINT_11X14_{artwork.id}'
+                },
+                {
+                    'size': '16x20',
+                    'material': 'fine_art_paper',
+                    'finish': 'matte',
+                    'price': 95.00,
+                    'sku': f'PRINT_16X20_{artwork.id}'
+                },
+                {
+                    'size': '24x30',
+                    'material': 'fine_art_paper',
+                    'finish': 'matte',
+                    'price': 150.00,
+                    'sku': f'PRINT_24X30_{artwork.id}'
+                }
+            ],
+            'status': 'active',
+            'test_mode': self.test_mode
+        }
+        
+        return payload
 
 
 class LumaPrintsWebhookHandler:
@@ -329,30 +479,72 @@ class LumaPrintsWebhookHandler:
     
     def _handle_order_status_change(self, payload: Dict) -> Dict:
         """Handle order status change webhook"""
-        from .models import Order
+        from .models import Order, OrderStatusUpdate
+        from django.utils import timezone
         
         try:
             # Find order by external ID
             external_order_id = payload.get('external_order_id')
             order = Order.objects.get(order_number=external_order_id)
             
-            # Update order with Luma Prints status
+            # Store previous status for tracking
+            previous_status = order.status
+            
+            # Update order with Luma Prints information
             luma_status = payload.get('status')
             order.luma_prints_order_id = payload.get('luma_order_id', order.luma_prints_order_id)
+            order.luma_prints_status = luma_status
+            order.luma_prints_updated_at = timezone.now()
+            
+            # Update tracking URL if provided
+            if payload.get('tracking_url'):
+                order.luma_prints_tracking_url = payload.get('tracking_url')
+            
+            # Update estimated delivery if provided
+            if payload.get('estimated_delivery'):
+                try:
+                    from datetime import datetime
+                    estimated_date = datetime.fromisoformat(payload['estimated_delivery'])
+                    order.estimated_delivery = estimated_date
+                except (ValueError, TypeError):
+                    pass
             
             # Map Luma status to our status
             status_mapping = {
                 'pending': 'confirmed',
                 'processing': 'processing',
                 'printed': 'processing',
+                'quality_check': 'processing',
+                'packaged': 'processing',
                 'shipped': 'shipped',
+                'in_transit': 'shipped',
+                'out_for_delivery': 'shipped',
                 'delivered': 'delivered',
-                'cancelled': 'cancelled'
+                'cancelled': 'cancelled',
+                'returned': 'cancelled'
             }
             
             if luma_status in status_mapping:
-                order.status = status_mapping[luma_status]
+                new_status = status_mapping[luma_status]
+                order.status = new_status
+                
+                # Update specific timestamps
+                if new_status == 'confirmed' and not order.confirmed_at:
+                    order.confirmed_at = timezone.now()
+                elif new_status == 'shipped' and not order.shipped_at:
+                    order.shipped_at = timezone.now()
+                elif new_status == 'delivered' and not order.delivered_at:
+                    order.delivered_at = timezone.now()
+                
                 order.save()
+                
+                # Create status update record
+                OrderStatusUpdate.objects.create(
+                    order=order,
+                    previous_status=previous_status,
+                    new_status=new_status,
+                    notes=f'Updated via LumaPrints webhook. Luma status: {luma_status}'
+                )
             
             return {'status': 'success', 'message': 'Order status updated'}
             
@@ -368,18 +560,43 @@ class LumaPrintsWebhookHandler:
             external_order_id = payload.get('external_order_id')
             order = Order.objects.get(order_number=external_order_id)
             
-            # Update order status
+            # Store previous status
+            previous_status = order.status
+            
+            # Update order with comprehensive shipping information
             order.status = 'shipped'
             order.shipped_at = timezone.now()
             order.tracking_number = payload.get('tracking_number', '')
+            order.carrier = payload.get('carrier', '').upper()
+            order.luma_prints_status = 'shipped'
+            order.luma_prints_updated_at = timezone.now()
+            
+            # Update tracking URLs
+            if payload.get('tracking_url'):
+                order.luma_prints_tracking_url = payload.get('tracking_url')
+            
+            # Update estimated delivery
+            if payload.get('estimated_delivery'):
+                try:
+                    from datetime import datetime
+                    estimated_date = datetime.fromisoformat(payload['estimated_delivery'])
+                    order.estimated_delivery = estimated_date
+                except (ValueError, TypeError):
+                    pass
+            
             order.save()
             
-            # Create status update
+            # Create detailed status update
+            tracking_info = f"Tracking: {order.tracking_number}" if order.tracking_number else "No tracking number provided"
+            carrier_info = f"Carrier: {order.carrier}" if order.carrier else ""
+            notes_parts = [f'Shipped by Luma Prints', tracking_info, carrier_info]
+            notes = '. '.join([part for part in notes_parts if part])
+            
             OrderStatusUpdate.objects.create(
                 order=order,
-                previous_status=order.status,
+                previous_status=previous_status,
                 new_status='shipped',
-                notes=f'Shipped by Luma Prints. Tracking: {order.tracking_number}'
+                notes=notes
             )
             
             return {'status': 'success', 'message': 'Order marked as shipped'}
@@ -454,6 +671,121 @@ def send_print_order_to_luma(order):
         
     except LumaPrintsAPIError as e:
         return {'status': 'error', 'message': str(e)}
+
+
+def create_luma_prints_product(artwork, image_url=None):
+    """
+    Helper function to create a new print product in LumaPrints for an artwork
+    
+    Args:
+        artwork: Django Artwork instance
+        image_url: Optional image URL, if not provided will use artwork.get_simple_signed_url()
+        
+    Returns:
+        Dict with LumaPrints response including product_id
+    """
+    try:
+        # Initialize API client
+        api = LumaPrintsAPI()
+        
+        # Prepare artwork data
+        artwork_data = {
+            'artwork': artwork,
+            'image_url': image_url or artwork.get_simple_signed_url()
+        }
+        
+        # Create product in LumaPrints
+        response = api.create_product(artwork_data)
+        
+        # Update artwork with LumaPrints product ID
+        if response.get('product_id'):
+            artwork.lumaprints_product_id = response['product_id']
+            artwork.save(update_fields=['lumaprints_product_id'])
+        
+        return {
+            'status': 'success',
+            'product_id': response.get('product_id'),
+            'message': 'Product created in LumaPrints successfully'
+        }
+        
+    except LumaPrintsAPIError as e:
+        return {'status': 'error', 'message': str(e)}
+    except Exception as e:
+        return {'status': 'error', 'message': f'Unexpected error: {str(e)}'}
+
+
+def update_luma_prints_product(artwork, image_url=None):
+    """
+    Helper function to update an existing print product in LumaPrints
+    
+    Args:
+        artwork: Django Artwork instance with lumaprints_product_id
+        image_url: Optional image URL, if not provided will use artwork.get_simple_signed_url()
+        
+    Returns:
+        Dict with LumaPrints response
+    """
+    if not artwork.lumaprints_product_id:
+        return {'status': 'error', 'message': 'No LumaPrints product ID found for this artwork'}
+    
+    try:
+        # Initialize API client
+        api = LumaPrintsAPI()
+        
+        # Prepare artwork data
+        artwork_data = {
+            'artwork': artwork,
+            'image_url': image_url or artwork.get_simple_signed_url()
+        }
+        
+        # Update product in LumaPrints
+        response = api.update_product(artwork.lumaprints_product_id, artwork_data)
+        
+        return {
+            'status': 'success',
+            'product_id': artwork.lumaprints_product_id,
+            'message': 'Product updated in LumaPrints successfully'
+        }
+        
+    except LumaPrintsAPIError as e:
+        return {'status': 'error', 'message': str(e)}
+    except Exception as e:
+        return {'status': 'error', 'message': f'Unexpected error: {str(e)}'}
+
+
+def delete_luma_prints_product(artwork):
+    """
+    Helper function to delete a print product from LumaPrints
+    
+    Args:
+        artwork: Django Artwork instance with lumaprints_product_id
+        
+    Returns:
+        Dict with deletion response
+    """
+    if not artwork.lumaprints_product_id:
+        return {'status': 'error', 'message': 'No LumaPrints product ID found for this artwork'}
+    
+    try:
+        # Initialize API client
+        api = LumaPrintsAPI()
+        
+        # Delete product from LumaPrints
+        response = api.delete_product(artwork.lumaprints_product_id)
+        
+        # Clear LumaPrints product ID from artwork
+        artwork.lumaprints_product_id = ''
+        artwork.save(update_fields=['lumaprints_product_id'])
+        
+        return {
+            'status': 'success',
+            'message': 'Product deleted from LumaPrints successfully'
+        }
+        
+    except LumaPrintsAPIError as e:
+        return {'status': 'error', 'message': str(e)}
+    except Exception as e:
+        return {'status': 'error', 'message': f'Unexpected error: {str(e)}'}
     except Exception as e:
         return {'status': 'error', 'message': f'Unexpected error: {str(e)}'}
 
@@ -484,3 +816,118 @@ def check_luma_order_status(order):
         
     except LumaPrintsAPIError as e:
         return {'status': 'error', 'message': str(e)}
+
+
+def create_luma_prints_product(artwork, image_url=None):
+    """
+    Helper function to create a new print product in LumaPrints for an artwork
+    
+    Args:
+        artwork: Django Artwork instance
+        image_url: Optional image URL, if not provided will use artwork.get_simple_signed_url()
+        
+    Returns:
+        Dict with LumaPrints response including product_id
+    """
+    try:
+        # Initialize API client
+        api = LumaPrintsAPI()
+        
+        # Prepare artwork data
+        artwork_data = {
+            'artwork': artwork,
+            'image_url': image_url or artwork.get_simple_signed_url()
+        }
+        
+        # Create product in LumaPrints
+        response = api.create_product(artwork_data)
+        
+        # Update artwork with LumaPrints product ID
+        if response.get('product_id'):
+            artwork.lumaprints_product_id = response['product_id']
+            artwork.save(update_fields=['lumaprints_product_id'])
+        
+        return {
+            'status': 'success',
+            'product_id': response.get('product_id'),
+            'message': 'Product created in LumaPrints successfully'
+        }
+        
+    except LumaPrintsAPIError as e:
+        return {'status': 'error', 'message': str(e)}
+    except Exception as e:
+        return {'status': 'error', 'message': f'Unexpected error: {str(e)}'}
+
+
+def update_luma_prints_product(artwork, image_url=None):
+    """
+    Helper function to update an existing print product in LumaPrints
+    
+    Args:
+        artwork: Django Artwork instance with lumaprints_product_id
+        image_url: Optional image URL, if not provided will use artwork.get_simple_signed_url()
+        
+    Returns:
+        Dict with LumaPrints response
+    """
+    if not artwork.lumaprints_product_id:
+        return {'status': 'error', 'message': 'No LumaPrints product ID found for this artwork'}
+    
+    try:
+        # Initialize API client
+        api = LumaPrintsAPI()
+        
+        # Prepare artwork data
+        artwork_data = {
+            'artwork': artwork,
+            'image_url': image_url or artwork.get_simple_signed_url()
+        }
+        
+        # Update product in LumaPrints
+        response = api.update_product(artwork.lumaprints_product_id, artwork_data)
+        
+        return {
+            'status': 'success',
+            'product_id': artwork.lumaprints_product_id,
+            'message': 'Product updated in LumaPrints successfully'
+        }
+        
+    except LumaPrintsAPIError as e:
+        return {'status': 'error', 'message': str(e)}
+    except Exception as e:
+        return {'status': 'error', 'message': f'Unexpected error: {str(e)}'}
+
+
+def delete_luma_prints_product(artwork):
+    """
+    Helper function to delete a print product from LumaPrints
+    
+    Args:
+        artwork: Django Artwork instance with lumaprints_product_id
+        
+    Returns:
+        Dict with deletion response
+    """
+    if not artwork.lumaprints_product_id:
+        return {'status': 'error', 'message': 'No LumaPrints product ID found for this artwork'}
+    
+    try:
+        # Initialize API client
+        api = LumaPrintsAPI()
+        
+        # Delete product from LumaPrints
+        response = api.delete_product(artwork.lumaprints_product_id)
+        
+        # Clear LumaPrints product ID from artwork
+        artwork.lumaprints_product_id = ''
+        artwork.save(update_fields=['lumaprints_product_id'])
+        
+        return {
+            'status': 'success',
+            'message': 'Product deleted from LumaPrints successfully'
+        }
+        
+    except LumaPrintsAPIError as e:
+        return {'status': 'error', 'message': str(e)}
+    except Exception as e:
+        return {'status': 'error', 'message': f'Unexpected error: {str(e)}'}

@@ -6,6 +6,8 @@ import { MotionConfig } from 'framer-motion';
 import GalleryGrid from '@components/Gallery/GalleryGrid';
 import { ShopGrid, ArtworkCardShop } from '@components/Gallery';
 import ArtworkImageViewer from '@components/Gallery/ArtworkImageViewer';
+import FeaturedSlider from './components/Gallery/FeaturedSlider.jsx';
+import OrderTracking from './components/Orders/OrderTracking.jsx';
 import ContactForm from '@components/Forms/ContactForm';
 import NewsletterForm from '@components/Forms/NewsletterForm';
 import CommissionForm from '@components/Forms/CommissionForm';
@@ -23,6 +25,8 @@ const componentRegistry = {
   'gallery-grid': GalleryGrid,
   'shop-grid': ShopGrid,
   'artwork-image-viewer': ArtworkImageViewer,
+  'featured-slider': FeaturedSlider,
+  'order-tracking': OrderTracking,
   'contact-form': ContactForm,
   'newsletter-form': NewsletterForm,
   'commission-form': CommissionForm,

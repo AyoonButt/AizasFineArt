@@ -62,7 +62,12 @@ class GalleryView(ListView):
     paginate_by = 20
     
     def get_queryset(self):
-        queryset = Artwork.objects.filter(
+        # Optimized query: only select needed fields for gallery display
+        queryset = Artwork.objects.only(
+            'id', 'title', 'slug', 'main_image_url', 'medium', 
+            'original_price', 'original_available', 'type', 'is_featured',
+            'display_order', 'created_at', 'category_id'
+        ).filter(
             is_active=True
         ).select_related('category')
         
@@ -85,11 +90,11 @@ class GalleryView(ListView):
         
         if featured == 'true':
             queryset = queryset.filter(is_featured=True)
+        # Skip complex search with tags to improve performance - implement via AJAX later
         if search:
             queryset = queryset.filter(
                 Q(title__icontains=search) | 
-                Q(description__icontains=search) |
-                Q(tags__name__icontains=search)
+                Q(description__icontains=search)
             ).distinct()
             
         return queryset.order_by('-is_featured', 'display_order', '-created_at')
@@ -97,9 +102,9 @@ class GalleryView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Add filter options
+        # Optimized filter options - only select needed fields
         context['medium_choices'] = Artwork.MEDIUM_CHOICES
-        context['categories'] = Category.objects.filter(is_active=True)
+        context['categories'] = Category.objects.only('id', 'name', 'slug').filter(is_active=True)
         context['current_medium'] = self.kwargs.get('medium', '')
         context['current_filters'] = {
             'status': self.request.GET.get('status', ''),
@@ -150,9 +155,9 @@ class PortfolioView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Add filter options
+        # Optimized filter options - only select needed fields
         context['medium_choices'] = Artwork.MEDIUM_CHOICES
-        context['categories'] = Category.objects.filter(is_active=True)
+        context['categories'] = Category.objects.only('id', 'name', 'slug').filter(is_active=True)
         context['current_filters'] = {
             'medium': self.request.GET.get('medium', ''),
             'status': self.request.GET.get('status', ''),
@@ -181,28 +186,28 @@ class ShopDjangoView(ListView):
     model = Artwork
     template_name = 'shop.html'
     context_object_name = 'artworks'
-    paginate_by = 12
+    paginate_by = 20
     
     def get_queryset(self):
-        # Show original and print artworks only (exclude gallery)
-        # Gallery type artworks are not for sale
-        return Artwork.objects.filter(
-            Q(type='original') | Q(type='print'),
+        # Optimized query: only select needed fields and avoid prefetch_related
+        return Artwork.objects.only(
+            'id', 'title', 'slug', 'main_image_url', 'medium', 
+            'original_price', 'original_available', 'type', 'is_featured',
+            'display_order', 'category_id'
+        ).filter(
+            type__in=['original', 'print'],  # Use __in instead of Q() for better performance
             is_active=True
-        ).select_related('category').prefetch_related('print_options', 'tags').order_by('-is_featured', 'display_order')
+        ).select_related('category').order_by('-is_featured', 'display_order')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Add shopping-specific context
-        context['categories'] = Category.objects.filter(is_active=True)
+        # Optimized context queries - only select needed fields
+        context['categories'] = Category.objects.only('id', 'name', 'slug').filter(is_active=True)
         context['medium_choices'] = Artwork.MEDIUM_CHOICES
         
-        # Get popular tags safely
-        try:
-            context['popular_tags'] = Tag.objects.filter(is_active=True, artworks__is_active=True).distinct()[:10]
-        except:
-            context['popular_tags'] = []
+        # Skip complex tag query to improve performance - can be added via AJAX later
+        context['popular_tags'] = []
         
         # Current filters for form state
         context['current_filters'] = {
@@ -225,7 +230,7 @@ class ArtworkDetailView(DetailView):
     
     def get_object(self):
         artwork = get_object_or_404(
-            Artwork.objects.select_related('category').prefetch_related('tags'),
+            Artwork.objects.select_related('category'),
             slug=self.kwargs['slug'],
             is_active=True
         )
@@ -237,47 +242,36 @@ class ArtworkDetailView(DetailView):
         return artwork
     
     def get_batch_frame_images(self):
-        """Batch generate frame image URLs to minimize Supabase API calls"""
+        """Get frame image URLs using fast method without transformations"""
         frame_images = {}
         
-        # Collect all frame URLs that exist
-        frame_urls = []
-        frame_mapping = {}
-        
+        # Use simple URLs for better performance, only include frames that exist
         for i in range(1, 5):
-            frame_url = getattr(self.object, f'frame{i}_image_url', None)
-            if frame_url:
-                # Store mapping for later reference
-                frame_mapping[f'frame{i}_gallery'] = len(frame_urls)
-                frame_urls.append((frame_url, 'gallery'))
-                frame_mapping[f'frame{i}_thumbnail'] = len(frame_urls)
-                frame_urls.append((frame_url, 'thumbnail'))
-        
-        # Batch process all URLs at once (if we had a batch method)
-        # For now, generate them efficiently with early returns
-        for i in range(1, 5):
-            frame_url = getattr(self.object, f'frame{i}_image_url', None)
-            if frame_url:
-                frame_images[f'frame{i}'] = {
-                    'gallery': self.object.get_frame_image(i, 'gallery'),
-                    'thumbnail': self.object.get_frame_image(i, 'thumbnail'),
-                }
-            else:
-                frame_images[f'frame{i}'] = {
-                    'gallery': None,
-                    'thumbnail': None,
-                }
+            raw_frame_url = getattr(self.object, f'frame{i}_image_url', '')
+            if raw_frame_url:  # Only process frames that have URLs
+                frame_url = self.object.get_frame_simple_url(i)
+                if frame_url:  # Only include if we successfully get a cached URL
+                    frame_images[f'frame{i}'] = {
+                        'gallery': frame_url,
+                        'thumbnail': frame_url,  # Use same URL for both for now
+                    }
         
         return frame_images
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
+        # Pre-cache main image URL to avoid multiple calls in template
+        context['cached_main_image'] = self.object.image_url
+        context['cached_gallery_url'] = self.object.gallery_url
+        
         # Related artworks (same medium or category) - optimized query
-        context['related_artworks'] = Artwork.objects.filter(
+        context['related_artworks'] = Artwork.objects.only(
+            'id', 'title', 'slug', 'main_image_url', 'medium', 'original_price', 'type', 'category_id'
+        ).filter(
             Q(medium=self.object.medium) | Q(category=self.object.category),
             is_active=True
-        ).exclude(id=self.object.id).select_related('category').prefetch_related('tags')[:4]
+        ).exclude(id=self.object.id).select_related('category')[:4]
         
         # Check if user has wishlisted this artwork (session-based for now)
         context['is_wishlisted'] = self.request.session.get(f'wishlist_{self.object.id}', False)
@@ -288,7 +282,7 @@ class ArtworkDetailView(DetailView):
         # SEO context
         context['page_title'] = f"{self.object.title} - {self.object.category.name} by Aiza"
         context['meta_description'] = self.object.meta_description or self.object.description[:160]
-        context['og_image'] = self.object.get_image('social')
+        context['og_image'] = context['cached_main_image']  # Use pre-cached URL
         
         return context
 

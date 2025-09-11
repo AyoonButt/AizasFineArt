@@ -110,26 +110,43 @@ class SupabaseStorageService:
                 transform_options['height'] = height
             transform_options['quality'] = quality
             
-            # Only include format if it's not 'origin' (keep original format)
-            # Supported formats: webp, avif, origin (keeps original format)
-            if format and format.lower() in ['webp', 'avif']:
-                transform_options['format'] = format.lower()
+            # Fix format parameter for Supabase API compatibility
+            # Supported formats: webp, avif (case sensitive), or omit for original
+            if format and format.lower() == 'webp':
+                transform_options['format'] = 'webp'
+            elif format and format.lower() == 'avif':
+                transform_options['format'] = 'avif'
+            # Don't include format for 'origin' - let Supabase keep original format
             
             # Create signed URL with transformations only if we have size transformations
-            if width or height:
-                response = self.client.storage.from_(self.bucket).create_signed_url(
-                    file_path, 
-                    expires_in,
-                    {'transform': transform_options}
-                )
-            else:
-                # No transformations needed, just get basic signed URL
-                response = self.client.storage.from_(self.bucket).create_signed_url(
-                    file_path, 
-                    expires_in
-                )
-            
-            signed_url = response.get('signedURL', '')
+            try:
+                if width or height:
+                    response = self.client.storage.from_(self.bucket).create_signed_url(
+                        file_path, 
+                        expires_in,
+                        {'transform': transform_options}
+                    )
+                else:
+                    # No transformations needed, just get basic signed URL
+                    response = self.client.storage.from_(self.bucket).create_signed_url(
+                        file_path, 
+                        expires_in
+                    )
+                
+                signed_url = response.get('signedURL', '')
+                
+            except Exception as transform_error:
+                # If transformation fails, fall back to simple signed URL
+                print(f"Transformation failed for {file_path}, falling back to simple URL: {transform_error}")
+                try:
+                    response = self.client.storage.from_(self.bucket).create_signed_url(
+                        file_path, 
+                        expires_in
+                    )
+                    signed_url = response.get('signedURL', '')
+                except Exception as fallback_error:
+                    print(f"Fallback URL generation also failed for {file_path}: {fallback_error}")
+                    return ''
             
             # Cache the URL for 90% of its expiration time to avoid serving expired URLs
             cache_timeout = int(expires_in * 0.9)

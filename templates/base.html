@@ -42,9 +42,13 @@
     
     {% load static %}
     
-    <!-- Styles -->
-    <link href="{% static 'src/css/design-system.css' %}" rel="stylesheet">
-    <link href="{% static 'dist/css/main.css' %}" rel="stylesheet">
+    <!-- Critical CSS - Optimized preload with proper fallback -->
+    <link rel="preload" href="{% static 'src/css/design-system.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'" crossorigin>
+    <link rel="preload" href="{% static 'dist/css/main.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'" crossorigin>
+    <noscript>
+        <link rel="stylesheet" href="{% static 'src/css/design-system.css' %}">
+        <link rel="stylesheet" href="{% static 'dist/css/main.css' %}">
+    </noscript>
     {% block extra_css %}{% endblock %}
     
     <!-- Structured Data -->
@@ -327,17 +331,17 @@
         </div>
     </footer>
 
+    <!-- Performance Optimization Scripts -->
+    <!-- Loading optimizer with improved conflict prevention -->
+    <script src="{% static 'src/js/loading-optimizer.js' %}" defer></script>
+    <script src="{% static 'src/js/lazy-loader.js' %}" defer></script>
+    <script src="{% static 'src/js/performance-monitor.js' %}" defer></script>
+    
     <!-- Only load external libraries when needed -->
     {% block external_scripts %}{% endblock %}
     
-    <!-- External lazy loading temporarily removed for performance -->
-    
     <!-- React Components via webpack_loader (only on pages that need it) -->
     {% block react_bundles %}{% endblock %}
-    
-    <!-- GSAP Animation Library - Removed to fix 404 errors -->
-    
-    <!-- Script removed - was conflicting with gallery masonry -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Simple image loading without conflicts

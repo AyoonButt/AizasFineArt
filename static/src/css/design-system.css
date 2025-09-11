@@ -11,7 +11,7 @@
 /* Google Fonts - Karla */
 @import url('https://fonts.googleapis.com/css2?family=Karla:wght@300;400;500;600;700&display=swap');
 
-/* Custom Font Declarations - To be loaded after font files are added */
+/* Custom Font Declarations - Commented out until font files are added
 @font-face {
   font-family: 'Nadeko';
   src: url('../fonts/Nadeko-Regular.woff2') format('woff2'),
@@ -41,6 +41,7 @@
   font-style: normal;
   font-display: optional;
 }
+*/
 
 /* ============================================
    CSS CUSTOM PROPERTIES - COLOR SYSTEM

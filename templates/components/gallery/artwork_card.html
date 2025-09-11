@@ -5,8 +5,8 @@
         
         <!-- Image Container -->
         <div class="relative overflow-hidden aspect-square">
-            {% if artwork.gallery_url %}
-                <img src="{{ artwork.gallery_url }}" 
+            {% if artwork.main_image_url %}
+                <img src="{{ artwork.image_url }}" 
                      alt="{{ artwork.alt_text|default:artwork.title }}"
                      class="artwork-image w-full h-full object-cover"
                      loading="lazy">

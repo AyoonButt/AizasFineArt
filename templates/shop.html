@@ -370,6 +370,7 @@
 /* Card styling adjustments for SMALL view - Amazon Style */
 .gallery-grid-small .artwork-card {
     @apply text-sm;
+    margin: 2px; /* Add small margin to prevent overlap */
 }
 
 .gallery-grid-small .artwork-info {
@@ -477,11 +478,16 @@
     z-index: 1;
 }
 
+
 /* Cards animate to their final positions */
 .artwork-item.positioned {
     opacity: 1;
-    transform: scale(1);
     z-index: auto;
+}
+
+/* Standard positioned items use scale(1) transform */
+.artwork-item.positioned {
+    transform: scale(1);
 }
 
 /* Responsive initial sizing for stacked cards */
@@ -525,34 +531,48 @@ document.addEventListener('DOMContentLoaded', function() {
     let masonryInProgress = false;
     let masonryTimeout = null;
     
+    // Animation state tracking - remember which view sizes have been animated for shop page
+    let shopAnimatedViews = new Set();
+    let isInitialLoad = true; // Track if this is the first load
+    
+    function shouldRunStackingAnimation(viewSize) {
+        const key = `shop-${viewSize}`;
+        // Always run animation on initial load, then check if already animated
+        if (isInitialLoad) {
+            return true;
+        }
+        return !shopAnimatedViews.has(key);
+    }
+    
+    function markViewAsAnimated(viewSize) {
+        const key = `shop-${viewSize}`;
+        shopAnimatedViews.add(key);
+        if (isInitialLoad) {
+            isInitialLoad = false; // No longer initial load after first animation
+        }
+    }
+    
     function initVariableMasonry() {
-        // Clear any existing timeout
+        // Cancel any pending masonry calls
         if (masonryTimeout) {
             clearTimeout(masonryTimeout);
             masonryTimeout = null;
         }
         
+        // If masonry is in progress, cancel it and start fresh
         if (masonryInProgress) {
-            console.log('Masonry in progress, queuing...');
-            // Queue another attempt after current one finishes
-            masonryTimeout = setTimeout(initVariableMasonry, 500);
+            masonryInProgress = false;
+            // Small delay to ensure previous operation is fully cancelled
+            masonryTimeout = setTimeout(initVariableMasonry, 50);
             return;
         }
         
         masonryInProgress = true;
         
-        // Emergency timeout to prevent hanging
-        const emergencyTimeout = setTimeout(() => {
-            if (masonryInProgress) {
-                masonryInProgress = false;
-            }
-        }, 5000);
-        
         try {
             const container = document.getElementById('shop-gallery-container');
             if (!container) {
                 masonryInProgress = false;
-                clearTimeout(emergencyTimeout);
                 return;
             }
             
@@ -560,7 +580,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (items.length === 0) {
                 masonryInProgress = false;
-                clearTimeout(emergencyTimeout);
                 return;
             }
             
@@ -569,31 +588,56 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Calculate responsive layout
             const isSmallView = container.classList.contains('gallery-grid-small');
+            const viewSize = isSmallView ? 'small' : 'large';
             const containerWidth = container.offsetWidth;
-            const gap = isSmallView ? 12 : 24;
+            const gap = isSmallView ? 16 : 24; // Increased gap for small view to prevent overlap
             
+            // Calculate columns based on container width
             let columns;
             if (isSmallView) {
-                if (window.innerWidth >= 1280) columns = 6;
-                else if (window.innerWidth >= 1024) columns = 5;
-                else if (window.innerWidth >= 768) columns = 4;
-                else if (window.innerWidth >= 640) columns = 3;
-                else columns = 2;
+                if (containerWidth >= 1200) columns = 5;
+                else if (containerWidth >= 1000) columns = 4; 
+                else if (containerWidth >= 800) columns = 3; 
+                else if (containerWidth >= 600) columns = 2; 
+                else columns = 1;
             } else {
-                if (window.innerWidth >= 1280) columns = 4;
-                else if (window.innerWidth >= 1024) columns = 3;
-                else if (window.innerWidth >= 640) columns = 2;
+                if (containerWidth >= 1200) columns = 4;
+                else if (containerWidth >= 900) columns = 3;
+                else if (containerWidth >= 600) columns = 2;
                 else columns = 1;
             }
             
-            const itemWidth = (containerWidth - (gap * (columns - 1))) / columns;
+            // Calculate base item width for columns with proper spacing
+            const totalGapSpace = gap * (columns - 1);
+            const rightMargin = gap; // Add right margin to prevent compression
+            const availableSpace = containerWidth - totalGapSpace - rightMargin;
+            let baseItemWidth = Math.floor(availableSpace / columns);
+            
+            // Define width variations (very subtle for minimal spacing impact)
+            const widthVariations = [1.0, 1.03, 0.97, 1.05, 0.95, 1.02, 1.04, 0.98, 1.06, 1.01];
+            
+            // Ensure varying widths don't exceed available space
+            const maxVariation = Math.max(...widthVariations);
+            const maxItemWidth = baseItemWidth * maxVariation;
+            if (maxItemWidth > (availableSpace / columns)) {
+                baseItemWidth = Math.floor(availableSpace / (columns * maxVariation));
+            }
             const columnHeights = new Array(columns).fill(0);
             
-            // STEP 1: Stack all items in top-left position first
+            // Always run the stacking animation
+            
+            // Always stack first, then animate (restore original behavior)
+            // STEP 1: Stack all items in top-left position with reverse z-index so bottom items are on top
             items.forEach((item, index) => {
                 item.classList.remove('positioned');
                 item.classList.add('initial-stacked');
-                // Add slight staggered z-index for visual stacking effect
+                
+                // Reset any existing transforms and positioning
+                item.style.transform = '';
+                item.style.left = '';
+                item.style.top = '';
+                
+                // First items (lower index) get higher z-index so they're on top of visual stack
                 item.style.zIndex = items.length - index;
             });
             
@@ -601,69 +645,130 @@ document.addEventListener('DOMContentLoaded', function() {
             container.offsetHeight;
             
             // STEP 2: After brief pause, animate items to their final positions
+            // Determine animation speed based on whether this view has been seen
+            const animationDelay = shouldRunStackingAnimation(viewSize) ? 150 : 0;
+            
             setTimeout(() => {
-                positionItemsSequentiallyFromStack(items, container, itemWidth, gap, columns, columnHeights, isSmallView)
+                // Check if masonry was cancelled during stacking delay
+                if (!masonryInProgress) {
+                    return;
+                }
+                
+                positionItemsSequentiallyFromStack(items, container, baseItemWidth, gap, columns, columnHeights, isSmallView, animationDelay, containerWidth, widthVariations)
                     .then(() => {
-                        // Set final container height with extra bottom padding to prevent overlap
-                        const maxHeight = Math.max(...columnHeights);
-                        const extraPadding = gap * 2;
-                        const finalHeight = maxHeight + extraPadding;
-                        
-                        container.style.height = `${finalHeight}px`;
-                        container.style.marginBottom = `${gap * 3}px`;
-                        
-                        // Ensure container doesn't overflow
-                        container.style.overflow = 'visible';
-                        container.style.position = 'relative';
-                        container.style.zIndex = '1';
-                        
-                        const minHeight = Math.min(600, finalHeight);
-                        if (finalHeight < minHeight) {
-                            container.style.height = `${minHeight}px`;
+                        // Final check - only finalize if masonry wasn't cancelled
+                        if (masonryInProgress) {
+                            markViewAsAnimated(viewSize);
+                            finalizeMasonryLayout(container, columnHeights, gap);
                         }
-                        
-                        masonryInProgress = false;
-                        clearTimeout(emergencyTimeout);
                     })
                     .catch(error => {
-                        console.error('Masonry error:', error);
                         masonryInProgress = false;
-                        clearTimeout(emergencyTimeout);
                     });
             }, 200); // Brief pause to show stacking effect
-                
         } catch (error) {
-            console.error('Masonry initialization error:', error);
             masonryInProgress = false;
-            clearTimeout(emergencyTimeout);
         }
     }
     
-    async function positionItemsSequentiallyFromStack(items, container, itemWidth, gap, columns, columnHeights, isSmallView) {
-        return new Promise((resolve) => {
+    // Finalize masonry layout function
+    function finalizeMasonryLayout(container, columnHeights, gap) {
+        // Wait for all positioning and transitions to complete before checking overlaps
+        setTimeout(() => {
+            checkForOverlaps(container);
+        }, 200); // Wait for positioning to fully complete
+        
+        // Continue with container height setting
+        const maxHeight = Math.max(...columnHeights);
+        const extraPadding = gap * 2;
+        const finalHeight = maxHeight + extraPadding;
+        
+        container.style.height = `${finalHeight}px`;
+        container.style.marginBottom = `${gap * 3}px`;
+        container.style.overflow = 'visible';
+        container.style.position = 'relative';
+        container.style.zIndex = '1';
+        
+        const minHeight = Math.min(600, finalHeight);
+        if (finalHeight < minHeight) {
+            container.style.height = `${minHeight}px`;
+        }
+        
+        masonryInProgress = false;
+    }
+    
+    // Separate function to check for overlaps after positioning is complete
+    function checkForOverlaps(container) {
+        const items = Array.from(container.querySelectorAll('.artwork-item:not(.filter-hidden)'));
+        let overlapDetected = false;
+        
+        for (let i = 0; i < items.length - 1; i++) {
+            const item1 = items[i];
+            const rect1 = item1.getBoundingClientRect();
+            
+            for (let j = i + 1; j < items.length; j++) {
+                const item2 = items[j];
+                const rect2 = item2.getBoundingClientRect();
+                
+                // Check if rectangles overlap with 5px tolerance
+                const overlap = !(rect1.right <= rect2.left + 5 || 
+                                rect2.right <= rect1.left + 5 || 
+                                rect1.bottom <= rect2.top + 5 || 
+                                rect2.bottom <= rect1.top + 5);
+                
+                if (overlap) {
+                    overlapDetected = true;
+                }
+            }
+        }
+        
+    }
+    
+    
+    async function positionItemsSequentiallyFromStack(items, container, baseItemWidth, gap, columns, columnHeights, isSmallView, delay, containerWidth, widthVariations) {
+        return new Promise((resolve, reject) => {
             let processedItems = 0;
+            let cancelled = false;
             
             items.forEach((item, index) => {
-                // Staggered delay for smooth animation from stack to final position
+                // Use delay parameter - 150ms for animated, 0ms for direct
+                const itemDelay = delay !== undefined ? delay : 150;
+                // First items (index 0) are on top of visual stack and should animate first
                 setTimeout(() => {
+                    // Check if masonry was cancelled
+                    if (!masonryInProgress || cancelled) {
+                        cancelled = true;
+                        reject(new Error('Masonry cancelled'));
+                        return;
+                    }
+                    
                     // Remove stacked class and add positioned class
                     item.classList.remove('initial-stacked');
                     item.classList.add('positioned');
                     
+                    // Calculate varying width for this item
+                    const variationIndex = index % widthVariations.length;
+                    const itemWidth = Math.floor(baseItemWidth * widthVariations[variationIndex]);
+                    
                     // Position the item in its final location
-                    positionSingleItemFromStack(item, itemWidth, gap, columns, columnHeights, isSmallView);
+                    positionSingleItemFromStack(item, itemWidth, gap, columns, columnHeights, isSmallView, containerWidth);
                     processedItems++;
                     
-                    if (processedItems === items.length) {
-                        // All items processed
-                        setTimeout(resolve, 300); // Longer delay for smooth completion
+                    if (processedItems === items.length && !cancelled) {
+                        // All items processed - use shorter delay for direct positioning
+                        const completionDelay = itemDelay === 0 ? 50 : 300;
+                        setTimeout(() => {
+                            if (!cancelled && masonryInProgress) {
+                                resolve();
+                            }
+                        }, completionDelay);
                     }
-                }, index * 150); // 150ms between each item for visible staggered effect
+                }, index * itemDelay); // First items (index 0) animate first, last items animate last
             });
         });
     }
 
-    function positionSingleItemFromStack(item, itemWidth, gap, columns, columnHeights, isSmallView) {
+    function positionSingleItemFromStack(item, itemWidth, gap, columns, columnHeights, isSmallView, containerWidth) {
         const img = item.querySelector('.artwork-image');
         
         // Calculate image height based on aspect ratio
@@ -675,7 +780,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const width = itemWidth;
         const imageHeight = width / aspectRatio;
         
-        // Find shortest column
+        // Calculate base column width for positioning calculations
+        const baseColWidth = Math.floor((containerWidth - (gap * (columns - 1))) / columns);
+        
+        // Use standard shortest column approach for consistent spacing
         let shortestColumn = 0;
         let shortestHeight = columnHeights[0];
         
@@ -686,18 +794,41 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Calculate position
-        const x = shortestColumn * (itemWidth + gap);
-        const y = shortestHeight;
+        // Use shortest column position
+        const bestPosition = {
+            column: shortestColumn,
+            x: shortestColumn * (baseColWidth + gap),
+            y: shortestHeight,
+            columnsAffected: 1
+        };
         
-        // Apply positioning immediately
+        const x = bestPosition.x;
+        const y = bestPosition.y;
+        
+        
+        // Use transform-based animation to avoid CSS positioning conflicts
+        // Keep item at stack position (0,0) initially, use transform to animate to final position
+        item.style.transition = 'none';
         item.style.position = 'absolute';
-        item.style.left = `${x}px`;
-        item.style.top = `${y}px`;
-        item.style.width = `${width}px`;
-        item.style.maxWidth = 'none'; // Override any CSS max-width constraints
-        item.style.minWidth = 'none'; // Override any CSS min-width constraints
-        item.style.transition = 'all 0.3s ease';
+        item.style.left = '0px';  // Keep at stack position
+        item.style.top = '0px';   // Keep at stack position
+        item.style.width = `${itemWidth}px`;
+        item.style.maxWidth = 'none';
+        item.style.minWidth = 'none';
+        
+        // Start with no transform (at stack position), then animate to final position
+        item.style.transform = 'translate(0px, 0px)';
+        
+        // Force reflow to apply initial state
+        item.offsetLeft;
+        
+        // Enable smooth transform animation
+        item.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        
+        // Animate to final position using transform
+        setTimeout(() => {
+            item.style.transform = `translate(${x}px, ${y}px)`;
+        }, 50); // Small delay to ensure transition is enabled
         
         // Update card container dimensions
         const artworkCard = item.querySelector('.artwork-card');
@@ -723,18 +854,32 @@ document.addEventListener('DOMContentLoaded', function() {
             img.style.display = 'block';
         }
         
-        // Calculate total card height including content
+        // Calculate card height - find the root cause of incorrect measurement
         // Force a reflow to get accurate height measurement
         item.offsetHeight;
         
-        // Get actual card height after image container is sized
+        // Get actual card height after all styling is applied
         const actualCardHeight = item.offsetHeight;
         
-        // Use actual measured height instead of just image height
-        const totalHeight = Math.max(actualCardHeight, imageHeight + 100); // min extra space for content
+        // Root cause investigation: Check if the height measurement is accurate
+        // The issue is likely that offsetHeight is not capturing the full rendered height
         
-        // Update column height with actual card height
-        columnHeights[shortestColumn] = y + totalHeight + gap;
+        // Use actual card height consistently 
+        const cardHeight = actualCardHeight;
+        const minGapBetweenCards = isSmallView ? 16 : 24;
+        
+        // Update only the assigned column height
+        const newColumnHeight = y + cardHeight + minGapBetweenCards;
+        columnHeights[bestPosition.column] = newColumnHeight;
+        
+        // Force a reflow and check if actual height matches calculated height
+        item.offsetHeight; // Force reflow
+        const actualHeightAfterPositioning = item.offsetHeight;
+        
+        if (Math.abs(actualHeightAfterPositioning - cardHeight) > 5) {
+            // Update column height with actual measurement
+            columnHeights[shortestColumn] = y + actualHeightAfterPositioning + minGapBetweenCards;
+        }
         
     }
     
@@ -874,9 +1019,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 resultsText.textContent = `Showing ${visibleCount} artworks`;
             }
             
-            // Re-apply variable masonry after filtering (only after initial load is complete)
-            if (initialLoadComplete && !masonryInProgress) {
-                setTimeout(initVariableMasonry, 100);
+            // Re-apply variable masonry after filtering with proper debouncing
+            if (initialLoadComplete) {
+                // Cancel any existing timeout and start fresh
+                if (masonryTimeout) {
+                    clearTimeout(masonryTimeout);
+                }
+                // Debounce masonry calls to prevent race conditions
+                masonryTimeout = setTimeout(initVariableMasonry, 100);
             }
         }
         
@@ -978,7 +1128,6 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 allCards.forEach((card, index) => {
                     card.classList.remove('initial-layout');
-                    console.log(`Shop card ${index} initial layout removed, masonry active`);
                 });
             }, 300); // Allow time for masonry to complete
             
@@ -997,14 +1146,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Wishlist states are initialized globally in base.html
     
-    // Re-run masonry on view toggle and resize
+    // Re-run masonry on resize with proper debouncing
+    let resizeTimeout;
     window.addEventListener('resize', () => {
-        setTimeout(() => {
+        // Clear any existing resize timeout
+        if (resizeTimeout) {
+            clearTimeout(resizeTimeout);
+        }
+        
+        // Debounce resize events to prevent excessive masonry calls
+        resizeTimeout = setTimeout(() => {
             if (initialLoadComplete) {
                 setupShopAnimations();
                 initVariableMasonry();
             }
-        }, 100);
+        }, 250); // Longer delay for resize to avoid excessive calls
     });
 
 // View toggle functionality for shop
@@ -1031,10 +1187,14 @@ document.addEventListener('DOMContentLoaded', function() {
             // Store user preference
             localStorage.setItem('shop-gallery-view', view);
             
-            // Re-apply masonry with smooth animation for view switching
-            if (initialLoadComplete) {
-                setTimeout(initVariableMasonry, 300);
+            // Re-apply masonry after view toggle with proper debouncing
+            // Cancel any pending masonry and start fresh
+            if (masonryTimeout) {
+                clearTimeout(masonryTimeout);
             }
+            masonryTimeout = setTimeout(() => {
+                initVariableMasonry();
+            }, 100);
         });
     });
     

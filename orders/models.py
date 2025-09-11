@@ -69,6 +69,13 @@ class Order(models.Model):
     # Shipping information
     shipping_method = models.CharField(max_length=50, blank=True)
     tracking_number = models.CharField(max_length=100, blank=True)
+    carrier = models.CharField(max_length=50, blank=True, help_text="Shipping carrier (UPS, FedEx, USPS, etc.)")
+    estimated_delivery = models.DateTimeField(null=True, blank=True, help_text="Estimated delivery date")
+    
+    # LumaPrints tracking information
+    luma_prints_status = models.CharField(max_length=50, blank=True, help_text="Status from LumaPrints")
+    luma_prints_tracking_url = models.URLField(blank=True, help_text="LumaPrints tracking URL")
+    luma_prints_updated_at = models.DateTimeField(null=True, blank=True, help_text="Last update from LumaPrints")
     
     # Special instructions
     notes = models.TextField(blank=True, help_text="Customer notes")
@@ -134,6 +141,89 @@ class Order(models.Model):
     def can_be_refunded(self):
         """Check if order can be refunded"""
         return self.status in ['delivered'] and self.payment_status == 'completed'
+    
+    @property
+    def tracking_stages(self):
+        """Return tracking stages with completion status"""
+        stages = [
+            {
+                'key': 'confirmed',
+                'title': 'Order Confirmed',
+                'description': 'Your order has been received and confirmed',
+                'completed': self.status in ['confirmed', 'processing', 'shipped', 'delivered'],
+                'timestamp': self.confirmed_at,
+                'icon': 'check-circle'
+            },
+            {
+                'key': 'processing',
+                'title': 'In Production',
+                'description': 'Your prints are being prepared',
+                'completed': self.status in ['processing', 'shipped', 'delivered'],
+                'timestamp': None,  # Will be filled from status updates
+                'icon': 'cog'
+            },
+            {
+                'key': 'shipped',
+                'title': 'Shipped',
+                'description': 'Your package is on its way',
+                'completed': self.status in ['shipped', 'delivered'],
+                'timestamp': self.shipped_at,
+                'icon': 'truck'
+            },
+            {
+                'key': 'delivered',
+                'title': 'Delivered',
+                'description': 'Package delivered successfully',
+                'completed': self.status == 'delivered',
+                'timestamp': self.delivered_at,
+                'icon': 'home'
+            }
+        ]
+        
+        # Add processing timestamp from status updates
+        processing_update = self.status_updates.filter(new_status='processing').first()
+        if processing_update:
+            stages[1]['timestamp'] = processing_update.timestamp
+            
+        return stages
+    
+    @property
+    def current_stage(self):
+        """Get current tracking stage"""
+        status_map = {
+            'pending': 0,
+            'confirmed': 0,
+            'processing': 1,
+            'shipped': 2,
+            'delivered': 3,
+            'cancelled': -1,
+            'refunded': -1
+        }
+        return status_map.get(self.status, 0)
+    
+    @property
+    def tracking_percentage(self):
+        """Get completion percentage for progress bar"""
+        if self.status in ['cancelled', 'refunded']:
+            return 0
+        current = self.current_stage
+        if current < 0:
+            return 0
+        return min(100, (current + 1) * 25)  # 25% per stage
+    
+    def get_carrier_tracking_url(self):
+        """Generate carrier tracking URL if tracking number exists"""
+        if not self.tracking_number or not self.carrier:
+            return None
+            
+        urls = {
+            'UPS': f'https://www.ups.com/track?track=yes&trackNums={self.tracking_number}',
+            'FEDEX': f'https://www.fedex.com/apps/fedextrack/?tracknumbers={self.tracking_number}',
+            'USPS': f'https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1={self.tracking_number}',
+            'DHL': f'https://www.dhl.com/us-en/home/tracking/tracking-express.html?submit=1&tracking-id={self.tracking_number}'
+        }
+        
+        return urls.get(self.carrier.upper(), None)
 
 
 class OrderItem(models.Model):
