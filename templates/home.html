@@ -2,6 +2,8 @@
 {% load static %}
 {% load webpack_loader %}
 
+{% block page_data %}home{% endblock %}
+
 {% block title %}Aiza's Fine Art - Original Watercolor & Oil Paintings from Fort Worth, TX{% endblock %}
 
 {% block meta_description %}Discover beautiful original watercolor and oil paintings by Aiza, a talented artist from Fort Worth, Texas. Unique artworks, custom commissions, and fine art prints available.{% endblock %}
@@ -13,7 +15,7 @@
     <div class="absolute inset-0">
         <img src="{% static 'dist/images/seascape blurred.jpg' %}" 
              alt="Seascape artwork background" 
-             class="w-full h-full object-cover opacity-50">
+             class="w-full h-full object-cover">
     </div>
     
     <div class="relative z-10 container text-center">
@@ -45,10 +47,13 @@
     </div>
 </section>
 
+<!-- Border between Hero and Featured -->
+<div class="painter-border painter-border-bottom painter-border-sea-glass"></div>
+
 <!-- Featured Artworks Section -->
-<section class="section-padding bg-mist-blue section-border-top from-hero-section watercolor-natural">
+<section class="section-padding bg-mist-blue">
     <div class="container">
-        <div class="text-center mb-16">
+        <div class="text-center mb-4">
             <div>
                 <h2 class="text-section-heading text-primary mb-4">Featured Artworks</h2>
                 <p class="text-body text-muted max-w-2xl mx-auto">
@@ -67,8 +72,11 @@
     </div>
 </section>
 
+<!-- Border between Featured and About -->
+<div class="painter-border painter-border-bottom painter-border-mauve-plum"></div>
+
 <!-- About Section -->
-<section class="section-padding bg-gradient-about section-border-top from-mist-section watercolor-natural">
+<section class="section-padding bg-gradient-about">
     <div class="container">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -115,8 +123,11 @@
     </div>
 </section>
 
+<!-- Border between About and Services -->
+<div class="painter-border painter-border-bottom painter-border-vintage-rosewood"></div>
+
 <!-- Services Section -->
-<section class="section-padding bg-pale-blush section-border-top from-about-section watercolor-natural">
+<section class="section-padding bg-pale-blush">
     <div class="container">
         <div class="text-center mb-16">
             <h2 class="text-section-heading text-primary mb-4">What I Offer</h2>
@@ -177,9 +188,11 @@
     </div>
 </section>
 
+<!-- Border between Services and Newsletter -->
+<div class="painter-border painter-border-bottom painter-border-pale-blush"></div>
 
 <!-- Newsletter Section -->
-<section class="section-padding bg-gradient-hero section-border-top from-blush-section watercolor-natural">
+<section class="section-padding bg-gradient-hero">
     <div class="container">
         <div class="max-w-4xl mx-auto text-center">
             <!-- Section Header -->
@@ -227,8 +240,11 @@
     </div>
 </section>
 
+<!-- Border between Newsletter and CTA -->
+<div class="painter-border painter-border-bottom painter-border-deep-ash"></div>
+
 <!-- Call-to-Action Section -->
-<section class="section-padding bg-deep-ash section-border-top from-hero-section watercolor-natural">
+<section class="section-padding bg-deep-ash">
     <div class="container text-center">
         <div class="max-w-3xl mx-auto">
             <h2 class="text-section-heading text-pale-blush mb-6">Ready to Find Your Perfect Artwork?</h2>

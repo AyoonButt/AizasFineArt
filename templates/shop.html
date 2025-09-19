@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block page_data %}shop{% endblock %}
+
 {% block title %}Shop - Original Art & Fine Prints by Aiza{% endblock %}
 
 {% block meta_description %}Shop original watercolor and oil paintings, plus high-quality fine art prints. Secure online purchasing with worldwide shipping from Fort Worth, Texas.{% endblock %}
@@ -56,8 +58,11 @@
     </div>
 </section>
 
+<!-- Border between Header and Gallery Content -->
+<div class="painter-border painter-border-bottom painter-border-vintage-rosewood"></div>
+
 <!-- Gallery Content -->
-<section class="section-padding bg-surface section-border-top from-rosewood-section watercolor-natural">
+<section class="section-padding bg-surface">
     <div class="container">
         <!-- Main Gallery -->
         <main class="max-w-7xl mx-auto">
@@ -164,9 +169,11 @@
     </div>
 </section>
 
+<!-- Border between Gallery Content and Shopping Information -->
+<div class="painter-border painter-border-bottom painter-border-mauve-plum"></div>
 
 <!-- Shopping Information -->
-<section class="section-padding bg-gradient-about section-border-top from-surface-section watercolor-natural">
+<section class="section-padding bg-gradient-about">
     <div class="container">
         <div class="grid md:grid-cols-3 gap-8">
             <!-- Shipping Info -->
@@ -211,8 +218,11 @@
     </div>
 </section>
 
+<!-- Border between Shopping Information and CTA -->
+<div class="painter-border painter-border-bottom painter-border-sea-glass"></div>
+
 <!-- Call to Action -->
-<section class="section-padding bg-gradient-hero section-border-top from-about-section watercolor-natural">
+<section class="section-padding bg-gradient-hero">
     <div class="container text-center">
         <div class="max-w-3xl mx-auto">
             <h2 class="text-section-heading text-white mb-6">

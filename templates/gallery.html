@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block page_data %}gallery{% endblock %}
+
 {% block title %}{{ page_title }} - Watercolor & Oil Paintings by Aiza{% endblock %}
 
 {% block meta_description %}{% if breadcrumb_medium %}Explore Aiza's {{ breadcrumb_medium|lower }} collection.{% else %}Browse Aiza's complete gallery of watercolor and oil paintings.{% endif %} Original artworks and fine art prints from Fort Worth, Texas.{% endblock %}
@@ -65,8 +67,11 @@
     </div>
 </section>
 
+<!-- Border between Hero and Gallery Content -->
+<div class="painter-border painter-border-bottom painter-border-mist-blue"></div>
+
 <!-- Gallery Results Header -->
-<section class="py-8 bg-surface border-b border-muted section-border-top from-hero-section watercolor-natural">
+<section class="py-8 bg-surface border-b border-muted">
     <div class="container">
         <div class="flex justify-between items-center">
             <div class="text-secondary">
@@ -102,7 +107,7 @@
                  data-medium="{{ artwork.medium }}"
                  data-title="{{ artwork.title }}"
                  data-created="{{ artwork.created_at|date:'c' }}"
-                 onclick="window.location.href='{{ artwork.get_absolute_url }}'">
+                 onclick="window.location.href='{{ artwork.get_display_url }}'">
                 
                 <!-- Image Container with Loading State -->
                 <div class="artwork-image-container relative overflow-hidden">
@@ -206,8 +211,11 @@
     </div>
 </section>
 
+<!-- Border between Gallery Content and CTA -->
+<div class="painter-border painter-border-bottom painter-border-sea-glass"></div>
+
 <!-- Call to Action -->
-<section class="section-padding bg-mist-blue section-border-top from-surface-section watercolor-natural">
+<section class="section-padding bg-mist-blue">
     <div class="container text-center">
         <div class="max-w-3xl mx-auto">
             <h2 class="text-section-heading text-primary mb-6">

@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block page_data %}about{% endblock %}
+
 {% block title %}About Aiza - Fort Worth Watercolor & Oil Artist{% endblock %}
 
 {% block meta_description %}Meet Aiza, a TCU Chemistry major turned professional watercolor and oil painter in Fort Worth, Texas. Learn about her artistic journey, healing through art, and creative process.{% endblock %}
@@ -59,8 +61,11 @@
     </div>
 </section>
 
+<!-- Border between Hero and Artist Journey -->
+<div class="painter-border painter-border-bottom painter-border-sea-glass"></div>
+
 <!-- Artist Journey -->
-<section class="section-padding bg-pale-blush section-border-top from-about-section watercolor-natural">
+<section class="section-padding bg-pale-blush">
     <div class="container">
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-16 animate-on-scroll">
@@ -146,8 +151,11 @@
     </div>
 </section>
 
+<!-- Border between Artist Journey and Artistic Philosophy -->
+<div class="painter-border painter-border-bottom painter-border-pale-blush"></div>
+
 <!-- Artistic Philosophy -->
-<section class="section-padding bg-gradient-hero section-border-top watercolor-border-blush watercolor-natural">
+<section class="section-padding bg-gradient-hero">
     <div class="container">
         <div class="max-w-4xl mx-auto text-center">
             <div class="animate-on-scroll">
@@ -172,8 +180,11 @@
     </div>
 </section>
 
+<!-- Border between Artistic Philosophy and Process & Techniques -->
+<div class="painter-border painter-border-bottom painter-border-mauve-plum"></div>
+
 <!-- Process & Techniques -->
-<section class="section-padding bg-vintage-rosewood section-border-top watercolor-border-hero watercolor-natural">
+<section class="section-padding bg-vintage-rosewood">
     <div class="container">
         <div class="text-center mb-16 animate-on-scroll">
             <h2 class="text-section-heading text-deep-ash mb-6">Creative Process</h2>
@@ -243,8 +254,11 @@
     </div>
 </section>
 
+<!-- Border between Process & Techniques and Studio & Location -->
+<div class="painter-border painter-border-bottom painter-border-vintage-rosewood"></div>
+
 <!-- Studio & Location -->
-<section class="section-padding bg-gradient-contact section-border-top watercolor-border-rosewood watercolor-natural">
+<section class="section-padding bg-gradient-contact">
     <div class="container">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
             <div class="animate-on-scroll slide-left">
@@ -309,6 +323,9 @@
         </div>
     </div>
 </section>
+
+<!-- Border between Studio & Location and CTA -->
+<div class="painter-border painter-border-bottom painter-border-deep-ash"></div>
 
 <!-- Call to Action -->
 <section class="section-padding" style="background-color: var(--color-deep-ash);">

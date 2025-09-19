@@ -2,6 +2,8 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block page_data %}contact{% endblock %}
+
 {% block title %}Contact Aiza - Commission Art & General Inquiries{% endblock %}
 
 {% block meta_description %}Get in touch with Aiza for custom art commissions, artwork inquiries, or general questions. Based in Fort Worth, Texas. Studio visits by appointment.{% endblock %}
@@ -64,8 +66,11 @@
     </div>
 </section>
 
+<!-- Border between Hero and Contact Forms -->
+<div class="painter-border painter-border-bottom painter-border-mist-blue"></div>
+
 <!-- Contact Forms Section -->
-<section class="section-padding bg-surface section-border-top from-contact-section watercolor-natural">
+<section class="section-padding bg-surface">
     <div class="container">
         <div class="grid lg:grid-cols-2 gap-12">
             <!-- Commission Form -->
@@ -240,8 +245,11 @@
     </div>
 </section>
 
+<!-- Border between Contact Forms and FAQ -->
+<div class="painter-border painter-border-bottom painter-border-white"></div>
+
 <!-- FAQ Section -->
-<section class="section-padding bg-gradient-hero section-border-top from-surface-section watercolor-natural">
+<section class="section-padding bg-gradient-hero">
     <div class="container">
         <div class="text-center mb-16 animate-on-scroll">
             <h2 class="text-section-heading text-white mb-6">Frequently Asked Questions</h2>
@@ -347,8 +355,11 @@
     </div>
 </section>
 
+<!-- Border between FAQ and Social Media -->
+<div class="painter-border painter-border-bottom painter-border-deep-ash"></div>
+
 <!-- Social Media & Follow -->
-<section class="section-padding-sm bg-black section-border-top from-hero-section watercolor-natural">
+<section class="section-padding-sm bg-black">
     <div class="container text-center">
         <div class="max-w-3xl mx-auto animate-on-scroll">
             <h2 class="text-section-heading text-white mb-6">

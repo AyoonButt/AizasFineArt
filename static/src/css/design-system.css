@@ -8,10 +8,11 @@
    FONT LOADING
    ============================================ */
 
-/* Google Fonts - Karla */
-@import url('https://fonts.googleapis.com/css2?family=Karla:wght@300;400;500;600;700&display=swap');
+/* Google Fonts - Karla - Moved to base.html to avoid build timeouts */
+/* @import url('https://fonts.googleapis.com/css2?family=Karla:wght@300;400;500;600;700&display=swap'); */
 
-/* Custom Font Declarations - Commented out until font files are added
+/* Custom Font Declarations - Disabled due to placeholder files */
+/*
 @font-face {
   font-family: 'Nadeko';
   src: url('../fonts/Nadeko-Regular.woff2') format('woff2'),
@@ -96,11 +97,11 @@
   --color-deep-ash-60: rgba(47, 47, 47, 0.6);
   --color-deep-ash-80: rgba(47, 47, 47, 0.8);
   
-  /* Font Family Variables */
-  --font-logo: 'Nadeko', serif;
-  --font-heading: 'Colton', serif;
+  /* Font Family Variables - Using fallback fonts until custom fonts are available */
+  --font-logo: 'Georgia', serif;
+  --font-heading: 'Georgia', serif;
   --font-body: 'Karla', sans-serif;
-  --font-decorative: 'Baar Sophia', serif;
+  --font-decorative: 'Georgia', serif;
   
   /* Typography Scale with Responsive Sizing */
   --text-logo: clamp(2rem, 4vw, 3.5rem);
@@ -623,4 +624,122 @@ body {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* ============================================
+   PAINTER BORDER SYSTEM
+   ============================================ */
+
+/* CSS Custom Properties for Painter Border System */
+:root {
+  --painter-border-height: clamp(40px, 8vw, 120px);
+  --painter-border-svg: url('/static/images/painter_border.svg');
+  --painter-border-default-color: var(--color-vintage-rosewood);
+}
+
+/* Painter Border Base Classes */
+.painter-border,
+.painter-border-bottom {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Standalone border divs - visible border, zero layout space */
+.painter-border:empty,
+.painter-border-bottom:empty {
+  height: var(--painter-border-height);
+  margin-bottom: calc(-1 * var(--painter-border-height));
+  padding: 0;
+}
+
+/* Only bottom borders - rotated 180 degrees and positioned at section boundary */
+.painter-border-bottom::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -300px;
+  width: calc(100% + 600px);
+  height: var(--painter-border-height);
+  background: var(--painter-border-color, var(--painter-border-default-color));
+  transform: rotate(180deg) translateY(50%);
+  mask: 
+    var(--painter-border-svg) no-repeat 0px center / 614px var(--painter-border-height),
+    var(--painter-border-svg) no-repeat 450px center / 614px var(--painter-border-height),
+    var(--painter-border-svg) no-repeat 900px center / 614px var(--painter-border-height),
+    var(--painter-border-svg) no-repeat 1350px center / 614px var(--painter-border-height),
+    var(--painter-border-svg) no-repeat 1800px center / 614px var(--painter-border-height);
+  -webkit-mask: 
+    var(--painter-border-svg) no-repeat 0px center / 614px var(--painter-border-height),
+    var(--painter-border-svg) no-repeat 450px center / 614px var(--painter-border-height),
+    var(--painter-border-svg) no-repeat 900px center / 614px var(--painter-border-height),
+    var(--painter-border-svg) no-repeat 1350px center / 614px var(--painter-border-height),
+    var(--painter-border-svg) no-repeat 1800px center / 614px var(--painter-border-height);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Color Themes */
+.painter-border-primary { --painter-border-color: var(--color-vintage-rosewood); }
+.painter-border-secondary { --painter-border-color: var(--color-mauve-plum); }
+.painter-border-accent { --painter-border-color: var(--color-sea-glass); }
+.painter-border-muted { --painter-border-color: var(--color-pale-blush); }
+.painter-border-dark { --painter-border-color: var(--color-deep-ash); }
+.painter-border-light { --painter-border-color: #ffffff; }
+
+/* Specific color classes */
+.painter-border-vintage-rosewood { --painter-border-color: var(--color-vintage-rosewood); }
+.painter-border-mauve-plum { --painter-border-color: var(--color-mauve-plum); }
+.painter-border-sea-glass { --painter-border-color: var(--color-sea-glass); }
+.painter-border-pale-blush { --painter-border-color: var(--color-pale-blush); }
+.painter-border-mist-blue { --painter-border-color: var(--color-mist-blue); }
+.painter-border-surface { --painter-border-color: var(--color-surface); }
+.painter-border-white { --painter-border-color: #ffffff; }
+.painter-border-deep-ash { --painter-border-color: var(--color-deep-ash); }
+
+/* Page-specific color overrides */
+/* Home Page */
+[data-page="home"] .bg-gradient-hero.painter-border-bottom { --painter-border-color: var(--color-mist-blue); }
+[data-page="home"] .bg-mist-blue.painter-border-top { --painter-border-color: var(--color-mauve-plum); }
+[data-page="home"] .bg-gradient-about.painter-border-top { --painter-border-color: var(--color-sea-glass); }
+[data-page="home"] .bg-pale-blush.painter-border-top { --painter-border-color: var(--color-sage-green); }
+[data-page="home"] .bg-deep-ash.painter-border-top { --painter-border-color: var(--color-mauve-plum); }
+[data-page="home"] .bg-deep-ash.painter-border-bottom { --painter-border-color: var(--color-vintage-rosewood); }
+
+/* Gallery Page */
+[data-page="gallery"] .bg-gradient-hero.painter-border-bottom { --painter-border-color: #ffffff; }
+[data-page="gallery"] .bg-mist-blue.painter-border-top { --painter-border-color: #ffffff; }
+
+/* About Page */
+[data-page="about"] .bg-pale-blush.painter-border-top { --painter-border-color: var(--color-sea-glass); }
+[data-page="about"] .bg-gradient-hero.painter-border-top { --painter-border-color: var(--color-pale-blush); }
+[data-page="about"] .bg-vintage-rosewood.painter-border-top { --painter-border-color: var(--color-mauve-plum); }
+[data-page="about"] .bg-gradient-contact.painter-border-top { --painter-border-color: var(--color-vintage-rosewood); }
+
+/* Contact Page */
+[data-page="contact"] .bg-surface.painter-border-top { --painter-border-color: var(--color-mist-blue); }
+[data-page="contact"] .bg-gradient-hero.painter-border-top { --painter-border-color: #ffffff; }
+[data-page="contact"] .bg-black.painter-border-top { --painter-border-color: var(--color-mauve-plum); }
+
+/* Shop Page */
+[data-page="shop"] .bg-surface.painter-border-top { --painter-border-color: var(--color-vintage-rosewood); }
+[data-page="shop"] .bg-gradient-about.painter-border-top { --painter-border-color: #ffffff; }
+[data-page="shop"] .bg-gradient-hero.painter-border-top { --painter-border-color: var(--color-sea-glass); }
+
+/* Responsive sizing */
+@media (max-width: 768px) {
+  :root {
+    --painter-border-height: clamp(25px, 5vw, 60px);
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --painter-border-height: clamp(60px, 10vw, 150px);
+  }
+}
+
+/* Content layering */
+.painter-border > * {
+  position: relative;
+  z-index: 2;
 }
