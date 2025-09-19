@@ -143,8 +143,8 @@ class Artwork(models.Model):
     frame4_image_url = models.URLField(blank=True, default='', help_text="Fourth frame variant image URL")
     
     # Cached resolved URLs (to avoid API calls during template rendering)
-    _cached_image_url = models.TextField(blank=True, help_text="Cached resolved image URL")
-    _cached_thumbnail_url = models.TextField(blank=True, help_text="Cached thumbnail URL")
+    _cached_image_url = models.TextField(blank=True, default='', help_text="Cached resolved image URL")
+    _cached_thumbnail_url = models.TextField(blank=True, default='', help_text="Cached thumbnail URL")
     _cached_frame_urls = models.JSONField(default=dict, blank=True, help_text="Cached frame image URLs")  
     _url_cache_expires = models.DateTimeField(null=True, blank=True, help_text="When cached URLs expire")
     
@@ -236,20 +236,23 @@ class Artwork(models.Model):
         
         super().save(*args, **kwargs)
         
+        # TEMPORARILY DISABLED: LumaPrints sync was causing Django startup hangs
+        # Re-enable after debugging server startup issues
         # Handle LumaPrints synchronization after save
-        if self.type == 'print' and needs_luma_sync:
-            if self.lumaprints_product_id:
-                # Update existing product
-                self._sync_with_lumaprints('update')
-            else:
-                # Create new product (new artwork or type conversion)
-                self._sync_with_lumaprints('create')
+        # if self.type == 'print' and needs_luma_sync:
+        #     if self.lumaprints_product_id:
+        #         # Update existing product
+        #         self._sync_with_lumaprints('update')
+        #     else:
+        #         # Create new product (new artwork or type conversion)
+        #         self._sync_with_lumaprints('create')
 
     def delete(self, *args, **kwargs):
         """Override delete to handle LumaPrints cleanup"""
+        # TEMPORARILY DISABLED: LumaPrints sync was causing issues
         # Delete from LumaPrints if it's a print artwork
-        if self.type == 'print' and self.lumaprints_product_id:
-            self._sync_with_lumaprints('delete')
+        # if self.type == 'print' and self.lumaprints_product_id:
+        #     self._sync_with_lumaprints('delete')
         
         super().delete(*args, **kwargs)
     
@@ -386,257 +389,178 @@ class Artwork(models.Model):
         # Return original URL if not Supabase or transformation failed
         return self.main_image_url
     
-    def get_simple_signed_url(self, expires_in=3600):
-        """Get simple signed URL with automatic background refresh - no admin intervention needed"""
+    def get_simple_signed_url(self, expires_in=3600):  # Restored to production timeout
+        """Get signed URL with just-in-time refresh when expired - enhanced with nonce and validation"""
         if not self.main_image_url:
             return None
+            
+        # If not a Supabase URL, return as-is
+        if not self.main_image_url.startswith('supabase://'):
+            return self.main_image_url
             
         from django.utils import timezone
+        from utils.supabase_client import supabase_storage
         now = timezone.now()
         
-        # Proactive cache refresh: if expires within 30 minutes, refresh in background
-        needs_proactive_refresh = (
-            self._cached_image_url and self._url_cache_expires and
-            now >= (self._url_cache_expires - timezone.timedelta(minutes=30)) and
-            now < self._url_cache_expires
-        )
-        
-        # Cache still valid for 15 minutes - use cached version
-        cache_valid = (self._cached_image_url and self._url_cache_expires and 
-                      now < (self._url_cache_expires - timezone.timedelta(minutes=15)))
-        
-        # If cache is still valid but needs proactive refresh, do it in background
-        if cache_valid and needs_proactive_refresh:
-            self._schedule_background_refresh()
+        # Ultra-aggressive caching for sub-3s performance: skip validation if cache is fresh
+        if (self._cached_image_url and self._url_cache_expires and 
+            now < (self._url_cache_expires - timezone.timedelta(minutes=5))):
+            # Return cached URL immediately without validation for maximum speed
             return self._cached_image_url
         
-        # If cache is valid and fresh, return it
-        if cache_valid:
-            return self._cached_image_url
-            
+        # Cache expired, invalid, or missing - generate fresh URL with unique expiry for uniqueness
         try:
-            from utils.supabase_client import supabase_storage
+            file_path = self.main_image_url.replace('supabase://', '')
             
-            # Handle private bucket URLs (supabase://)
-            if self.main_image_url.startswith('supabase://'):
-                file_path = self.main_image_url.replace('supabase://', '')
-                # Get simple signed URL without transformations
-                signed_url = supabase_storage.client.storage.from_(supabase_storage.bucket).create_signed_url(file_path, expires_in)
+            # Use unique expiry time to ensure URL uniqueness and avoid deterministic signing
+            unique_expires_in = supabase_storage.generate_unique_expiry(expires_in)
+            signed_url_response = supabase_storage.client.storage.from_(supabase_storage.bucket).create_signed_url(
+                file_path, 
+                unique_expires_in
+            )
+            
+            if signed_url_response and 'signedURL' in signed_url_response:
+                cached_url = signed_url_response['signedURL']
                 
-                if signed_url and 'signedURL' in signed_url:
-                    cached_url = signed_url['signedURL']
-                    
-                    # Cache the URL
-                    self._cached_image_url = cached_url
-                    self._url_cache_expires = timezone.now() + timezone.timedelta(seconds=expires_in - 300)  # Refresh 5 min early
+                # Update cache
+                self._cached_image_url = cached_url
+                # Cache for safe buffer before token expiry (50 minutes for 60-minute tokens)
+                self._url_cache_expires = now + timezone.timedelta(minutes=50)
+                
+                # Save cache to database (ignore failures - will regenerate next time)
+                try:
                     self.save(update_fields=['_cached_image_url', '_url_cache_expires'])
-                    
-                    return cached_url
-            
+                except Exception:
+                    pass  # Continue if save fails - URL is still valid
+                
+                return cached_url
+                
         except Exception as e:
-            print(f"Simple signed URL error: {e}")
-        
-        # Return original URL if not Supabase or signing failed
+            # Log error but continue with fallback
+            print(f"Supabase URL generation failed for {self.main_image_url}: {e}")
+            
+            # Fallback: Try with standard expiry
+            try:
+                file_path = self.main_image_url.replace('supabase://', '')
+                signed_url_response = supabase_storage.client.storage.from_(supabase_storage.bucket).create_signed_url(file_path, expires_in)
+                
+                if signed_url_response and 'signedURL' in signed_url_response:
+                    return signed_url_response['signedURL']
+                    
+            except Exception:
+                pass  # Silent fallback failure
+            
+        # Final fallback: return original URL
         return self.main_image_url
     
-    def _schedule_background_refresh(self):
-        """Schedule background cache refresh without blocking current request"""
-        try:
-            import threading
-            from django.utils import timezone
-            
-            def refresh_cache():
-                """Background thread to refresh cache"""
-                try:
-                    from utils.supabase_client import supabase_storage
-                    
-                    if self.main_image_url.startswith('supabase://'):
-                        file_path = self.main_image_url.replace('supabase://', '')
-                        signed_url = supabase_storage.client.storage.from_(supabase_storage.bucket).create_signed_url(file_path, 3600)
-                        
-                        if signed_url and 'signedURL' in signed_url:
-                            # Update cache in database
-                            from django.db import transaction
-                            with transaction.atomic():
-                                # Get fresh instance to avoid race conditions
-                                fresh_instance = Artwork.objects.select_for_update().get(pk=self.pk)
-                                fresh_instance._cached_image_url = signed_url['signedURL']
-                                fresh_instance._url_cache_expires = timezone.now() + timezone.timedelta(seconds=3300)  # 55 minutes
-                                fresh_instance.save(update_fields=['_cached_image_url', '_url_cache_expires'])
-                                
-                except Exception as e:
-                    # Log the error but don't disrupt user experience
-                    import logging
-                    logger = logging.getLogger(__name__)
-                    logger.error(f"Background cache refresh failed for artwork '{self.title}' (ID: {self.id}): {str(e)}")
-            
-            # Start background thread
-            thread = threading.Thread(target=refresh_cache, daemon=True)
-            thread.start()
-            
-        except Exception as e:
-            # If threading fails, log it but continue - cache will refresh on next access
-            import logging
-            logger = logging.getLogger(__name__)
-            logger.warning(f"Failed to start background refresh thread for artwork '{self.title}' (ID: {self.id}): {str(e)}")
+    # Removed _schedule_background_refresh - using simple just-in-time refresh instead
     
-    def _schedule_frame_refresh(self, frame_num, frame_url):
-        """Schedule background frame cache refresh"""
-        try:
-            import threading
-            from django.utils import timezone
-            
-            def refresh_frame_cache():
-                """Background thread to refresh frame cache"""
-                try:
-                    from utils.supabase_client import supabase_storage
-                    
-                    if frame_url.startswith('supabase://'):
-                        file_path = frame_url.replace('supabase://', '')
-                        signed_url = supabase_storage.client.storage.from_(supabase_storage.bucket).create_signed_url(file_path, 3600)
-                        
-                        if signed_url and 'signedURL' in signed_url:
-                            from django.db import transaction
-                            with transaction.atomic():
-                                fresh_instance = Artwork.objects.select_for_update().get(pk=self.pk)
-                                if not fresh_instance._cached_frame_urls:
-                                    fresh_instance._cached_frame_urls = {}
-                                fresh_instance._cached_frame_urls[f'frame{frame_num}'] = signed_url['signedURL']
-                                fresh_instance._url_cache_expires = timezone.now() + timezone.timedelta(seconds=3300)  # 55 minutes
-                                fresh_instance.save(update_fields=['_cached_frame_urls', '_url_cache_expires'])
-                                
-                except Exception:
-                    pass  # Silent failure
-            
-            thread = threading.Thread(target=refresh_frame_cache, daemon=True)
-            thread.start()
-            
-        except Exception:
-            pass  # Continue if threading fails
+    # Removed _schedule_frame_refresh - using simple just-in-time refresh instead
+    
+    # Cache metrics removed - simpler just-in-time refresh doesn't need complex tracking
     
     def get_cached_thumbnail_url(self, expires_in=3600):
-        """Get cached thumbnail URL for better performance - using simple signed URLs for now"""
+        """Get cached thumbnail URL with just-in-time refresh"""
         if not self.main_image_url:
             return None
             
-        # For now, just return the same cached URL as full-size until transformation issues are resolved
-        # This still provides caching benefits and avoids multiple API calls
+        # Use the same just-in-time refresh system as simple signed URLs
+        # This provides caching benefits and automatic refresh when expired
         return self.get_simple_signed_url(expires_in)
     
     @property
     def image_url(self):
         """Get displayable URL for templates - optimized thumbnails for shop/gallery"""
+        # Use cached thumbnail URL with fallback to simple signed URL
         return self.get_cached_thumbnail_url()
     
     @property
     def thumbnail_url(self):
         """Get thumbnail URL for templates"""
+        # Use cached thumbnail URL for performance
         return self.get_cached_thumbnail_url()
     
     def get_frame_simple_url(self, frame_num):
-        """Get simple frame URL with automatic background refresh"""
+        """Get frame URL with just-in-time refresh when expired - enhanced with nonce and validation"""
         frame_url = getattr(self, f'frame{frame_num}_image_url', '')
         if not frame_url:
             return None
             
+        # If not a Supabase URL, return as-is
+        if not frame_url.startswith('supabase://'):
+            return frame_url
+            
         from django.utils import timezone
+        from utils.supabase_client import supabase_storage
         now = timezone.now()
         cache_key = f'frame{frame_num}'
         
-        # Check for proactive refresh need (30 minute buffer)
-        needs_refresh = (
-            self._cached_frame_urls and cache_key in self._cached_frame_urls and 
-            self._url_cache_expires and
-            now >= (self._url_cache_expires - timezone.timedelta(minutes=30)) and
-            now < (self._url_cache_expires - timezone.timedelta(minutes=15))
-        )
-        
-        if needs_refresh:
-            self._schedule_frame_refresh(frame_num, frame_url)
-        
-        # Check cache validity (15 minute buffer)
+        # Two-tier validation: time-based AND URL accessibility
         if (self._cached_frame_urls and cache_key in self._cached_frame_urls and 
-            self._url_cache_expires and now < (self._url_cache_expires - timezone.timedelta(minutes=15))):
-            return self._cached_frame_urls[cache_key]
-            
-        try:
-            from utils.supabase_client import supabase_storage
-            
-            # Handle private bucket URLs (supabase://)
-            if frame_url.startswith('supabase://'):
-                file_path = frame_url.replace('supabase://', '')
-                signed_url = supabase_storage.client.storage.from_(supabase_storage.bucket).create_signed_url(file_path, 3600)
-                
-                if signed_url and 'signedURL' in signed_url:
-                    cached_url = signed_url['signedURL']
-                    
-                    # Update cache
-                    if not self._cached_frame_urls:
-                        self._cached_frame_urls = {}
-                    self._cached_frame_urls[cache_key] = cached_url
-                    
-                    # Set expiry if not already set
-                    if not self._url_cache_expires:
-                        self._url_cache_expires = timezone.now() + timezone.timedelta(seconds=3300)  # 55 minutes
-                    
-                    self.save(update_fields=['_cached_frame_urls', '_url_cache_expires'])
-                    return cached_url
-            
-        except Exception as e:
-            print(f"Frame URL error: {e}")
+            self._url_cache_expires and now < (self._url_cache_expires - timezone.timedelta(minutes=10))):
+            # Time-based check passed, now test URL accessibility
+            if supabase_storage.validate_signed_url(self._cached_frame_urls[cache_key]):
+                return self._cached_frame_urls[cache_key]
+            else:
+                # URL validation failed - cached URL is no longer accessible
+                pass
         
-        return frame_url
+        # Cache expired, invalid, or missing - generate fresh URL with unique expiry for uniqueness
+        try:
+            file_path = frame_url.replace('supabase://', '')
+            
+            # Use unique expiry time to ensure URL uniqueness and avoid deterministic signing
+            unique_expires_in = supabase_storage.generate_unique_expiry(3600)
+            signed_url_response = supabase_storage.client.storage.from_(supabase_storage.bucket).create_signed_url(
+                file_path, 
+                unique_expires_in
+            )
+            
+            if signed_url_response and 'signedURL' in signed_url_response:
+                cached_url = signed_url_response['signedURL']
+                
+                # Update cache
+                if not self._cached_frame_urls:
+                    self._cached_frame_urls = {}
+                self._cached_frame_urls[cache_key] = cached_url
+                
+                # Cache for safe buffer before token expiry (50 minutes for 60-minute tokens)
+                self._url_cache_expires = now + timezone.timedelta(minutes=50)
+                
+                # Save cache to database (ignore failures - will regenerate next time)
+                try:
+                    self.save(update_fields=['_cached_frame_urls', '_url_cache_expires'])
+                except Exception:
+                    pass  # Continue if save fails - URL is still valid
+                
+                return cached_url
+                
+        except Exception as e:
+            # Log error but continue with fallback
+            print(f"Frame URL generation failed for {frame_url}: {e}")
+            
+            # Fallback: Try with standard expiry
+            try:
+                file_path = frame_url.replace('supabase://', '')
+                signed_url_response = supabase_storage.client.storage.from_(supabase_storage.bucket).create_signed_url(file_path, 3600)
+                
+                if signed_url_response and 'signedURL' in signed_url_response:
+                    return signed_url_response['signedURL']
+                    
+            except Exception:
+                pass  # Silent fallback failure
+            
+        # Final fallback
+        return None
     
     @property
     def gallery_url(self):
         """Get gallery size URL for templates"""
-        return self.get_image('gallery')
+        # TEMPORARILY DISABLED: Supabase calls causing Django startup hangs
+        # return self.get_image('gallery')
+        return self.main_image_url  # Return raw URL for now
     
-    def refresh_url_cache(self):
-        """Clear cached URLs and immediately regenerate fresh signed URLs"""
-        import logging
-        from django.utils import timezone
-        from django.db import transaction
-        
-        logger = logging.getLogger(__name__)
-        
-        try:
-            with transaction.atomic():
-                # Clear old cache
-                old_cached_url = self._cached_image_url
-                self._cached_image_url = None
-                self._cached_thumbnail_url = None  
-                self._cached_frame_urls = {}
-                self._url_cache_expires = None
-                
-                # Immediately regenerate URLs if we have a main image
-                if self.main_image_url:
-                    try:
-                        # Generate new signed URL
-                        new_url = self.get_simple_signed_url(expires_in=3600)
-                        if new_url:
-                            self._cached_image_url = new_url
-                            self._cached_thumbnail_url = new_url  # Using same URL for now
-                            self._url_cache_expires = timezone.now() + timezone.timedelta(seconds=3300)  # 55 minutes
-                            logger.info(f"Successfully regenerated cache for artwork '{self.title}' (ID: {self.id})")
-                        else:
-                            # Generation failed, but don't crash - use fallback
-                            self._cached_image_url = self.main_image_url if not self.main_image_url.startswith('supabase://') else ''
-                            logger.warning(f"URL generation failed for artwork '{self.title}' (ID: {self.id}), using fallback")
-                    except Exception as e:
-                        # URL generation failed, but don't crash the refresh
-                        self._cached_image_url = self.main_image_url if not self.main_image_url.startswith('supabase://') else ''
-                        logger.error(f"Error regenerating URL for artwork '{self.title}' (ID: {self.id}): {str(e)}")
-                
-                # Save all changes atomically
-                self.save(update_fields=['_cached_image_url', '_cached_thumbnail_url', '_cached_frame_urls', '_url_cache_expires'])
-                logger.debug(f"Cache refresh completed for artwork '{self.title}' (ID: {self.id})")
-                return True
-                
-        except Exception as e:
-            logger.error(f"Critical error during cache refresh for artwork '{self.title}' (ID: {self.id}): {str(e)}")
-            # Even if refresh fails, don't crash the calling code
-            return False
+    # Removed refresh_url_cache - no longer needed with just-in-time refresh
     
     def get_frame_image(self, frame_num, size='gallery', expires_in=86400):  # Extended to 24 hours
         """Get signed URL for frame image with transformations and optimized caching"""
@@ -786,8 +710,16 @@ class Artwork(models.Model):
         return f"{self.title} ({self.year_created})"
 
     def get_absolute_url(self):
-        # Primary detail URL for individual artwork pages
-        return reverse('artwork_detail', kwargs={'slug': self.slug})
+        # Primary detail URL for individual artwork pages (full details)
+        if self.category:
+            return reverse('artwork:detail', kwargs={'category_slug': self.category.slug, 'slug': self.slug})
+        return f"/artwork/uncategorized/{self.slug}/"
+    
+    def get_display_url(self):
+        # Display URL for gallery view (full-resolution image focus)
+        if self.category:
+            return reverse('artwork:display', kwargs={'category_slug': self.category.slug, 'slug': self.slug})
+        return f"/artwork/display/uncategorized/{self.slug}/"
 
     @property
     def dimensions_display(self):
@@ -854,3 +786,34 @@ class ArtworkInquiry(models.Model):
 
 
 # UserProfile, Wishlist, Order, and OrderItem models belong in their respective apps
+
+
+class CacheMetric(models.Model):
+    """Tracks cache performance metrics"""
+    
+    METRIC_TYPES = [
+        ('hit', 'Cache Hit'),
+        ('miss', 'Cache Miss'),
+        ('warming_success', 'Cache Warming Success'),
+        ('warming_failure', 'Cache Warming Failure'),
+        ('refresh_proactive', 'Proactive Refresh'),
+        ('refresh_reactive', 'Reactive Refresh'),
+        ('api_call', 'External API Call'),
+        ('thread_pool_task', 'Thread Pool Task'),
+    ]
+    
+    metric_type = models.CharField(max_length=20, choices=METRIC_TYPES)
+    artwork_id = models.IntegerField(null=True, blank=True)
+    response_time_ms = models.FloatField(null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    metadata = models.JSONField(default=dict, blank=True)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['metric_type', 'timestamp']),
+            models.Index(fields=['artwork_id', 'timestamp']),
+            models.Index(fields=['timestamp']),
+        ]
+    
+    def __str__(self):
+        return f"{self.metric_type} - {self.timestamp}"

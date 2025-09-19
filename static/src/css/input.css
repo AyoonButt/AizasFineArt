@@ -2,31 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Performance-specific overrides for shop/gallery pages */
-.performance-page .animate-on-scroll,
-.performance-page [data-animate],
-.performance-page [data-scroll-item],
-.performance-page [data-scroll-section] {
-  opacity: 1 !important;
-  transform: none !important;
-  transition: none !important;
-  animation: none !important;
-}
+/* Animations and scroll behavior restored - build system now stable */
 
-/* Disable all scroll-based animations on performance pages */
-.performance-page * {
-  scroll-behavior: auto !important;
-}
-
-/* Ensure artwork cards don't move during scroll */
-.performance-page .artwork-item,
-.performance-page .artwork-card {
-  transform: none !important;
-  transition: none !important;
-}
-
-/* Import Google Fonts for fallbacks - Custom fonts loaded via design-system.css */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap');
+/* Google Fonts moved to base.html template to avoid build timeouts */
+/* @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&family=Karla:wght@300;400;500;600;700&display=swap'); */
 
 /* Custom Base Styles */
 @layer base {
@@ -35,15 +14,20 @@
   }
   
   body {
-    @apply font-body text-primary bg-surface antialiased;
+    @apply antialiased;
+    font-family: 'Karla', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #F6ECEA;
+    color: #2F2F2F;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-medium;
+    @apply font-medium;
+    font-family: 'Colton', serif;
   }
   
   .accent-font {
-    @apply font-decorative font-medium tracking-wider;
+    @apply font-medium tracking-wider;
+    font-family: 'Nadeko', serif;
   }
 }
 
@@ -55,19 +39,19 @@
   }
   
   .btn-primary {
-    @apply bg-primary hover:bg-primary-600 text-pale-blush shadow-soft hover:shadow-medium;
+    @apply bg-primary hover:bg-primary-600 text-white shadow-md hover:shadow-lg;
   }
   
   .btn-secondary {
-    @apply bg-secondary hover:bg-secondary-600 text-deep-ash shadow-soft hover:shadow-medium;
+    @apply bg-secondary hover:bg-secondary-600 text-gray-800 shadow-md hover:shadow-lg;
   }
   
   .btn-outline {
-    @apply border-2 border-primary text-primary hover:bg-primary hover:text-pale-blush;
+    @apply border-2 border-primary text-primary hover:bg-primary hover:text-white;
   }
   
   .btn-ghost {
-    @apply text-primary hover:bg-primary-10;
+    @apply text-primary hover:bg-gray-100;
   }
   
   /* Card Styles - JavaScript Masonry */
@@ -86,33 +70,33 @@
     aspect-ratio: 4/5 !important;
   }
   .card {
-    @apply bg-surface rounded-xl shadow-soft hover:shadow-medium transition-all duration-300 border border-muted;
+    @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200;
   }
   
   .card-elevated {
-    @apply bg-surface rounded-xl shadow-medium hover:shadow-strong transition-all duration-300 border border-muted;
+    @apply bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200;
   }
   
   /* Form Styles */
   .form-input {
-    @apply w-full px-4 py-3 border border-muted rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 bg-surface;
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 bg-white;
   }
   
   .form-label {
-    @apply block text-caption font-medium text-secondary mb-2;
+    @apply block text-sm font-medium text-gray-700 mb-2;
   }
   
   .form-textarea {
-    @apply w-full px-4 py-3 border border-muted rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 resize-y bg-surface;
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 resize-y bg-white;
   }
   
   .form-select {
-    @apply w-full px-4 py-3 border border-muted rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 bg-surface;
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200 bg-white;
   }
   
   /* Navigation Styles */
   .nav-link {
-    @apply text-primary hover:text-primary-600 font-medium transition-colors duration-200 relative;
+    @apply text-primary hover:opacity-80 font-medium transition-colors duration-200 relative;
   }
   
   .nav-link-active {
@@ -192,16 +176,16 @@
   }
   
   .price-sold {
-    @apply text-body font-medium text-secondary bg-secondary-10 px-3 py-1 rounded-full;
+    @apply text-base font-medium text-secondary bg-gray-100 px-3 py-1 rounded-full;
   }
   
   /* Status Badges */
   .status-available {
-    @apply bg-primary-10 text-primary px-3 py-1 rounded-full text-caption font-medium;
+    @apply bg-green-100 text-primary px-3 py-1 rounded-full text-sm font-medium;
   }
   
   .status-prints-only {
-    @apply bg-secondary-20 text-secondary px-3 py-1 rounded-full text-caption font-medium;
+    @apply bg-blue-100 text-secondary px-3 py-1 rounded-full text-sm font-medium;
   }
   
   /* Wishlist button states */
@@ -213,6 +197,29 @@
     fill: currentColor !important;
   }
   
+  /* OrderTracking Component Styles */
+  .order-tracking-progress {
+    transition: width 1.2s ease-out;
+  }
+
+  .order-tracking-step {
+    transition: all 0.3s ease;
+  }
+
+  .order-tracking-step.completed {
+    @apply bg-green-500 border-green-500 shadow-lg shadow-green-500/25;
+  }
+
+  .order-tracking-step.current {
+    @apply bg-blue-500 border-blue-500 shadow-lg shadow-blue-500/25;
+  }
+
+  .order-tracking-step.pending {
+    @apply bg-white border-gray-300;
+  }
+
+
+
   /* Form Label Override */
   .form-label {
     color: #9C6B68 !important; /* vintage rosewood */
@@ -527,193 +534,103 @@ img[src=""]:after, img:not([src]):after {
   animation: shimmer 2s infinite;
 }
 
-/* Watercolor Section Borders - Natural paint bleed effect */
-.section-border-top {
-  position: relative;
-}
 
-/* Oil paint texture border with impasto effect */
-
-.section-border-top::before {
+/* Painter Border System (matches design-system.css) */
+/* Only bottom borders - rotated 180 degrees and positioned at section boundary */
+.painter-border-bottom::after {
   content: '';
   position: absolute;
-  top: -3px;
-  left: 0;
-  width: 100%;
-  height: 12px;
-  background: 
-    /* Main oil paint stroke with texture */
-    linear-gradient(90deg, 
-      transparent 0%, 
-      var(--watercolor-border-color, #9C6B68) 2%, 
-      var(--watercolor-border-color, #9C6B68) 8%, 
-      transparent 10%,
-      var(--watercolor-border-color, #9C6B68) 15%, 
-      var(--watercolor-border-color, #9C6B68) 25%, 
-      transparent 28%,
-      var(--watercolor-border-color, #9C6B68) 35%, 
-      var(--watercolor-border-color, #9C6B68) 42%, 
-      transparent 45%,
-      var(--watercolor-border-color, #9C6B68) 52%, 
-      var(--watercolor-border-color, #9C6B68) 68%, 
-      transparent 72%,
-      var(--watercolor-border-color, #9C6B68) 78%, 
-      var(--watercolor-border-color, #9C6B68) 88%, 
-      transparent 92%,
-      var(--watercolor-border-color, #9C6B68) 96%, 
-      transparent 100%),
-    /* Oil paint splatters */
-    radial-gradient(ellipse 4px 2px at 12% 40%, var(--watercolor-border-color, #9C6B68), transparent),
-    radial-gradient(ellipse 3px 3px at 28% 70%, var(--watercolor-border-color, #9C6B68), transparent),
-    radial-gradient(ellipse 5px 2px at 45% 20%, var(--watercolor-border-color, #9C6B68), transparent),
-    radial-gradient(ellipse 2px 4px at 62% 80%, var(--watercolor-border-color, #9C6B68), transparent),
-    radial-gradient(ellipse 3px 2px at 78% 35%, var(--watercolor-border-color, #9C6B68), transparent),
-    radial-gradient(ellipse 4px 3px at 88% 65%, var(--watercolor-border-color, #9C6B68), transparent);
-  opacity: 0.4;
-  filter: none;
-  z-index: 1;
+  bottom: 0;
+  left: -300px;
+  width: calc(100% + 600px);
+  height: clamp(40px, 8vw, 120px);
+  background: var(--painter-border-color, var(--color-vintage-rosewood, #9C6B68));
+  transform: rotate(180deg) translateY(50%);
+  mask: 
+    url('/static/images/painter_border.svg') no-repeat 0px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 450px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 900px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 1350px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 1800px center / 614px clamp(40px, 8vw, 120px);
+  -webkit-mask: 
+    url('/static/images/painter_border.svg') no-repeat 0px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 450px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 900px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 1350px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 1800px center / 614px clamp(40px, 8vw, 120px);
+  pointer-events: none;
+  z-index: 10;
 }
 
-.section-border-top::after {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: 0;
-  width: 100%;
-  height: 6px;
-  background: var(--watercolor-border-color, #9C6B68);
-  opacity: 0.15;
-  filter: blur(0.5px);
-  z-index: 0;
-}
-
+/* Legacy compatibility classes */
+.section-border-top,
 .section-border-bottom {
   position: relative;
 }
 
-.section-border-bottom::before {
+.section-border-top::before {
   content: '';
   position: absolute;
-  bottom: -3px;
-  left: 0;
-  width: 100%;
-  height: 12px;
-  background: 
-    /* Main oil paint stroke with texture */
-    linear-gradient(90deg, 
-      transparent 0%, 
-      var(--watercolor-border-color, #9C6B68) 4%, 
-      var(--watercolor-border-color, #9C6B68) 12%, 
-      transparent 16%,
-      var(--watercolor-border-color, #9C6B68) 22%, 
-      var(--watercolor-border-color, #9C6B68) 34%, 
-      transparent 38%,
-      var(--watercolor-border-color, #9C6B68) 44%, 
-      var(--watercolor-border-color, #9C6B68) 58%, 
-      transparent 62%,
-      var(--watercolor-border-color, #9C6B68) 68%, 
-      var(--watercolor-border-color, #9C6B68) 76%, 
-      transparent 80%,
-      var(--watercolor-border-color, #9C6B68) 84%, 
-      var(--watercolor-border-color, #9C6B68) 94%, 
-      transparent 98%),
-    /* Oil paint splatters */
-    radial-gradient(ellipse 3px 4px at 18% 35%, var(--watercolor-border-color, #9C6B68), transparent),
-    radial-gradient(ellipse 4px 2px at 32% 75%, var(--watercolor-border-color, #9C6B68), transparent),
-    radial-gradient(ellipse 2px 5px at 48% 15%, var(--watercolor-border-color, #9C6B68), transparent),
-    radial-gradient(ellipse 5px 3px at 64% 85%, var(--watercolor-border-color, #9C6B68), transparent),
-    radial-gradient(ellipse 3px 3px at 76% 40%, var(--watercolor-border-color, #9C6B68), transparent),
-    radial-gradient(ellipse 4px 2px at 92% 70%, var(--watercolor-border-color, #9C6B68), transparent);
-  opacity: 0.4;
-  filter: none;
-  z-index: 1;
+  top: 0;
+  left: -300px;
+  width: calc(100% + 600px);
+  height: clamp(40px, 8vw, 120px);
+  background: var(--painter-border-color, #9C6B68);
+  mask: 
+    url('/static/images/painter_border.svg') no-repeat 0px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 450px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 900px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 1350px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 1800px center / 614px clamp(40px, 8vw, 120px);
+  -webkit-mask: 
+    url('/static/images/painter_border.svg') no-repeat 0px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 450px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 900px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 1350px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 1800px center / 614px clamp(40px, 8vw, 120px);
+  pointer-events: none;
+  z-index: 10;
+  transform: scaleY(-1);
 }
 
 .section-border-bottom::after {
   content: '';
   position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 100%;
-  height: 6px;
-  background: var(--watercolor-border-color, #9C6B68);
-  opacity: 0.15;
-  filter: blur(0.5px);
-  z-index: 0;
+  bottom: 0;
+  left: -300px;
+  width: calc(100% + 600px);
+  height: clamp(40px, 8vw, 120px);
+  background: var(--painter-border-color, #9C6B68);
+  mask: 
+    url('/static/images/painter_border.svg') no-repeat 0px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 450px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 900px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 1350px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 1800px center / 614px clamp(40px, 8vw, 120px);
+  -webkit-mask: 
+    url('/static/images/painter_border.svg') no-repeat 0px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 450px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 900px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 1350px center / 614px clamp(40px, 8vw, 120px),
+    url('/static/images/painter_border.svg') no-repeat 1800px center / 614px clamp(40px, 8vw, 120px);
+  pointer-events: none;
+  z-index: 10;
 }
 
-/* Section above color mapping - exact color matches */
-.from-hero-section {
-  --watercolor-border-color: #A38194; /* Exact mauve plum from hero gradient */
-}
+.section-border-primary { --painter-border-color: #9C6B68; }
+.section-border-secondary { --painter-border-color: #A38194; }
+.section-border-accent { --painter-border-color: #2F2F2F; }
+.section-border-muted { --painter-border-color: #9C6B68; }
 
-.from-mist-section {
-  --watercolor-border-color: #DCE3E8; /* Exact mist blue from featured section */
-}
-
-.from-surface-section {
-  --watercolor-border-color: #ffffff; /* Exact white from surface */
-}
-
-.from-about-section {
-  --watercolor-border-color: #C5D6D2; /* Exact sea glass from about gradient */
-}
-
-.from-blush-section {
-  --watercolor-border-color: #F6ECEA; /* Exact pale blush from services */
-}
-
-.from-rosewood-section {
-  --watercolor-border-color: #9C6B68; /* Exact vintage rosewood from shop header */
-}
-
-.from-contact-section {
-  --watercolor-border-color: #DCE3E8; /* Exact mist blue from contact gradient */
-}
-
-.from-ash-section {
-  --watercolor-border-color: #2F2F2F; /* Exact deep ash */
-}
-
-.from-black-section {
-  --watercolor-border-color: #000000; /* Exact black */
-}
-
-/* Natural oil paint effect - smooth impasto with splattering */
-.watercolor-natural .section-border-top::before {
-  opacity: 0.5;
-  filter: none;
-}
-
-.watercolor-natural .section-border-top::after {
-  opacity: 0.2;
-  filter: blur(1px);
-}
-
-.watercolor-natural .section-border-bottom::before {
-  opacity: 0.5;
-  filter: none;
-}
-
-.watercolor-natural .section-border-bottom::after {
-  opacity: 0.2;
-  filter: blur(1px);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .section-border-top::before,
-  .section-border-bottom::after {
-    height: 16px;
-    filter: none;
-  }
-  
-  .watercolor-natural .section-border-top::before,
-  .watercolor-natural .section-border-bottom::after {
-    filter: none;
-    opacity: 1;
-  }
-}
+/* Painter border specific color classes */
+.painter-border-vintage-rosewood { --painter-border-color: #9C6B68; }
+.painter-border-mauve-plum { --painter-border-color: #A38194; }
+.painter-border-sea-glass { --painter-border-color: #C5D6D2; }
+.painter-border-pale-blush { --painter-border-color: #F6ECEA; }
+.painter-border-mist-blue { --painter-border-color: #DCE3E8; }
+.painter-border-surface { --painter-border-color: #ffffff; }
+.painter-border-white { --painter-border-color: #ffffff; }
+.painter-border-deep-ash { --painter-border-color: #2F2F2F; }
 
 /* Print Styles */
 @media print {
@@ -722,16 +639,14 @@ img[src=""]:after, img:not([src]):after {
   }
   
   body {
-    @apply text-primary bg-surface;
+    color: #2F2F2F;
+    background: white;
   }
   
   .card {
-    @apply shadow-none border border-muted;
+    box-shadow: none;
+    border: 1px solid #ccc;
   }
   
-  /* Hide painterly borders in print */
-  .section-border-top::before,
-  .section-border-bottom::after {
-    display: none;
-  }
+
 }

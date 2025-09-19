@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.db.models import Q, Count, F, Sum
 from django.db import models
 from django.http import JsonResponse
+from django.core.cache import cache
 from artwork.models import Artwork, Category, Tag, Series
 from artwork.forms import ArtworkForm
 from blog.models import BlogPost
@@ -21,16 +22,42 @@ class HomePage(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Featured artworks for hero carousel
-        context['featured_artworks'] = Artwork.objects.filter(
-            is_featured=True, 
-            is_active=True
-        ).select_related('category')[:8]
+        # Featured artworks for hero carousel - cached and optimized query
+        cache_key = 'homepage_featured_artworks'
+        featured_artworks = cache.get(cache_key)
         
-        # Latest available artworks
-        context['latest_artworks'] = Artwork.objects.filter(
-            is_active=True
-        ).select_related('category')[:6]
+        if featured_artworks is None:
+            featured_artworks = list(Artwork.objects.filter(
+                is_featured=True, 
+                is_active=True
+            ).only(
+                'id', 'title', 'slug', 'medium', 'main_image_url',
+                'original_price', 'original_available', 'category_id',
+                'alt_text', '_cached_image_url', '_url_cache_expires'
+            ).select_related('category')[:8])
+            
+            # Cache for 10 minutes (600 seconds)
+            cache.set(cache_key, featured_artworks, 600)
+        
+        context['featured_artworks'] = featured_artworks
+        
+        # Latest available artworks - cached for performance
+        latest_cache_key = 'homepage_latest_artworks'
+        latest_artworks = cache.get(latest_cache_key)
+        
+        if latest_artworks is None:
+            latest_artworks = list(Artwork.objects.filter(
+                is_active=True
+            ).only(
+                'id', 'title', 'slug', 'main_image_url', 'medium',
+                'original_price', 'original_available', 'category_id',
+                '_cached_image_url', '_url_cache_expires'
+            ).select_related('category')[:6])
+            
+            # Cache for 15 minutes
+            cache.set(latest_cache_key, latest_artworks, 900)
+        
+        context['latest_artworks'] = latest_artworks
         
         # Latest blog posts for content
         context['recent_posts'] = BlogPost.objects.filter(
@@ -62,14 +89,25 @@ class GalleryView(ListView):
     paginate_by = 20
     
     def get_queryset(self):
-        # Optimized query: only select needed fields for gallery display
-        queryset = Artwork.objects.only(
-            'id', 'title', 'slug', 'main_image_url', 'medium', 
-            'original_price', 'original_available', 'type', 'is_featured',
-            'display_order', 'created_at', 'category_id'
-        ).filter(
-            is_active=True
-        ).select_related('category')
+        # Check cache first for gallery artworks
+        cache_key = f'gallery_artworks_{self.kwargs.get("medium", "all")}'
+        cached_queryset = cache.get(cache_key)
+        
+        if cached_queryset is None:
+            # Optimized query: only select needed fields for gallery display
+            queryset = Artwork.objects.only(
+                'id', 'title', 'slug', 'main_image_url', 'medium', 
+                'original_price', 'original_available', 'type', 'is_featured',
+                'display_order', 'created_at', 'category_id',
+                '_cached_image_url', '_url_cache_expires'
+            ).filter(
+                is_active=True
+            ).select_related('category')
+            
+            # Cache the queryset for 5 minutes
+            cache.set(cache_key, queryset, 300)
+        else:
+            queryset = cached_queryset
         
         # Filter by medium from URL path
         medium_filter = self.kwargs.get('medium')
@@ -102,9 +140,15 @@ class GalleryView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Optimized filter options - only select needed fields
+        # Optimized filter options - cached categories
         context['medium_choices'] = Artwork.MEDIUM_CHOICES
-        context['categories'] = Category.objects.only('id', 'name', 'slug').filter(is_active=True)
+        
+        categories_cache_key = 'active_categories'
+        categories = cache.get(categories_cache_key)
+        if categories is None:
+            categories = list(Category.objects.only('id', 'name', 'slug').filter(is_active=True))
+            cache.set(categories_cache_key, categories, 1800)  # 30 minutes
+        context['categories'] = categories
         context['current_medium'] = self.kwargs.get('medium', '')
         context['current_filters'] = {
             'status': self.request.GET.get('status', ''),
@@ -155,9 +199,15 @@ class PortfolioView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Optimized filter options - only select needed fields
+        # Optimized filter options - cached categories
         context['medium_choices'] = Artwork.MEDIUM_CHOICES
-        context['categories'] = Category.objects.only('id', 'name', 'slug').filter(is_active=True)
+        
+        categories_cache_key = 'active_categories'
+        categories = cache.get(categories_cache_key)
+        if categories is None:
+            categories = list(Category.objects.only('id', 'name', 'slug').filter(is_active=True))
+            cache.set(categories_cache_key, categories, 1800)  # 30 minutes
+        context['categories'] = categories
         context['current_filters'] = {
             'medium': self.request.GET.get('medium', ''),
             'status': self.request.GET.get('status', ''),
@@ -189,15 +239,25 @@ class ShopDjangoView(ListView):
     paginate_by = 20
     
     def get_queryset(self):
-        # Optimized query: only select needed fields and avoid prefetch_related
-        return Artwork.objects.only(
-            'id', 'title', 'slug', 'main_image_url', 'medium', 
-            'original_price', 'original_available', 'type', 'is_featured',
-            'display_order', 'category_id'
-        ).filter(
-            type__in=['original', 'print'],  # Use __in instead of Q() for better performance
-            is_active=True
-        ).select_related('category').order_by('-is_featured', 'display_order')
+        # Check cache first for shop artworks
+        cache_key = 'shop_artworks_list'
+        cached_artworks = cache.get(cache_key)
+        
+        if cached_artworks is None:
+            # Optimized query: only select needed fields and avoid prefetch_related
+            cached_artworks = list(Artwork.objects.only(
+                'id', 'title', 'slug', 'main_image_url', 'medium', 
+                'original_price', 'original_available', 'type', 'is_featured',
+                'display_order', 'category_id', '_cached_image_url', '_url_cache_expires'
+            ).filter(
+                type__in=['original', 'print'],  # Use __in instead of Q() for better performance
+                is_active=True
+            ).select_related('category').order_by('-is_featured', 'display_order'))
+            
+            # Cache for 5 minutes
+            cache.set(cache_key, cached_artworks, 300)
+        
+        return cached_artworks
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

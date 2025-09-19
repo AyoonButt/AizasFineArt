@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Addresses - Aiza's Fine Art{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-neutral-50 min-h-screen">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-h1 font-playfair font-semibold text-neutral-800 mb-2">Manage Addresses</h1>
+                <p class="text-body-lg text-neutral-600">Update your shipping and billing addresses</p>
+            </div>
+
+            <!-- Back to Profile -->
+            <div class="mb-6">
+                <a href="{% url 'userprofiles:profile_dashboard' %}" class="inline-flex items-center text-sm text-neutral-600 hover:text-neutral-800">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L4.414 9H17a1 1 0 110 2H4.414l5.293 5.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+                    </svg>
+                    Back to Profile
+                </a>
+            </div>
+
+            <!-- Address Form -->
+            <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-playfair font-semibold text-neutral-800">Default Address</h2>
+                    <div class="text-sm text-neutral-600">
+                        {% if stripe_address %}
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Synced with billing
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="address_line_1" class="block text-sm font-medium text-neutral-700 mb-2">Street Address *</label>
+                            <input type="text" 
+                                   id="address_line_1" 
+                                   name="address_line_1" 
+                                   required
+                                   value="{{ profile.address_line_1|default:'' }}"
+                                   class="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                        
+                        <div>
+                            <label for="address_line_2" class="block text-sm font-medium text-neutral-700 mb-2">Apartment, Suite, etc.</label>
+                            <input type="text" 
+                                   id="address_line_2" 
+                                   name="address_line_2" 
+                                   value="{{ profile.address_line_2|default:'' }}"
+                                   placeholder="Optional"
+                                   class="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-6 mb-6">
+                        <div>
+                            <label for="city" class="block text-sm font-medium text-neutral-700 mb-2">City *</label>
+                            <input type="text" 
+                                   id="city" 
+                                   name="city" 
+                                   required
+                                   value="{{ profile.city|default:'' }}"
+                                   class="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                        
+                        <div>
+                            <label for="state" class="block text-sm font-medium text-neutral-700 mb-2">State/Province *</label>
+                            <input type="text" 
+                                   id="state" 
+                                   name="state" 
+                                   required
+                                   value="{{ profile.state|default:'' }}"
+                                   class="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                        
+                        <div>
+                            <label for="postal_code" class="block text-sm font-medium text-neutral-700 mb-2">ZIP/Postal Code *</label>
+                            <input type="text" 
+                                   id="postal_code" 
+                                   name="postal_code" 
+                                   required
+                                   value="{{ profile.postal_code|default:'' }}"
+                                   class="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="country" class="block text-sm font-medium text-neutral-700 mb-2">Country *</label>
+                        <select id="country" 
+                                name="country" 
+                                required
+                                class="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            <option value="US" {% if profile.country == 'US' %}selected{% endif %}>United States</option>
+                            <option value="CA" {% if profile.country == 'CA' %}selected{% endif %}>Canada</option>
+                            <option value="GB" {% if profile.country == 'GB' %}selected{% endif %}>United Kingdom</option>
+                            <option value="AU" {% if profile.country == 'AU' %}selected{% endif %}>Australia</option>
+                            <option value="DE" {% if profile.country == 'DE' %}selected{% endif %}>Germany</option>
+                            <option value="FR" {% if profile.country == 'FR' %}selected{% endif %}>France</option>
+                            <option value="IT" {% if profile.country == 'IT' %}selected{% endif %}>Italy</option>
+                            <option value="ES" {% if profile.country == 'ES' %}selected{% endif %}>Spain</option>
+                            <option value="NL" {% if profile.country == 'NL' %}selected{% endif %}>Netherlands</option>
+                            <option value="CH" {% if profile.country == 'CH' %}selected{% endif %}>Switzerland</option>
+                            <option value="SE" {% if profile.country == 'SE' %}selected{% endif %}>Sweden</option>
+                            <option value="NO" {% if profile.country == 'NO' %}selected{% endif %}>Norway</option>
+                            <option value="DK" {% if profile.country == 'DK' %}selected{% endif %}>Denmark</option>
+                            <option value="FI" {% if profile.country == 'FI' %}selected{% endif %}>Finland</option>
+                            <option value="BE" {% if profile.country == 'BE' %}selected{% endif %}>Belgium</option>
+                            <option value="AT" {% if profile.country == 'AT' %}selected{% endif %}>Austria</option>
+                            <option value="IE" {% if profile.country == 'IE' %}selected{% endif %}>Ireland</option>
+                            <option value="NZ" {% if profile.country == 'NZ' %}selected{% endif %}>New Zealand</option>
+                            <option value="JP" {% if profile.country == 'JP' %}selected{% endif %}>Japan</option>
+                            <option value="SG" {% if profile.country == 'SG' %}selected{% endif %}>Singapore</option>
+                        </select>
+                    </div>
+
+                    <!-- Stripe Address Sync Info -->
+                    {% if profile.stripe_customer_id %}
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                            <div class="text-sm">
+                                <p class="text-blue-800 font-medium">Address Synchronization</p>
+                                <p class="text-blue-700 mt-1">
+                                    This address will be automatically synchronized with your billing information for faster checkout.
+                                    {% if stripe_address %}
+                                    Your address matches your billing information on file.
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Form Actions -->
+                    <div class="flex items-center justify-between pt-6 border-t border-neutral-200">
+                        <a href="{% url 'userprofiles:profile_dashboard' %}" class="px-6 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors">
+                            Cancel
+                        </a>
+                        <button type="submit" class="px-6 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 transition-colors">
+                            Save Address
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Current Address Display -->
+            {% if profile.address_line_1 %}
+            <div class="mt-6 bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+                <h3 class="text-lg font-playfair font-semibold text-neutral-800 mb-4">Current Address</h3>
+                <div class="text-neutral-700">
+                    <div>{{ profile.address_line_1 }}</div>
+                    {% if profile.address_line_2 %}
+                        <div>{{ profile.address_line_2 }}</div>
+                    {% endif %}
+                    <div>{{ profile.city }}, {{ profile.state }} {{ profile.postal_code }}</div>
+                    <div>{{ profile.get_country_display|default:profile.country }}</div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Shipping Information -->
+            <div class="mt-6 bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+                <h3 class="text-lg font-playfair font-semibold text-neutral-800 mb-4">Shipping Information</h3>
+                
+                <div class="space-y-4 text-sm text-neutral-600">
+                    <div class="flex items-start space-x-3">
+                        <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+                            <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1V8a1 1 0 00-1-1h-3z"/>
+                        </svg>
+                        <div>
+                            <p class="font-medium text-neutral-800">Free shipping (US)</p>
+                            <p>Complimentary shipping for all orders within the United States.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <svg class="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <p class="font-medium text-neutral-800">Processing time</p>
+                            <p>Orders typically ship within 2-3 business days of confirmation.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-3">
+                        <svg class="w-5 h-5 text-purple-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <p class="font-medium text-neutral-800">Careful packaging</p>
+                            <p>All artwork is carefully packaged to ensure safe delivery in perfect condition.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

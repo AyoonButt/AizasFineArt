@@ -47,9 +47,13 @@ urlpatterns = [
     path('art/', include('artwork.urls', namespace='artwork')),
     path('blog/', include('blog.urls', namespace='blog')),
     path('orders/', include('orders.urls', namespace='orders')),
+    path('users/', include('userprofiles.urls', namespace='userprofiles')),
     
     # API endpoints
     path('api/', include('api.urls', namespace='api')),
+    
+    # Monitoring endpoints
+    path('metrics/', include('artwork.urls_metrics')),
     
     # HTMX endpoints for shop
     path('shop/artworks/', htmx_views.shop_artwork_list, name='shop_artwork_list'),

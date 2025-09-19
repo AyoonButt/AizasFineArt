@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 60" preserveAspectRatio="none">
+  <!-- Watercolor brush stroke - Pale Blush -->
+  <path d="M0,30 C50,25 100,35 150,30 C200,25 250,35 300,28 C350,32 400,22 450,30 C500,35 550,25 600,30 C650,28 700,35 750,25 C800,30 850,35 900,28 C950,32 1000,25 1050,30 C1100,35 1150,28 1200,30 L1200,60 L0,60 Z" 
+        fill="#F6ECEA" stroke="none"/>
+</svg>

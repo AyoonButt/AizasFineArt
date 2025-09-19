@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Delete Account - Aiza's Fine Art{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-neutral-50 min-h-screen">
+    <div class="container mx-auto px-4">
+        <div class="max-w-2xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-h1 font-playfair font-semibold text-red-600 mb-2">Delete Account</h1>
+                <p class="text-body-lg text-neutral-600">We're sorry to see you go</p>
+            </div>
+
+            <!-- Back to Settings -->
+            <div class="mb-6">
+                <a href="{% url 'userprofiles:account_settings' %}" class="inline-flex items-center text-sm text-neutral-600 hover:text-neutral-800">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L4.414 9H17a1 1 0 110 2H4.414l5.293 5.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+                    </svg>
+                    Back to Settings
+                </a>
+            </div>
+
+            <!-- Warning Notice -->
+            <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+                <div class="flex items-start space-x-3">
+                    <svg class="w-6 h-6 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-medium text-red-800 mb-2">This action cannot be undone</h3>
+                        <p class="text-red-700">
+                            Deleting your account will permanently remove all your data from our systems. 
+                            This includes your profile information, order history, wishlist, and any saved payment methods.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Data Summary -->
+            <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-6 mb-6">
+                <h2 class="text-lg font-playfair font-semibold text-neutral-800 mb-4">Your Account Data</h2>
+                <p class="text-neutral-600 mb-4">The following data will be permanently deleted:</p>
+                
+                <div class="space-y-3 text-sm">
+                    <div class="flex items-center justify-between py-2 border-b border-neutral-100">
+                        <span class="text-neutral-700">Profile information</span>
+                        <span class="text-neutral-500">Personal details, preferences, contact info</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between py-2 border-b border-neutral-100">
+                        <span class="text-neutral-700">Order history</span>
+                        <span class="text-neutral-500">{{ orders_count }} order{{ orders_count|pluralize }}</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between py-2 border-b border-neutral-100">
+                        <span class="text-neutral-700">Wishlist items</span>
+                        <span class="text-neutral-500">{{ wishlist_count }} item{{ wishlist_count|pluralize }}</span>
+                    </div>
+                    
+                    {% if has_payment_methods %}
+                    <div class="flex items-center justify-between py-2 border-b border-neutral-100">
+                        <span class="text-neutral-700">Saved payment methods</span>
+                        <span class="text-neutral-500">All saved cards and billing info</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="flex items-center justify-between py-2">
+                        <span class="text-neutral-700">Account access</span>
+                        <span class="text-neutral-500">Login credentials and permissions</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- What Happens Next -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+                <h3 class="text-lg font-medium text-blue-800 mb-3">What happens next?</h3>
+                <ul class="text-blue-700 text-sm space-y-2">
+                    <li class="flex items-start space-x-2">
+                        <span class="text-blue-500 mt-1">•</span>
+                        <span>Your account will be immediately deactivated</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <span class="text-blue-500 mt-1">•</span>
+                        <span>All personal data will be securely deleted from our systems</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <span class="text-blue-500 mt-1">•</span>
+                        <span>Saved payment methods will be removed from Stripe</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <span class="text-blue-500 mt-1">•</span>
+                        <span>You will be automatically logged out</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <span class="text-blue-500 mt-1">•</span>
+                        <span>You can create a new account anytime if you change your mind</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Confirmation Form -->
+            <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+                <form method="post" action="{% url 'userprofiles:delete_account' %}" id="delete-form">
+                    {% csrf_token %}
+                    
+                    <div class="mb-6">
+                        <label for="confirm_delete" class="block text-sm font-medium text-neutral-700 mb-2">
+                            To confirm deletion, type <strong>DELETE</strong> in the box below:
+                        </label>
+                        <input type="text" 
+                               id="confirm_delete" 
+                               name="confirm_delete" 
+                               required
+                               placeholder="Type DELETE to confirm"
+                               class="w-full px-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex items-center justify-between pt-6 border-t border-neutral-200">
+                        <a href="{% url 'userprofiles:account_settings' %}" class="px-6 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors">
+                            Cancel
+                        </a>
+                        <button type="submit" 
+                                id="delete-button"
+                                disabled
+                                class="px-6 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            Delete My Account
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmInput = document.getElementById('confirm_delete');
+    const deleteButton = document.getElementById('delete-button');
+    
+    confirmInput.addEventListener('input', function() {
+        if (this.value === 'DELETE') {
+            deleteButton.disabled = false;
+        } else {
+            deleteButton.disabled = true;
+        }
+    });
+    
+    document.getElementById('delete-form').addEventListener('submit', function(e) {
+        if (confirmInput.value !== 'DELETE') {
+            e.preventDefault();
+            alert('Please type DELETE to confirm account deletion.');
+            return false;
+        }
+        
+        if (!confirm('Are you absolutely sure you want to delete your account? This action cannot be undone.')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}

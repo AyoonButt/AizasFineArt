@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views, api_views
+from . import views, api_views, checkout_views
 
 app_name = 'orders'
 
@@ -14,10 +14,12 @@ urlpatterns = [
     path('cart/remove/', views.remove_from_cart, name='remove_from_cart'),
     
     # Checkout URLs
-    path('checkout/', views.CheckoutView.as_view(), name='checkout'),
+    path('checkout/', checkout_views.checkout, name='checkout'),
     path('checkout/direct/', views.DirectCheckoutView.as_view(), name='direct_checkout'),
     path('checkout/setup/', views.setup_direct_checkout, name='setup_direct_checkout'),
     path('checkout/clear/', views.clear_direct_checkout, name='clear_direct_checkout'),
+    path('checkout/confirm-payment/', checkout_views.confirm_payment, name='confirm_payment'),
+    path('checkout/success/<int:order_id>/', checkout_views.order_success, name='order_success'),
     path('apply-coupon/', views.apply_coupon, name='apply_coupon'),
     
     # Order management

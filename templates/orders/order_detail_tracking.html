@@ -43,8 +43,19 @@
         <div data-react-component="order-tracking" 
              data-react-props='{"orderData": {{ order_tracking_data|safe }}}'
              id="order-tracking-component">
-            <!-- Fallback: Django Template Version -->
-            {% include 'components/orders/order_tracking.html' with order=order %}
+            <!-- Loading placeholder -->
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <div class="animate-pulse">
+                    <div class="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+                    <div class="h-2 bg-gray-200 rounded w-full mb-6"></div>
+                    <div class="flex justify-between">
+                        <div class="w-12 h-12 bg-gray-200 rounded-full"></div>
+                        <div class="w-12 h-12 bg-gray-200 rounded-full"></div>
+                        <div class="w-12 h-12 bg-gray-200 rounded-full"></div>
+                        <div class="w-12 h-12 bg-gray-200 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Order Items -->
@@ -155,19 +166,33 @@
 </div>
 {% endblock %}
 
+{% block react_cdn %}
+<!-- React CDN (updated to match package.json version) -->
+<script crossorigin src="https://unpkg.com/react@19/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@19/umd/react-dom.production.min.js"></script>
+<!-- Framer Motion CDN (updated to match package.json version) -->
+<script crossorigin src="https://unpkg.com/framer-motion@12/dist/framer-motion.umd.min.js"></script>
+{% endblock %}
+
 {% block extra_js %}
-{% render_bundle 'main' 'js' %}
+<!-- Load React bundle via webpack_loader -->
+{% render_bundle 'main' %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize React tracking component if available
-    if (window.ReactComponents && window.ReactComponents.mount) {
-        const trackingElement = document.getElementById('order-tracking-component');
-        if (trackingElement) {
-            const props = JSON.parse(trackingElement.dataset.reactProps || '{}');
-            console.log('Mounting React OrderTracking component with props:', props);
-            window.ReactComponents.mount('order-tracking', 'order-tracking-component', props);
-        }
+    console.log('ReactComponents available:', !!window.ReactComponents);
+    
+    // Let the automatic mounting from webpack bundle handle it first
+    if (window.ReactComponents && window.ReactComponents.mountAll) {
+        window.ReactComponents.mountAll();
     }
+    
+    // Also try manual mounting as backup
+    setTimeout(function() {
+        if (window.ReactComponents && window.ReactComponents.mount) {
+            const orderData = {{ order_tracking_data|safe }};
+            window.ReactComponents.mount('order-tracking', 'order-tracking-component', { orderData: orderData });
+        }
+    }, 100);
 });
 </script>
 {% endblock %}

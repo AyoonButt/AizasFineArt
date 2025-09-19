@@ -138,7 +138,7 @@ const ArtworkCardMultiImage = ({ artwork, index = 0 }) => {
     >
       <motion.div variants={hoverVariants}>
         <a 
-          href={artwork.get_absolute_url || '#'} 
+          href={artwork.get_display_url || '#'} 
           className="block"
         >
           {/* Image Container */}

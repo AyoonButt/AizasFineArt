@@ -84,19 +84,50 @@ const ArtworkImageContainer = ({ artwork, isCenter }) => {
     );
 };
 
-const FeaturedSlider = ({ className = '' }) => {
+const FeaturedSlider = ({ className = '', featuredArtworks: propsFeaturedArtworks = null }) => {
     const [featuredArtworks, setFeaturedArtworks] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [isPaused, setIsPaused] = useState(false);
     const [maxHeight, setMaxHeight] = useState(420); // Default height
 
-    // Fetch featured artworks on component mount with performance optimizations
+    // Initialize with props data or fetch from API as fallback
     useEffect(() => {
-        const fetchFeaturedArtworks = async () => {
+        const initializeFeaturedArtworks = async () => {
             try {
-                // Optimized API call with minimal fields for performance
-                const response = await fetch('/api/artworks/?featured=true&fields=id,title,slug,medium,price_display,image_thumbnail,image_gallery,image_url,alt_text,aspect_ratio', {
+                // Use props data if available (server-side rendered data)
+                if (propsFeaturedArtworks && Array.isArray(propsFeaturedArtworks) && propsFeaturedArtworks.length > 0) {
+                    console.log('FeaturedSlider: Using server-side data');
+                    
+                    // Aggressive preloading strategy for first 3 images
+                    const preloadPromises = propsFeaturedArtworks.slice(0, 3).map((artwork, index) => {
+                        return new Promise((resolve) => {
+                            const img = new Image();
+                            img.onload = resolve;
+                            img.onerror = resolve; // Don't block on errors
+                            // Use thumbnail for side images, gallery for center image
+                            img.src = index === 0 ? artwork.image_gallery || artwork.image_thumbnail : artwork.image_thumbnail;
+                        });
+                    });
+                    
+                    // Set artworks immediately, don't wait for preloading
+                    setFeaturedArtworks(propsFeaturedArtworks);
+                    
+                    // Calculate maximum height needed for all images
+                    calculateMaxHeight(propsFeaturedArtworks);
+                    
+                    // Preload images in background
+                    Promise.all(preloadPromises).then(() => {
+                        console.log('Featured images preloaded from server data');
+                    });
+                    
+                    setIsLoading(false);
+                    return;
+                }
+                
+                // Fallback to API if no props data available
+                console.log('FeaturedSlider: Falling back to API call');
+                const response = await fetch('/api/artworks/?featured=true&fields=id,title,slug,medium,price_display,image_thumbnail,image_gallery,image_url,alt_text,aspect_ratio,get_display_url', {
                     headers: {
                         'Accept': 'application/json',
                         'Cache-Control': 'max-age=600' // Cache for 10 minutes
@@ -129,21 +160,21 @@ const FeaturedSlider = ({ className = '' }) => {
                     
                     // Preload images in background
                     Promise.all(preloadPromises).then(() => {
-                        console.log('Featured images preloaded');
+                        console.log('Featured images preloaded from API');
                     });
                 } else {
                     setFeaturedArtworks([]);
                 }
             } catch (error) {
-                console.warn('FeaturedSlider: API error:', error.message);
+                console.warn('FeaturedSlider: Error loading featured artworks:', error.message);
                 setFeaturedArtworks([]);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchFeaturedArtworks();
-    }, []);
+        initializeFeaturedArtworks();
+    }, [propsFeaturedArtworks]);
 
     // Calculate the maximum height needed based on all featured artworks
     const calculateMaxHeight = async (artworks) => {
@@ -320,9 +351,9 @@ const FeaturedSlider = ({ className = '' }) => {
                                     }`}
                                     onClick={() => {
                                         if (artwork.isCenter) {
-                                            // Navigate to artwork detail page using slug
-                                            if (artwork.slug) {
-                                                window.location.href = `/art/${artwork.slug}/`;
+                                            // Navigate to artwork display page using get_display_url
+                                            if (artwork.get_display_url) {
+                                                window.location.href = artwork.get_display_url;
                                             }
                                         } else if (!artwork.isCenter) {
                                             goToSlide((currentIndex + artwork.position + featuredArtworks.length) % featuredArtworks.length);
@@ -364,20 +395,6 @@ const FeaturedSlider = ({ className = '' }) => {
             </button>
             
             
-            {/* Progress Bar */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/10 z-10">
-                <motion.div 
-                    className="h-full bg-gradient-to-r from-primary to-primary-600"
-                    initial={{ width: 0 }}
-                    animate={{ 
-                        width: isPaused ? `${((currentIndex + 1) / featuredArtworks.length) * 100}%` : '100%' 
-                    }}
-                    transition={{ 
-                        duration: isPaused ? 0.3 : 4,
-                        ease: isPaused ? 'easeOut' : 'linear'
-                    }}
-                />
-            </div>
 
         </div>
     );

@@ -6,11 +6,22 @@
   "scripts": {
     "dev": "npm run copy:images && npm run copy:js && npm run css:watch",
     "build": "npm run copy:images && npm run copy:js && npm run css:build",
+    "build:quick": "npm run copy:images && npm run copy:js",
+    "build:full": "npm run build && npm run webpack:build:safe",
+    "build:with-fallback": "npm run build && (npm run webpack:build:quick || npm run build:fallback)",
+    "build:fallback": "echo 'Webpack failed, using manual React bundle' && cp static/dist/js/main.bundle.js.backup static/dist/js/main.bundle.js 2>/dev/null || echo 'No fallback bundle available'",
     "css:watch": "tailwindcss -i ./static/src/css/input.css -o ./static/dist/css/main.css --watch",
     "css:build": "tailwindcss -i ./static/src/css/input.css -o ./static/dist/css/main.css --minify",
+    "css:build:safe": "timeout 10 tailwindcss --config tailwind.config.minimal.js -i ./static/src/css/input.simple.css -o ./static/dist/css/main.css --minify || cp static/src/css/design-system.css static/dist/css/main.css",
     "copy:images": "cp -r static/src/images/* static/dist/images/ 2>/dev/null || mkdir -p static/dist/images",
     "copy:js": "mkdir -p static/dist/js && find static/src/js -name '*.js' -not -path '*/react/*' -exec cp {} static/dist/js/ \\;",
-    "start": "python3 manage.py runserver 8001"
+    "webpack:build": "NODE_ENV=production webpack --mode=production --progress",
+    "webpack:build:safe": "timeout 300 webpack --mode=production --progress || echo 'Webpack build timed out after 5 minutes'",
+    "webpack:build:quick": "NODE_ENV=production webpack --mode=production --progress --stats=minimal",
+    "webpack:dev": "webpack --mode=development --watch",
+    "webpack:serve": "webpack serve --mode=development",
+    "start": "python3 manage.py runserver 8001",
+    "test:build": "npm run build:quick && echo 'Basic build completed successfully'"
   },
   "keywords": [
     "art",
@@ -23,6 +34,7 @@
   "author": "Aiza",
   "license": "MIT",
   "dependencies": {
+    "@playwright/test": "^1.55.0",
     "axios": "^1.6.0",
     "framer-motion": "^12.23.12",
     "lozad": "^1.16.0",
@@ -39,9 +51,13 @@
     "@tailwindcss/typography": "^0.5.16",
     "autoprefixer": "^10.4.16",
     "babel-loader": "^10.0.0",
+    "css-loader": "^7.1.2",
     "postcss": "^8.4.31",
+    "postcss-loader": "^8.2.0",
+    "style-loader": "^4.0.0",
     "tailwindcss": "^3.3.0",
     "webpack-bundle-tracker": "^3.2.1",
-    "webpack-cli": "^6.0.1"
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
   }
 }

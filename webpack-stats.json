@@ -1,84 +1,18 @@
 {
   "status": "done",
   "assets": {
-    "forms-3c95aa86550627cdefd9.js": {
-      "name": "forms-3c95aa86550627cdefd9.js",
-      "path": "/mnt/c/Users/ayoon/projects/AizasFineArt/static/dist/js/forms-3c95aa86550627cdefd9.js",
-      "publicPath": "/static/dist/js/forms-3c95aa86550627cdefd9.js"
-    },
-    "forms-3c95aa86550627cdefd9.js.map": {
-      "name": "forms-3c95aa86550627cdefd9.js.map",
-      "path": "/mnt/c/Users/ayoon/projects/AizasFineArt/static/dist/js/forms-3c95aa86550627cdefd9.js.map",
-      "publicPath": "/static/dist/js/forms-3c95aa86550627cdefd9.js.map"
-    },
-    "gallery-9391415b1c9b4a8b13ae.js": {
-      "name": "gallery-9391415b1c9b4a8b13ae.js",
-      "path": "/mnt/c/Users/ayoon/projects/AizasFineArt/static/dist/js/gallery-9391415b1c9b4a8b13ae.js",
-      "publicPath": "/static/dist/js/gallery-9391415b1c9b4a8b13ae.js"
-    },
-    "gallery-9391415b1c9b4a8b13ae.js.map": {
-      "name": "gallery-9391415b1c9b4a8b13ae.js.map",
-      "path": "/mnt/c/Users/ayoon/projects/AizasFineArt/static/dist/js/gallery-9391415b1c9b4a8b13ae.js.map",
-      "publicPath": "/static/dist/js/gallery-9391415b1c9b4a8b13ae.js.map"
-    },
-    "main-50fa3e62977a3ba1acc3.js": {
-      "name": "main-50fa3e62977a3ba1acc3.js",
-      "path": "/mnt/c/Users/ayoon/projects/AizasFineArt/static/dist/js/main-50fa3e62977a3ba1acc3.js",
-      "publicPath": "/static/dist/js/main-50fa3e62977a3ba1acc3.js"
-    },
-    "main-50fa3e62977a3ba1acc3.js.map": {
-      "name": "main-50fa3e62977a3ba1acc3.js.map",
-      "path": "/mnt/c/Users/ayoon/projects/AizasFineArt/static/dist/js/main-50fa3e62977a3ba1acc3.js.map",
-      "publicPath": "/static/dist/js/main-50fa3e62977a3ba1acc3.js.map"
-    },
-    "static_src_js_react_components_Forms_CommissionForm_jsx-static_src_js_react_components_Forms_-68b81c-4eb0f9c36a6735a00c3d.js": {
-      "name": "static_src_js_react_components_Forms_CommissionForm_jsx-static_src_js_react_components_Forms_-68b81c-4eb0f9c36a6735a00c3d.js",
-      "path": "/mnt/c/Users/ayoon/projects/AizasFineArt/static/dist/js/static_src_js_react_components_Forms_CommissionForm_jsx-static_src_js_react_components_Forms_-68b81c-4eb0f9c36a6735a00c3d.js",
-      "publicPath": "/static/dist/js/static_src_js_react_components_Forms_CommissionForm_jsx-static_src_js_react_components_Forms_-68b81c-4eb0f9c36a6735a00c3d.js"
-    },
-    "static_src_js_react_components_Forms_CommissionForm_jsx-static_src_js_react_components_Forms_-68b81c-4eb0f9c36a6735a00c3d.js.map": {
-      "name": "static_src_js_react_components_Forms_CommissionForm_jsx-static_src_js_react_components_Forms_-68b81c-4eb0f9c36a6735a00c3d.js.map",
-      "path": "/mnt/c/Users/ayoon/projects/AizasFineArt/static/dist/js/static_src_js_react_components_Forms_CommissionForm_jsx-static_src_js_react_components_Forms_-68b81c-4eb0f9c36a6735a00c3d.js.map",
-      "publicPath": "/static/dist/js/static_src_js_react_components_Forms_CommissionForm_jsx-static_src_js_react_components_Forms_-68b81c-4eb0f9c36a6735a00c3d.js.map"
-    },
-    "static_src_js_react_components_Gallery_index_js-7720c70071c7c608ae8f.js": {
-      "name": "static_src_js_react_components_Gallery_index_js-7720c70071c7c608ae8f.js",
-      "path": "/mnt/c/Users/ayoon/projects/AizasFineArt/static/dist/js/static_src_js_react_components_Gallery_index_js-7720c70071c7c608ae8f.js",
-      "publicPath": "/static/dist/js/static_src_js_react_components_Gallery_index_js-7720c70071c7c608ae8f.js"
-    },
-    "static_src_js_react_components_Gallery_index_js-7720c70071c7c608ae8f.js.map": {
-      "name": "static_src_js_react_components_Gallery_index_js-7720c70071c7c608ae8f.js.map",
-      "path": "/mnt/c/Users/ayoon/projects/AizasFineArt/static/dist/js/static_src_js_react_components_Gallery_index_js-7720c70071c7c608ae8f.js.map",
-      "publicPath": "/static/dist/js/static_src_js_react_components_Gallery_index_js-7720c70071c7c608ae8f.js.map"
-    },
-    "vendors-82c3bdd79211771a64d4.js": {
-      "name": "vendors-82c3bdd79211771a64d4.js",
-      "path": "/mnt/c/Users/ayoon/projects/AizasFineArt/static/dist/js/vendors-82c3bdd79211771a64d4.js",
-      "publicPath": "/static/dist/js/vendors-82c3bdd79211771a64d4.js"
-    },
-    "vendors-82c3bdd79211771a64d4.js.map": {
-      "name": "vendors-82c3bdd79211771a64d4.js.map",
-      "path": "/mnt/c/Users/ayoon/projects/AizasFineArt/static/dist/js/vendors-82c3bdd79211771a64d4.js.map",
-      "publicPath": "/static/dist/js/vendors-82c3bdd79211771a64d4.js.map"
+    "main.bundle.js": {
+      "name": "main.bundle.js",
+      "path": "/mnt/c/Users/ayoon/projects/AizasFineArt/static/dist/js/main.bundle.js",
+      "publicPath": "/static/dist/js/main.bundle.js"
     }
   },
   "chunks": {
-    "forms": [
-      "vendors-82c3bdd79211771a64d4.js",
-      "static_src_js_react_components_Forms_CommissionForm_jsx-static_src_js_react_components_Forms_-68b81c-4eb0f9c36a6735a00c3d.js",
-      "forms-3c95aa86550627cdefd9.js"
-    ],
-    "gallery": [
-      "vendors-82c3bdd79211771a64d4.js",
-      "static_src_js_react_components_Gallery_index_js-7720c70071c7c608ae8f.js",
-      "gallery-9391415b1c9b4a8b13ae.js"
-    ],
     "main": [
-      "vendors-82c3bdd79211771a64d4.js",
-      "static_src_js_react_components_Gallery_index_js-7720c70071c7c608ae8f.js",
-      "static_src_js_react_components_Forms_CommissionForm_jsx-static_src_js_react_components_Forms_-68b81c-4eb0f9c36a6735a00c3d.js",
-      "main-50fa3e62977a3ba1acc3.js"
+      "main.bundle.js"
     ]
   },
-  "publicPath": "/static/dist/js/"
+  "publicPath": "/static/dist/js/",
+  "startTime": 1758154785256,
+  "endTime": 1758154821996
 }

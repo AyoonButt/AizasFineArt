@@ -272,7 +272,7 @@ class CartAPIView(APIView):
         
         # Calculate totals based on shipping country
         shipping_cost = cart.shipping_cost(shipping_country)
-        total = cart.total(shipping_country)
+        total = cart.total_for_country(shipping_country)
         
         return Response({
             'success': True,

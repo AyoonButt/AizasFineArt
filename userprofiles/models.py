@@ -38,6 +38,10 @@ class UserProfile(models.Model):
     instagram_handle = models.CharField(max_length=100, blank=True)
     facebook_profile = models.URLField(blank=True)
     
+    # Stripe integration
+    stripe_customer_id = models.CharField(max_length=100, blank=True, null=True, help_text="Stripe customer ID")
+    save_payment_info = models.BooleanField(default=False, help_text="User opted to save payment info")
+    
     # Account information
     is_collector = models.BooleanField(default=False, help_text="Serious art collector status")
     is_artist = models.BooleanField(default=False, help_text="Fellow artist")
@@ -78,6 +82,71 @@ class UserProfile(models.Model):
         """Update last active timestamp"""
         self.last_active = timezone.now()
         self.save(update_fields=['last_active'])
+    
+    def get_stripe_customer(self):
+        """Get or create Stripe customer"""
+        from orders.stripe_service import StripeCustomerService
+        return StripeCustomerService.create_or_get_customer(self.user)
+    
+    def get_saved_payment_methods(self):
+        """Get user's saved payment methods from Stripe"""
+        if not self.stripe_customer_id:
+            return []
+        from orders.stripe_service import StripeCustomerService
+        return StripeCustomerService.get_customer_payment_methods(self.stripe_customer_id)
+    
+    def sync_from_stripe(self):
+        """Sync profile data from Stripe customer"""
+        if not self.stripe_customer_id:
+            return
+        
+        try:
+            import stripe
+            from django.conf import settings
+            stripe.api_key = settings.STRIPE_SECRET_KEY
+            
+            customer = stripe.Customer.retrieve(self.stripe_customer_id)
+            
+            # Update address from Stripe if available
+            if customer.get('address'):
+                addr = customer['address']
+                self.address_line_1 = addr.get('line1', '')
+                self.address_line_2 = addr.get('line2', '')
+                self.city = addr.get('city', '')
+                self.state = addr.get('state', '')
+                self.postal_code = addr.get('postal_code', '')
+                self.country = addr.get('country', 'US')
+            
+            # Update phone from Stripe if available
+            if customer.get('phone'):
+                self.phone = customer['phone']
+            
+            self.save()
+        except Exception as e:
+            print(f"Error syncing from Stripe: {e}")
+    
+    def delete_stripe_data(self):
+        """Delete all Stripe data when user deletes account"""
+        if not self.stripe_customer_id:
+            return
+        
+        try:
+            import stripe
+            from django.conf import settings
+            stripe.api_key = settings.STRIPE_SECRET_KEY
+            
+            # Delete all payment methods
+            payment_methods = stripe.PaymentMethod.list(
+                customer=self.stripe_customer_id
+            )
+            for pm in payment_methods.data:
+                stripe.PaymentMethod.detach(pm.id)
+            
+            # Delete customer (this will delete all associated data)
+            stripe.Customer.delete(self.stripe_customer_id)
+            
+        except Exception as e:
+            print(f"Error deleting Stripe data: {e}")
 
 
 class UserWishlist(models.Model):

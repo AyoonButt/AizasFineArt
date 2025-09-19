@@ -9,6 +9,7 @@ urlpatterns = [
     path('category/<slug:slug>/', views.CategoryDetailView.as_view(), name='category_detail'),
     path('series/<slug:category_slug>/<slug:slug>/', views.SeriesDetailView.as_view(), name='series_detail'),
     path('<slug:category_slug>/<slug:slug>/', views.ArtworkDetailView.as_view(), name='detail'),
+    path('display/<slug:category_slug>/<slug:slug>/', views.ArtworkDisplayView.as_view(), name='display'),
     
     # Search and filtering
     path('search/', views.ArtworkSearchView.as_view(), name='search'),

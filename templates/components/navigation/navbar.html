@@ -60,14 +60,41 @@
                         <!-- Dropdown Menu -->
                         <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                             <div class="py-1">
-                                <a href="{% url 'dashboard' %}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">Dashboard</a>
-                                <a href="{% url 'dashboard' %}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">Profile</a>
-                                <a href="{% url 'orders:history' %}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">Orders</a>
-                                <a href="{% url 'wishlist' %}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">Wishlist</a>
+                                <a href="{% url 'userprofiles:profile_dashboard' %}" class="flex items-center px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">
+                                    <svg class="w-4 h-4 mr-3 text-neutral-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+                                    </svg>
+                                    My Profile
+                                </a>
+                                {% if user.is_staff %}
+                                    <a href="{% url 'dashboard' %}" class="flex items-center px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">
+                                        <svg class="w-4 h-4 mr-3 text-neutral-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                        </svg>
+                                        Dashboard
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'orders:history' %}" class="flex items-center px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">
+                                    <svg class="w-4 h-4 mr-3 text-neutral-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                    </svg>
+                                    Orders
+                                </a>
+                                <a href="{% url 'wishlist' %}" class="flex items-center px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">
+                                    <svg class="w-4 h-4 mr-3 text-neutral-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Wishlist
+                                </a>
                                 <div class="border-t border-neutral-100 mt-1 pt-1">
                                     <form method="post" action="{% url 'account_logout' %}">
                                         {% csrf_token %}
-                                        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">Logout</button>
+                                        <button type="submit" class="flex items-center w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50">
+                                            <svg class="w-4 h-4 mr-3 text-neutral-500" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+                                            </svg>
+                                            Logout
+                                        </button>
                                     </form>
                                 </div>
                             </div>
@@ -161,12 +188,40 @@
                             </div>
                             <span class="text-sm font-medium text-neutral-700">{{ user.first_name|default:user.username }}</span>
                         </div>
-                        <a href="{% url 'dashboard' %}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 rounded-lg">Dashboard</a>
-                        <a href="{% url 'orders:history' %}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 rounded-lg">Orders</a>
-                        <a href="{% url 'wishlist' %}" class="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 rounded-lg">Wishlist</a>
+                        <a href="{% url 'userprofiles:profile_dashboard' %}" class="flex items-center px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 rounded-lg">
+                            <svg class="w-4 h-4 mr-3 text-neutral-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+                            </svg>
+                            My Profile
+                        </a>
+                        {% if user.is_staff %}
+                            <a href="{% url 'dashboard' %}" class="flex items-center px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 rounded-lg">
+                                <svg class="w-4 h-4 mr-3 text-neutral-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                </svg>
+                                Dashboard
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'orders:history' %}" class="flex items-center px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 rounded-lg">
+                            <svg class="w-4 h-4 mr-3 text-neutral-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                            </svg>
+                            Orders
+                        </a>
+                        <a href="{% url 'wishlist' %}" class="flex items-center px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 rounded-lg">
+                            <svg class="w-4 h-4 mr-3 text-neutral-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                            </svg>
+                            Wishlist
+                        </a>
                         <form method="post" action="{% url 'account_logout' %}">
                             {% csrf_token %}
-                            <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 rounded-lg">Logout</button>
+                            <button type="submit" class="flex items-center w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 rounded-lg">
+                                <svg class="w-4 h-4 mr-3 text-neutral-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+                                </svg>
+                                Logout
+                            </button>
                         </form>
                     </div>
                 </div>

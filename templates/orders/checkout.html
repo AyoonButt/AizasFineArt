@@ -1,0 +1,466 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - Aiza's Fine Art{% endblock %}
+
+{% block extra_css %}
+<script src="https://js.stripe.com/v3/"></script>
+{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-neutral-50 min-h-screen">
+    <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+            <!-- Checkout Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-h1 font-playfair font-semibold text-neutral-800 mb-2">Secure Checkout</h1>
+                <p class="text-body-lg text-neutral-600">Complete your order safely and securely</p>
+                
+                <!-- Security Badges -->
+                <div class="flex items-center justify-center space-x-6 mt-4">
+                    <div class="flex items-center text-sm text-neutral-600">
+                        <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                        </svg>
+                        SSL Encrypted
+                    </div>
+                    <div class="flex items-center text-sm text-neutral-600">
+                        <svg class="w-4 h-4 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        Secure Payment
+                    </div>
+                    <div class="flex items-center text-sm text-neutral-600">
+                        <svg class="w-4 h-4 mr-2 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                        </svg>
+                        Stripe Powered
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Steps -->
+            <div class="mb-8">
+                <div class="flex items-center justify-center">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-medium">1</div>
+                            <span class="ml-2 text-sm font-medium text-primary-600">Cart</span>
+                        </div>
+                        <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-medium">2</div>
+                            <span class="ml-2 text-sm font-medium text-primary-600">Checkout</span>
+                        </div>
+                        <svg class="w-4 h-4 text-neutral-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-neutral-300 text-neutral-600 rounded-full flex items-center justify-center text-sm font-medium">3</div>
+                            <span class="ml-2 text-sm text-neutral-500">Confirmation</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Checkout Layout -->
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Checkout Form Column (Left) -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+                        <form id="checkout-form" method="post" data-stripe-key="{{ stripe_public_key }}" {% if client_secret %}data-client-secret="{{ client_secret }}"{% endif %}>
+                            {% csrf_token %}
+                            
+                            <!-- Saved Payment Method Selection (if available) -->
+                            {% if payment_methods %}
+                            <div class="checkout-section mb-8" data-section="payment-method-selection">
+                                <div class="border-b border-neutral-200 pb-4 mb-6">
+                                    <h2 class="text-lg font-playfair font-semibold text-neutral-800">Payment Method</h2>
+                                    <p class="text-sm text-neutral-600 mt-1">Choose how you'd like to pay</p>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <!-- Use Saved Payment Method -->
+                                    <label class="flex items-start space-x-3 p-4 border border-neutral-200 rounded-lg cursor-pointer hover:bg-neutral-50">
+                                        <input type="radio" name="payment_method_type" value="saved" {% if payment_methods %}checked{% endif %} class="mt-1">
+                                        <div class="flex-grow">
+                                            <div class="font-medium text-neutral-800">Use saved payment method</div>
+                                            <div class="text-sm text-neutral-600 mt-1">
+                                                <select name="saved_payment_method" class="w-full px-3 py-2 border border-neutral-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                                    {% for pm in payment_methods %}
+                                                    <option value="{{ pm.id }}">**** **** **** {{ pm.card.last4 }} ({{ pm.card.brand|title }} expires {{ pm.card.exp_month|stringformat:"02d" }}/{{ pm.card.exp_year }})</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </label>
+
+                                    <!-- Add New Payment Method -->
+                                    <label class="flex items-start space-x-3 p-4 border border-neutral-200 rounded-lg cursor-pointer hover:bg-neutral-50">
+                                        <input type="radio" name="payment_method_type" value="new" {% if not payment_methods %}checked{% endif %}>
+                                        <div class="flex-grow">
+                                            <div class="font-medium text-neutral-800">Add new payment method</div>
+                                            <div class="text-sm text-neutral-600">Enter new card details below</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            {% else %}
+                            <input type="hidden" name="payment_method_type" value="new">
+                            {% endif %}
+                            
+                            <!-- Customer Information Section -->
+                            <div class="checkout-section mb-8" data-section="customer">
+                                <div class="border-b border-neutral-200 pb-4 mb-6">
+                                    <h2 class="text-lg font-playfair font-semibold text-neutral-800 flex items-center">
+                                        <div class="w-6 h-6 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-medium mr-3">1</div>
+                                        Contact Information
+                                    </h2>
+                                    <p class="text-sm text-neutral-600 mt-1">We'll use this information to send order updates</p>
+                                </div>
+
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="first_name" class="block text-sm font-medium text-neutral-700 mb-2">First Name *</label>
+                                        <input type="text" 
+                                               id="first_name" 
+                                               name="first_name" 
+                                               required
+                                               value="{{ initial_data.first_name|default:'' }}"
+                                               class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    </div>
+                                    <div>
+                                        <label for="last_name" class="block text-sm font-medium text-neutral-700 mb-2">Last Name *</label>
+                                        <input type="text" 
+                                               id="last_name" 
+                                               name="last_name" 
+                                               required
+                                               value="{{ initial_data.last_name|default:'' }}"
+                                               class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <label for="email" class="block text-sm font-medium text-neutral-700 mb-2">Email Address *</label>
+                                    <input type="email" 
+                                           id="email" 
+                                           name="email" 
+                                           required
+                                           value="{{ initial_data.email|default:'' }}"
+                                           class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    <p class="text-xs text-neutral-500 mt-1">Order confirmation and tracking will be sent here</p>
+                                </div>
+
+                                <div class="mt-4">
+                                    <label for="phone" class="block text-sm font-medium text-neutral-700 mb-2">Phone Number</label>
+                                    <input type="tel" 
+                                           id="phone" 
+                                           name="phone" 
+                                           value="{{ initial_data.phone|default:'' }}"
+                                           class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    <p class="text-xs text-neutral-500 mt-1">Optional - for delivery updates</p>
+                                </div>
+                            </div>
+
+                            <!-- Shipping Address Section -->
+                            <div class="checkout-section mb-8" data-section="shipping">
+                                <div class="border-b border-neutral-200 pb-4 mb-6">
+                                    <h2 class="text-lg font-playfair font-semibold text-neutral-800 flex items-center">
+                                        <div class="w-6 h-6 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-medium mr-3">2</div>
+                                        Shipping Address
+                                    </h2>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="flex items-center">
+                                        <input type="checkbox" id="same_as_billing" name="same_as_billing" checked class="mr-2 rounded">
+                                        <span class="text-sm text-neutral-700">Same as billing address</span>
+                                    </label>
+                                </div>
+
+                                <div id="shipping-fields" class="hidden">
+                                    <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <label for="shipping_first_name" class="block text-sm font-medium text-neutral-700 mb-2">First Name *</label>
+                                            <input type="text" id="shipping_first_name" name="shipping_first_name" class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                        </div>
+                                        <div>
+                                            <label for="shipping_last_name" class="block text-sm font-medium text-neutral-700 mb-2">Last Name *</label>
+                                            <input type="text" id="shipping_last_name" name="shipping_last_name" class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="shipping_address_1" class="block text-sm font-medium text-neutral-700 mb-2">Address Line 1 *</label>
+                                        <input type="text" id="shipping_address_1" name="shipping_address_1" class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="shipping_address_2" class="block text-sm font-medium text-neutral-700 mb-2">Address Line 2</label>
+                                        <input type="text" id="shipping_address_2" name="shipping_address_2" placeholder="Apartment, suite, etc." class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    </div>
+
+                                    <div class="grid md:grid-cols-3 gap-4">
+                                        <div>
+                                            <label for="shipping_city" class="block text-sm font-medium text-neutral-700 mb-2">City *</label>
+                                            <input type="text" id="shipping_city" name="shipping_city" class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                        </div>
+                                        <div>
+                                            <label for="shipping_state" class="block text-sm font-medium text-neutral-700 mb-2">State *</label>
+                                            <input type="text" id="shipping_state" name="shipping_state" class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                        </div>
+                                        <div>
+                                            <label for="shipping_postal_code" class="block text-sm font-medium text-neutral-700 mb-2">ZIP Code *</label>
+                                            <input type="text" id="shipping_postal_code" name="shipping_postal_code" class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <label for="shipping_country" class="block text-sm font-medium text-neutral-700 mb-2">Country *</label>
+                                        <select id="shipping_country" name="shipping_country" class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                            <option value="US">United States</option>
+                                            <option value="CA">Canada</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Always show billing address -->
+                                <div class="mt-6">
+                                    <h3 class="text-md font-medium text-neutral-800 mb-4">Billing Address</h3>
+                                    
+                                    <div class="mb-4">
+                                        <label for="address_line_1" class="block text-sm font-medium text-neutral-700 mb-2">Address Line 1 *</label>
+                                        <input type="text" id="address_line_1" name="address_line_1" required value="{{ initial_data.address_line_1|default:'' }}" class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="address_line_2" class="block text-sm font-medium text-neutral-700 mb-2">Address Line 2</label>
+                                        <input type="text" id="address_line_2" name="address_line_2" placeholder="Apartment, suite, etc." value="{{ initial_data.address_line_2|default:'' }}" class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                    </div>
+
+                                    <div class="grid md:grid-cols-3 gap-4">
+                                        <div>
+                                            <label for="city" class="block text-sm font-medium text-neutral-700 mb-2">City *</label>
+                                            <input type="text" id="city" name="city" required value="{{ initial_data.city|default:'' }}" class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                        </div>
+                                        <div>
+                                            <label for="state" class="block text-sm font-medium text-neutral-700 mb-2">State *</label>
+                                            <input type="text" id="state" name="state" required value="{{ initial_data.state|default:'' }}" class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                        </div>
+                                        <div>
+                                            <label for="postal_code" class="block text-sm font-medium text-neutral-700 mb-2">ZIP Code *</label>
+                                            <input type="text" id="postal_code" name="postal_code" required value="{{ initial_data.postal_code|default:'' }}" class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <label for="country" class="block text-sm font-medium text-neutral-700 mb-2">Country *</label>
+                                        <select id="country" name="country" required class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                            <option value="US" {% if initial_data.country == 'US' %}selected{% endif %}>United States</option>
+                                            <option value="CA" {% if initial_data.country == 'CA' %}selected{% endif %}>Canada</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment Section -->
+                            <div class="checkout-section mb-8" data-section="payment">
+                                <div class="border-b border-neutral-200 pb-4 mb-6">
+                                    <h2 class="text-lg font-playfair font-semibold text-neutral-800 flex items-center">
+                                        <div class="w-6 h-6 bg-primary-500 text-white rounded-full flex items-center justify-center text-sm font-medium mr-3">3</div>
+                                        Payment Information
+                                    </h2>
+                                    <p class="text-sm text-neutral-600 mt-1">Your payment information is encrypted and secure</p>
+                                </div>
+
+                                <!-- Stripe Elements Container -->
+                                <div id="card-element" class="mb-4 p-3 border border-neutral-300 rounded-lg bg-white">
+                                    <!-- Stripe Elements will create form elements here -->
+                                </div>
+                                <div id="card-errors" class="text-red-600 text-sm mt-2" role="alert"></div>
+                                
+                                <!-- Test Card Information -->
+                                {% if 'test' in stripe_public_key or debug %}
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2">
+                                    <p class="text-xs font-medium text-blue-800 mb-1">Test Mode - Use these test cards:</p>
+                                    <div class="text-xs text-blue-700 space-y-1">
+                                        <div><strong>Success:</strong> 4242 4242 4242 4242</div>
+                                        <div><strong>Declined:</strong> 4000 0000 0000 0002</div>
+                                        <div><strong>Insufficient Funds:</strong> 4000 0000 0000 9995</div>
+                                        <div class="text-blue-600">Use any future date for expiry and any 3-digit CVC</div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <!-- Payment Method Info -->
+                                <div class="flex items-center space-x-4 text-sm text-neutral-600 mb-6">
+                                    <div class="flex items-center">
+                                        <svg class="w-8 h-5" viewBox="0 0 40 25" fill="none">
+                                            <rect width="40" height="25" rx="4" fill="#1434CB"/>
+                                            <text x="20" y="16" font-size="10" fill="white" text-anchor="middle" font-family="Arial">VISA</text>
+                                        </svg>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <svg class="w-8 h-5" viewBox="0 0 40 25" fill="none">
+                                            <rect width="40" height="25" rx="4" fill="#EB001B"/>
+                                            <circle cx="15" cy="12.5" r="8" fill="#EB001B"/>
+                                            <circle cx="25" cy="12.5" r="8" fill="#FF5F00"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <svg class="w-8 h-5" viewBox="0 0 40 25" fill="none">
+                                            <rect width="40" height="25" rx="4" fill="#016FD0"/>
+                                            <text x="20" y="16" font-size="8" fill="white" text-anchor="middle" font-family="Arial">AMEX</text>
+                                        </svg>
+                                    </div>
+                                    <span>and more...</span>
+                                </div>
+
+                                <!-- Special Instructions -->
+                                <div class="mt-6">
+                                    <label for="order_notes" class="block text-sm font-medium text-neutral-700 mb-2">Special Instructions</label>
+                                    <textarea id="order_notes" name="order_notes" rows="3" placeholder="Any special requests or delivery instructions..." class="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"></textarea>
+                                </div>
+
+                                <!-- Save Information -->
+                                {% if user.is_authenticated %}
+                                <div class="mt-6 p-4 bg-primary-50 border border-primary-200 rounded-lg">
+                                    <label class="flex items-start space-x-3">
+                                        <input type="checkbox" name="save_info" value="on" {% if not has_saved_info %}checked{% endif %} class="mt-1 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-2 focus:ring-primary-500">
+                                        <div>
+                                            <div class="font-medium text-primary-800">Save my information for faster checkout</div>
+                                            <div class="text-sm text-primary-600">Securely store your billing and shipping information for future purchases</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="pt-6 border-t border-neutral-200">
+                                <button type="submit" 
+                                        id="submit-payment" 
+                                        class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <span id="button-text">Complete Order</span>
+                                    <span id="button-spinner" class="hidden">
+                                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Processing...
+                                    </span>
+                                </button>
+                                
+                                <p class="text-xs text-neutral-500 text-center mt-3">
+                                    By completing this order, you agree to our 
+                                    <a href="#" class="text-primary-600 hover:underline">Terms of Service</a> and 
+                                    <a href="#" class="text-primary-600 hover:underline">Privacy Policy</a>
+                                </p>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Order Summary Column (Right) -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-6 sticky top-24">
+                        <div id="order-summary">
+                            <h3 class="text-lg font-playfair font-semibold text-neutral-800 mb-4">Order Summary</h3>
+                            
+                            <!-- Cart Items -->
+                            <div class="space-y-4 mb-6">
+                                {% for item in cart.items.all %}
+                                <div class="flex items-start space-x-3 pb-4 border-b border-neutral-100 last:border-b-0">
+                                    <img src="{{ item.artwork.gallery_image }}" alt="{{ item.artwork.title }}" class="w-16 h-16 object-cover rounded-lg flex-shrink-0">
+                                    <div class="flex-grow min-w-0">
+                                        <h4 class="font-medium text-neutral-800 text-sm truncate">{{ item.artwork.title }}</h4>
+                                        <p class="text-xs text-neutral-600">{{ item.item_type_display }}</p>
+                                        <p class="text-xs text-neutral-500">Qty: {{ item.quantity }}</p>
+                                    </div>
+                                    <div class="text-right flex-shrink-0">
+                                        <p class="font-medium text-neutral-800">${{ item.total_price }}</p>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="text-center py-8">
+                                    <p class="text-neutral-500">Your cart is empty</p>
+                                    <a href="{% url 'shop' %}" class="text-primary-600 hover:underline text-sm">Continue shopping</a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Order Totals -->
+                            <div class="space-y-2 border-t border-neutral-200 pt-4">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-neutral-600">Subtotal:</span>
+                                    <span class="font-medium text-neutral-800" id="checkout-subtotal">${{ cart.subtotal }}</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-neutral-600">Shipping:</span>
+                                    <span class="font-medium text-neutral-800" id="checkout-shipping">
+                                        <span class="text-green-600">Free (US)</span>
+                                    </span>
+                                </div>
+                                <div class="text-xs text-neutral-500 italic" id="shipping-note">
+                                    Free shipping for US buyers, $12 for international
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-neutral-600">Tax:</span>
+                                    <span class="font-medium text-neutral-800" id="checkout-tax">Calculated at checkout</span>
+                                </div>
+                                <div class="flex justify-between text-base font-semibold border-t border-neutral-200 pt-2 mt-2">
+                                    <span class="text-neutral-800">Total:</span>
+                                    <span class="text-neutral-800" id="checkout-total">${{ cart.total }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Coupon Code -->
+                            <div class="mt-6">
+                                <div class="border border-neutral-200 rounded-lg p-3">
+                                    <label for="coupon_code" class="block text-xs font-medium text-neutral-700 mb-2">Coupon Code</label>
+                                    <div class="flex space-x-2">
+                                        <input type="text" id="coupon_code" name="coupon_code" placeholder="Enter code" class="flex-grow px-3 py-2 text-sm border border-neutral-300 rounded focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                        <button type="button" id="apply-coupon" class="px-4 py-2 text-sm bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded transition-colors">Apply</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Security Notice -->
+                            <div class="mt-6 p-3 bg-neutral-50 rounded-lg">
+                                <div class="flex items-start space-x-2">
+                                    <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    <div>
+                                        <p class="text-xs font-medium text-neutral-800">Secure Checkout</p>
+                                        <p class="text-xs text-neutral-600">Your payment information is encrypted and never stored.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Loading Overlay -->
+<div id="checkout-loading" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-white rounded-lg p-6 text-center">
+            <div class="animate-spin w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p class="text-neutral-700">Processing your order...</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'src/js/checkout.js' %}"></script>
+<script src="{% static 'src/js/checkout-init.js' %}"></script>
+{% endblock %}

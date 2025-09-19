@@ -32,9 +32,11 @@ COPY . /app/
 
 # Build static files
 RUN python manage.py collectstatic --noinput
-RUN npm run build
+RUN 
+
 
 # Create a non-root user
+
 RUN adduser --disabled-password --gecos '' appuser
 RUN chown -R appuser:appuser /app
 USER appuser

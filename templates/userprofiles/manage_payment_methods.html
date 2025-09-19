@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Payment Methods - Aiza's Fine Art{% endblock %}
+
+{% block extra_css %}
+<script src="https://js.stripe.com/v3/"></script>
+{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-neutral-50 min-h-screen">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-h1 font-playfair font-semibold text-neutral-800 mb-2">Payment Methods</h1>
+                <p class="text-body-lg text-neutral-600">Manage your saved payment methods for faster checkout</p>
+            </div>
+
+            <!-- Back to Profile -->
+            <div class="mb-6">
+                <a href="{% url 'userprofiles:profile_dashboard' %}" class="inline-flex items-center text-sm text-neutral-600 hover:text-neutral-800">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L4.414 9H17a1 1 0 110 2H4.414l5.293 5.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+                    </svg>
+                    Back to Profile
+                </a>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Add New Payment Method -->
+                <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-playfair font-semibold text-neutral-800">Add New Payment Method</h2>
+                    </div>
+                    
+                    <div class="bg-primary-50 border border-primary-200 rounded-lg p-4 mb-4">
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-primary-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                            </svg>
+                            <div class="text-sm">
+                                <p class="text-primary-800 font-medium">Secure Payment Processing</p>
+                                <p class="text-primary-700 mt-1">Your payment information is encrypted and securely stored by Stripe. We never see or store your card details.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="{% url 'userprofiles:add_payment_method' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+                        </svg>
+                        Add Payment Method
+                    </a>
+                </div>
+
+                <!-- Saved Payment Methods -->
+                <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+                    <h2 class="text-lg font-playfair font-semibold text-neutral-800 mb-6">Saved Payment Methods</h2>
+                    
+                    {% if payment_methods %}
+                        <div class="space-y-4">
+                            {% for pm in payment_methods %}
+                            <div class="flex items-center justify-between p-4 border border-neutral-200 rounded-lg">
+                                <div class="flex items-center space-x-4">
+                                    <!-- Card Icon -->
+                                    <div class="flex-shrink-0">
+                                        {% if pm.card.brand == 'visa' %}
+                                            <div class="w-12 h-8 bg-blue-600 rounded flex items-center justify-center">
+                                                <span class="text-white text-xs font-bold">VISA</span>
+                                            </div>
+                                        {% elif pm.card.brand == 'mastercard' %}
+                                            <div class="w-12 h-8 bg-red-600 rounded flex items-center justify-center">
+                                                <span class="text-white text-xs font-bold">MC</span>
+                                            </div>
+                                        {% elif pm.card.brand == 'amex' %}
+                                            <div class="w-12 h-8 bg-green-600 rounded flex items-center justify-center">
+                                                <span class="text-white text-xs font-bold">AMEX</span>
+                                            </div>
+                                        {% else %}
+                                            <div class="w-12 h-8 bg-gray-400 rounded flex items-center justify-center">
+                                                <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                                </svg>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Card Details -->
+                                    <div>
+                                        <div class="font-medium text-neutral-800">
+                                            {{ pm.card.brand|title }} ending in {{ pm.card.last4 }}
+                                        </div>
+                                        <div class="text-sm text-neutral-600">
+                                            Expires {{ pm.card.exp_month|stringformat:"02d" }}/{{ pm.card.exp_year }}
+                                        </div>
+                                        {% if pm.card.funding %}
+                                            <div class="text-xs text-neutral-500">{{ pm.card.funding|title }} card</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Actions -->
+                                <div class="flex items-center space-x-2">
+                                    <form method="post" action="{% url 'userprofiles:delete_payment_method' pm.id %}" class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit" 
+                                                onclick="return confirm('Are you sure you want to remove this payment method?')"
+                                                class="px-3 py-1 text-sm text-red-600 hover:text-red-700 border border-red-300 hover:border-red-400 rounded transition-colors">
+                                            Remove
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-12">
+                            <svg class="w-16 h-16 text-neutral-300 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                            </svg>
+                            <h3 class="text-lg font-medium text-neutral-800 mb-2">No payment methods saved</h3>
+                            <p class="text-neutral-600 mb-4">Add a payment method to make checkout faster and easier.</p>
+                            <a href="{% url 'userprofiles:add_payment_method' %}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+                                </svg>
+                                Add Your First Payment Method
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Security Information -->
+                <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+                    <h2 class="text-lg font-playfair font-semibold text-neutral-800 mb-4">Security & Privacy</h2>
+                    
+                    <div class="space-y-4 text-sm text-neutral-600">
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <p class="font-medium text-neutral-800">Bank-level encryption</p>
+                                <p>Your payment information is protected with the same security standards used by leading banks.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <p class="font-medium text-neutral-800">PCI DSS compliant</p>
+                                <p>We meet the highest security standards for handling payment card information.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div>
+                                <p class="font-medium text-neutral-800">No storage of card details</p>
+                                <p>We never see or store your full card number. All data is securely handled by Stripe.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

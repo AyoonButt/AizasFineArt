@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Personal Information - Aiza's Fine Art{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-neutral-50 min-h-screen">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-h1 font-playfair font-semibold text-neutral-800 mb-2">Edit Personal Information</h1>
+                <p class="text-body-lg text-neutral-600">Update your account details and preferences</p>
+            </div>
+
+            <!-- Back to Profile -->
+            <div class="mb-6">
+                <a href="{% url 'userprofiles:profile_dashboard' %}" class="inline-flex items-center text-sm text-neutral-600 hover:text-neutral-800">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L4.414 9H17a1 1 0 110 2H4.414l5.293 5.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
+                    </svg>
+                    Back to Profile
+                </a>
+            </div>
+
+            <!-- Form -->
+            <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-8">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Basic Information -->
+                    <div class="mb-8">
+                        <h2 class="text-lg font-playfair font-semibold text-neutral-800 mb-6 pb-3 border-b border-neutral-200">
+                            Basic Information
+                        </h2>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="{{ user_form.first_name.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ user_form.first_name.label }}
+                                </label>
+                                {{ user_form.first_name }}
+                                {% if user_form.first_name.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ user_form.first_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ user_form.last_name.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ user_form.last_name.label }}
+                                </label>
+                                {{ user_form.last_name }}
+                                {% if user_form.last_name.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ user_form.last_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mt-6">
+                            <label for="{{ user_form.email.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                {{ user_form.email.label }}
+                            </label>
+                            {{ user_form.email }}
+                            {% if user_form.email.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ user_form.email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="mb-8">
+                        <h2 class="text-lg font-playfair font-semibold text-neutral-800 mb-6 pb-3 border-b border-neutral-200">
+                            Contact Information
+                        </h2>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="{{ profile_form.phone.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ profile_form.phone.label }}
+                                </label>
+                                {{ profile_form.phone }}
+                                {% if profile_form.phone.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ profile_form.phone.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ profile_form.date_of_birth.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ profile_form.date_of_birth.label }}
+                                </label>
+                                {{ profile_form.date_of_birth }}
+                                {% if profile_form.date_of_birth.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ profile_form.date_of_birth.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mt-6">
+                            <label for="{{ profile_form.preferred_contact_method.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                {{ profile_form.preferred_contact_method.label }}
+                            </label>
+                            {{ profile_form.preferred_contact_method }}
+                            {% if profile_form.preferred_contact_method.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ profile_form.preferred_contact_method.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Address Information -->
+                    <div class="mb-8">
+                        <h2 class="text-lg font-playfair font-semibold text-neutral-800 mb-6 pb-3 border-b border-neutral-200">
+                            Address Information
+                        </h2>
+                        
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="{{ profile_form.address_line_1.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ profile_form.address_line_1.label }}
+                                </label>
+                                {{ profile_form.address_line_1 }}
+                                {% if profile_form.address_line_1.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ profile_form.address_line_1.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ profile_form.address_line_2.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ profile_form.address_line_2.label }}
+                                </label>
+                                {{ profile_form.address_line_2 }}
+                                {% if profile_form.address_line_2.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ profile_form.address_line_2.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-3 gap-6 mb-6">
+                            <div>
+                                <label for="{{ profile_form.city.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ profile_form.city.label }}
+                                </label>
+                                {{ profile_form.city }}
+                                {% if profile_form.city.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ profile_form.city.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ profile_form.state.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ profile_form.state.label }}
+                                </label>
+                                {{ profile_form.state }}
+                                {% if profile_form.state.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ profile_form.state.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ profile_form.postal_code.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ profile_form.postal_code.label }}
+                                </label>
+                                {{ profile_form.postal_code }}
+                                {% if profile_form.postal_code.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ profile_form.postal_code.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="{{ profile_form.country.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                {{ profile_form.country.label }}
+                            </label>
+                            {{ profile_form.country }}
+                            {% if profile_form.country.errors %}
+                                <div class="text-red-600 text-sm mt-1">{{ profile_form.country.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Art Preferences -->
+                    <div class="mb-8">
+                        <h2 class="text-lg font-playfair font-semibold text-neutral-800 mb-6 pb-3 border-b border-neutral-200">
+                            Art Preferences
+                        </h2>
+                        
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="{{ profile_form.favorite_mediums.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ profile_form.favorite_mediums.label }}
+                                </label>
+                                {{ profile_form.favorite_mediums }}
+                                <p class="text-xs text-neutral-500 mt-1">{{ profile_form.favorite_mediums.help_text }}</p>
+                                {% if profile_form.favorite_mediums.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ profile_form.favorite_mediums.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ profile_form.favorite_subjects.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ profile_form.favorite_subjects.label }}
+                                </label>
+                                {{ profile_form.favorite_subjects }}
+                                <p class="text-xs text-neutral-500 mt-1">{{ profile_form.favorite_subjects.help_text }}</p>
+                                {% if profile_form.favorite_subjects.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ profile_form.favorite_subjects.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="{{ profile_form.price_range_min.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ profile_form.price_range_min.label }}
+                                </label>
+                                {{ profile_form.price_range_min }}
+                                {% if profile_form.price_range_min.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ profile_form.price_range_min.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ profile_form.price_range_max.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ profile_form.price_range_max.label }}
+                                </label>
+                                {{ profile_form.price_range_max }}
+                                {% if profile_form.price_range_max.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ profile_form.price_range_max.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Social Media & Personal Details -->
+                    <div class="mb-8">
+                        <h2 class="text-lg font-playfair font-semibold text-neutral-800 mb-6 pb-3 border-b border-neutral-200">
+                            Social Media & Additional Information
+                        </h2>
+                        
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="{{ profile_form.instagram_handle.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ profile_form.instagram_handle.label }}
+                                </label>
+                                {{ profile_form.instagram_handle }}
+                                {% if profile_form.instagram_handle.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ profile_form.instagram_handle.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ profile_form.facebook_profile.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ profile_form.facebook_profile.label }}
+                                </label>
+                                {{ profile_form.facebook_profile }}
+                                {% if profile_form.facebook_profile.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ profile_form.facebook_profile.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="{{ profile_form.referral_source.id_for_label }}" class="block text-sm font-medium text-neutral-700 mb-2">
+                                    {{ profile_form.referral_source.label }}
+                                </label>
+                                {{ profile_form.referral_source }}
+                                {% if profile_form.referral_source.errors %}
+                                    <div class="text-red-600 text-sm mt-1">{{ profile_form.referral_source.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <label class="flex items-center">
+                                {{ profile_form.is_collector }}
+                                <span class="ml-2 text-sm text-neutral-700">{{ profile_form.is_collector.label }}</span>
+                            </label>
+                            
+                            <label class="flex items-center">
+                                {{ profile_form.is_artist }}
+                                <span class="ml-2 text-sm text-neutral-700">{{ profile_form.is_artist.label }}</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Preferences -->
+                    <div class="mb-8">
+                        <h2 class="text-lg font-playfair font-semibold text-neutral-800 mb-6 pb-3 border-b border-neutral-200">
+                            Communication Preferences
+                        </h2>
+                        
+                        <div class="space-y-4">
+                            <label class="flex items-center">
+                                {{ profile_form.newsletter_subscription }}
+                                <span class="ml-2 text-sm text-neutral-700">{{ profile_form.newsletter_subscription.label }}</span>
+                            </label>
+                            
+                            <label class="flex items-center">
+                                {{ profile_form.email_notifications }}
+                                <span class="ml-2 text-sm text-neutral-700">{{ profile_form.email_notifications.label }}</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex items-center justify-between pt-6 border-t border-neutral-200">
+                        <a href="{% url 'userprofiles:profile_dashboard' %}" class="px-6 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors">
+                            Cancel
+                        </a>
+                        <button type="submit" class="px-6 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 transition-colors">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

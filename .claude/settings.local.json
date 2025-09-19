@@ -23,7 +23,12 @@
       "Bash(curl:*)",
       "Bash(grep:*)",
       "Bash(rg:*)",
-      "Bash(python3 manage.py shell:*)"
+      "Bash(python3 manage.py shell:*)",
+      "Bash(DJANGO_SETTINGS_MODULE=aizasfineart.settings python3 -c \"import django; django.setup(); print(''Django setup successful'')\")",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_evaluate"
     ],
     "deny": []
   }

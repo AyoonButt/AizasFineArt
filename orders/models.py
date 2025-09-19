@@ -351,8 +351,15 @@ class Cart(models.Model):
         """Tax amount placeholder - will be calculated by Stripe"""
         return Decimal('0.00')  # Stripe will handle tax calculation
     
-    def total(self, shipping_country='US', tax_amount=None):
-        """Calculate total including shipping and tax"""
+    @property
+    def total(self):
+        """Calculate total including shipping and tax (US default)"""
+        shipping = self.shipping_cost('US')
+        tax = self.tax_amount
+        return (self.subtotal + shipping + tax).quantize(Decimal('0.01'))
+    
+    def total_for_country(self, shipping_country='US', tax_amount=None):
+        """Calculate total including shipping and tax for specific country"""
         shipping = self.shipping_cost(shipping_country)
         tax = tax_amount if tax_amount is not None else self.tax_amount
         return (self.subtotal + shipping + tax).quantize(Decimal('0.01'))

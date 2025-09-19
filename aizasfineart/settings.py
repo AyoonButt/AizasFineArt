@@ -136,25 +136,34 @@ TIME_ZONE = 'America/Chicago'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Static files (CSS, JavaScript, Images) - Optimized for Sub-3s Performance
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Static file optimization for performance
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
+# Enable compression and aggressive caching
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # Django Components
 COMPONENTS = {
     'autodiscover': True,
 }
 
-# Caching Configuration for Supabase Image URLs
+# Enhanced Caching Configuration for Sub-3s Performance
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'supabase-images',
-        'TIMEOUT': 86400,  # 24 hours default
+        'LOCATION': 'artwork-performance-cache',
+        'TIMEOUT': 3600,  # 1 hour default - shorter for more responsive updates
         'OPTIONS': {
-            'MAX_ENTRIES': 10000,
-            'CULL_FREQUENCY': 3,
+            'MAX_ENTRIES': 10000,  # Increased for more aggressive caching
+            'CULL_FREQUENCY': 3,   # More aggressive culling
         }
     }
 }
@@ -277,7 +286,8 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 # Static files configuration for production
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Temporarily disable compression for font issue debugging
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_AUTOREFRESH = DEBUG
 
@@ -309,13 +319,30 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'simple',
         },
         'file': {
             'class': 'logging.FileHandler',
             'filename': 'logs/django.log',
+            'formatter': 'verbose',
+        },
+        'cache_file': {
+            'class': 'logging.FileHandler',
+            'filename': 'logs/cache.log',
+            'formatter': 'verbose',
         },
     },
     'root': {
@@ -328,8 +355,26 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
+        'artwork.thread_manager': {
+            'handlers': ['console', 'cache_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'artwork.cache_metrics': {
+            'handlers': ['console', 'cache_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'artwork.async_cache': {
+            'handlers': ['console', 'cache_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
 }
+
+# Thread pool configuration
+CACHE_THREAD_POOL_SIZE = 5
 
 # ================================
 # AUTHENTICATION CONFIGURATION
@@ -371,7 +416,7 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # Login/Logout URLs
 LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/dashboard/'
+LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 # ================================

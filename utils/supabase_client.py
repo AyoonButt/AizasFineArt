@@ -73,9 +73,34 @@ class SupabaseStorageService:
             traceback.print_exc()
             return None
     
-    def get_signed_url(self, file_path: str, expires_in: int = 3600) -> str:
-        """Get signed URL for private bucket access"""
+    def generate_unique_expiry(self, base_expires_in: int = 3600) -> int:
+        """Generate slightly randomized expiry time to force URL uniqueness
+        
+        Since Supabase ignores query parameters in URL signing, we vary the expiry time
+        by a few seconds to force different signed URLs while maintaining performance.
+        """
+        import random
+        # Add 1-60 second randomization to base expiry time
+        variation = random.randint(1, 60)
+        return base_expires_in + variation
+    
+    def validate_signed_url(self, url: str) -> bool:
+        """Test if signed URL is still valid (returns HTTP 200)"""
         try:
+            import requests
+            response = requests.head(url, timeout=3)
+            return response.status_code == 200
+        except Exception as e:
+            # URL validation failed - consider it invalid
+            return False
+
+    def get_signed_url(self, file_path: str, expires_in: int = 3600, force_unique: bool = False) -> str:
+        """Get signed URL for private bucket access with optional uniqueness forcing"""
+        try:
+            # Use unique expiry time to force different URLs if requested
+            if force_unique:
+                expires_in = self.generate_unique_expiry(expires_in)
+            
             response = self.client.storage.from_(self.bucket).create_signed_url(
                 file_path, 
                 expires_in
@@ -90,18 +115,26 @@ class SupabaseStorageService:
         return f"{settings.SUPABASE_URL}/storage/v1/object/authenticated/{self.bucket}/{file_path}"
     
     def get_transformed_url(self, file_path: str, width: int = None, height: int = None, 
-                          quality: int = 80, format: str = 'origin', expires_in: int = 3600) -> str:
+                          quality: int = 80, format: str = 'origin', expires_in: int = 3600, force_unique: bool = False) -> str:
         """Get signed URL with image transformations for private bucket with caching"""
         from django.core.cache import cache
         
         # Create cache key for this specific transformation
         cache_key = f"supabase_url_{file_path}_{width}_{height}_{quality}_{format}_{expires_in}"
+        if force_unique:
+            cache_key += "_unique"
+        
         cached_url = cache.get(cache_key)
         
-        if cached_url:
+        if cached_url and not force_unique:  # Skip cache when forcing uniqueness to ensure freshness
             return cached_url
             
         try:
+            # Use unique expiry time to force different URLs if requested
+            working_expires_in = expires_in
+            if force_unique:
+                working_expires_in = self.generate_unique_expiry(expires_in)
+                
             # Build transformation object for Supabase
             transform_options = {}
             if width:
@@ -123,14 +156,14 @@ class SupabaseStorageService:
                 if width or height:
                     response = self.client.storage.from_(self.bucket).create_signed_url(
                         file_path, 
-                        expires_in,
+                        working_expires_in,
                         {'transform': transform_options}
                     )
                 else:
                     # No transformations needed, just get basic signed URL
                     response = self.client.storage.from_(self.bucket).create_signed_url(
                         file_path, 
-                        expires_in
+                        working_expires_in
                     )
                 
                 signed_url = response.get('signedURL', '')
@@ -141,7 +174,7 @@ class SupabaseStorageService:
                 try:
                     response = self.client.storage.from_(self.bucket).create_signed_url(
                         file_path, 
-                        expires_in
+                        working_expires_in
                     )
                     signed_url = response.get('signedURL', '')
                 except Exception as fallback_error:
@@ -149,15 +182,17 @@ class SupabaseStorageService:
                     return ''
             
             # Cache the URL for 90% of its expiration time to avoid serving expired URLs
-            cache_timeout = int(expires_in * 0.9)
-            cache.set(cache_key, signed_url, cache_timeout)
+            # Don't cache unique URLs since they should always be fresh
+            if not force_unique:
+                cache_timeout = int(working_expires_in * 0.9)
+                cache.set(cache_key, signed_url, cache_timeout)
             
             return signed_url
             
         except Exception as e:
             print(f"Transformation error: {e}")
             # Fallback to basic signed URL
-            return self.get_signed_url(file_path, expires_in)
+            return self.get_signed_url(file_path, expires_in, force_unique)
     
     def delete_image(self, file_path: str) -> bool:
         """Delete image from storage"""

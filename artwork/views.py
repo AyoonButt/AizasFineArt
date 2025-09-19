@@ -140,7 +140,7 @@ class SeriesDetailView(DetailView):
 
 class ArtworkDetailView(DetailView):
     model = Artwork
-    template_name = 'artwork/detail.html'
+    template_name = 'artwork_detail.html'
     context_object_name = 'artwork'
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
@@ -173,6 +173,25 @@ class ArtworkDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        # Add cached main image URL
+        context['cached_main_image'] = self.object.get_simple_signed_url()
+        
+        # Add frame images context that template expects
+        context['frame_images'] = {
+            'frame1': {
+                'gallery': self.object.get_frame_simple_url(1) if self.object.frame1_image_url else None
+            },
+            'frame2': {
+                'gallery': self.object.get_frame_simple_url(2) if self.object.frame2_image_url else None
+            },
+            'frame3': {
+                'gallery': self.object.get_frame_simple_url(3) if self.object.frame3_image_url else None
+            },
+            'frame4': {
+                'gallery': self.object.get_frame_simple_url(4) if self.object.frame4_image_url else None
+            }
+        }
         
         # Get related artworks
         context['related_artworks'] = Artwork.objects.filter(
@@ -282,6 +301,64 @@ class ArtworkFilterView(ListView):
             })
         
         return super().render_to_response(context, **response_kwargs)
+
+
+class ArtworkDisplayView(DetailView):
+    model = Artwork
+    template_name = 'artwork/artwork_display.html'
+    context_object_name = 'artwork'
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
+
+    def get_object(self):
+        artwork = get_object_or_404(
+            Artwork.objects.select_related('category', 'series'),
+            slug=self.kwargs['slug'],
+            category__slug=self.kwargs['category_slug'],
+            is_active=True
+        )
+        
+        # Track artwork view
+        if self.request.user.is_authenticated:
+            ArtworkView.objects.create(
+                artwork=artwork,
+                ip_address=self.get_client_ip(),
+                user_agent=self.request.META.get('HTTP_USER_AGENT', '')
+            )
+        
+        return artwork
+
+    def get_client_ip(self):
+        x_forwarded_for = self.request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = self.request.META.get('REMOTE_ADDR')
+        return ip
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Get related artworks
+        context['related_artworks'] = Artwork.objects.filter(
+            Q(category=self.object.category) | Q(medium=self.object.medium),
+            is_active=True
+        ).exclude(pk=self.object.pk).select_related('category')[:4]
+        
+        # Check if user has wishlisted this artwork
+        if self.request.user.is_authenticated:
+            context['is_wishlisted'] = self.request.user.wishlists.filter(
+                artwork=self.object
+            ).exists()
+        
+        # Add inquiry form
+        context['inquiry_form'] = ArtworkInquiryForm()
+        
+        # Add SEO context
+        context['meta_title'] = f"{self.object.title} - {self.object.category.name} by Aiza"
+        context['meta_description'] = self.object.meta_description or self.object.description[:160]
+        
+        return context
 
 
 class ArtworkInquiryView(FormView):

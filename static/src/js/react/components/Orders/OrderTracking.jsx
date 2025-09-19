@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const OrderTracking = ({ orderData }) => {
   const [order, setOrder] = useState(orderData);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [animationTrigger, setAnimationTrigger] = useState(0);
 
   // Auto-refresh order status every 30 seconds
   useEffect(() => {
@@ -22,6 +23,10 @@ const OrderTracking = ({ orderData }) => {
       const response = await fetch(`/orders/api/${order.order_number}/status/`);
       if (response.ok) {
         const updatedOrder = await response.json();
+        // Trigger animation when status changes
+        if (updatedOrder.tracking_percentage !== order.tracking_percentage) {
+          setAnimationTrigger(prev => prev + 1);
+        }
         setOrder(updatedOrder);
       }
     } catch (error) {
@@ -31,47 +36,192 @@ const OrderTracking = ({ orderData }) => {
     }
   };
 
-  const getStageIcon = (icon, completed) => {
-    const iconClass = `w-5 h-5 ${completed ? 'text-white' : 'text-gray-500'}`;
+  // Define the 4 tracking steps with enhanced icons
+  const TRACKING_STEPS = [
+    {
+      id: 'confirmed',
+      title: 'Order Confirmed',
+      description: 'Payment processed successfully',
+      percentage: 25,
+      status: ['confirmed', 'processing', 'shipped', 'delivered']
+    },
+    {
+      id: 'processing',
+      title: 'In Production', 
+      description: 'Creating your prints',
+      percentage: 50,
+      status: ['processing', 'shipped', 'delivered']
+    },
+    {
+      id: 'shipped',
+      title: 'Shipped',
+      description: 'Package in transit',
+      percentage: 75,
+      status: ['shipped', 'delivered']
+    },
+    {
+      id: 'delivered', 
+      title: 'Delivered',
+      description: 'Enjoy your artwork!',
+      percentage: 100,
+      status: ['delivered']
+    }
+  ];
+
+  // Enhanced icon components with website theme colors
+  const StepIcon = ({ stepId, isCompleted, isCurrent }) => {
+    const baseIconClass = "w-8 h-8";
+    const iconClass = isCompleted ? "text-white" : isCurrent ? "text-white" : "text-gray-400";
     
-    switch (icon) {
-      case 'check-circle':
-        return (
-          <svg className={iconClass} fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
-          </svg>
-        );
-      case 'cog':
-        return (
-          <motion.svg 
-            className={iconClass} 
-            fill="currentColor" 
-            viewBox="0 0 20 20"
-            animate={completed ? { rotate: 360 } : {}}
-            transition={{ duration: 2, repeat: completed ? Infinity : 0, ease: "linear" }}
-          >
-            <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd"></path>
-          </motion.svg>
-        );
-      case 'truck':
+    const iconVariants = {
+      completed: { scale: [1, 1.2, 1], transition: { duration: 0.5 } },
+      current: { 
+        scale: [1, 1.1, 1], 
+        transition: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+      },
+      pending: { scale: 1 }
+    };
+
+    const getAnimationState = () => {
+      if (isCompleted) return "completed";
+      if (isCurrent) return "current"; 
+      return "pending";
+    };
+
+    switch (stepId) {
+      case 'confirmed':
         return (
           <motion.svg 
-            className={iconClass} 
-            fill="currentColor" 
-            viewBox="0 0 20 20"
-            animate={completed ? { x: [0, 5, 0] } : {}}
-            transition={{ duration: 1.5, repeat: completed ? Infinity : 0, ease: "easeInOut" }}
+            className={`${baseIconClass} ${iconClass}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+            variants={iconVariants}
+            animate={getAnimationState()}
           >
-            <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"></path>
-            <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707L16 7.586A1 1 0 0015.414 7H14z"></path>
+            {/* Credit card with checkmark for payment confirmation */}
+            <rect x="2" y="6" width="20" height="12" rx="2" strokeWidth="2"/>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2 10h20"/>
+            {isCompleted ? (
+              <motion.g>
+                <motion.path
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth="2.5"
+                  d="m7 13 2 2 4-4"
+                  stroke="#A38194"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                />
+              </motion.g>
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M6 14h6" opacity="0.4"/>
+            )}
           </motion.svg>
         );
-      case 'home':
+      
+      case 'processing':
         return (
-          <svg className={iconClass} fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-          </svg>
+          <motion.svg 
+            className={`${baseIconClass} ${iconClass}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+            variants={iconVariants}
+            animate={getAnimationState()}
+          >
+            {/* Printer/production icon for processing */}
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+            {(isCurrent || isCompleted) && (
+              <motion.g>
+                <motion.circle 
+                  cx="18" cy="12" r="1.5" 
+                  fill="currentColor"
+                  animate={{ opacity: [1, 0.3, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                />
+                <motion.path
+                  strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" 
+                  d="M9 15h6" 
+                  opacity="0.6"
+                  animate={{ scaleX: [1, 0.8, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                />
+              </motion.g>
+            )}
+          </motion.svg>
         );
+      
+      case 'shipped':
+        return (
+          <motion.svg 
+            className={`${baseIconClass} ${iconClass}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+            variants={iconVariants}
+            animate={getAnimationState()}
+          >
+            {/* Clean delivery truck icon */}
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM21 17a2 2 0 11-4 0 2 2 0 014 0z"/>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+            <rect x="14" y="6" width="8" height="6" rx="1" strokeWidth="2"/>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 9h6"/>
+            {isCurrent && (
+              <motion.g
+                animate={{ x: [0, 1, 0], y: [0, -0.5, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M2 8l2-2m0 0l2 2" opacity="0.7"/>
+              </motion.g>
+            )}
+          </motion.svg>
+        );
+      
+      case 'delivered':
+        return (
+          <motion.svg 
+            className={`${baseIconClass} ${iconClass}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+            variants={iconVariants}
+            animate={getAnimationState()}
+          >
+            {/* Package with checkmark for delivery */}
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7v10l8 4"/>
+            {isCompleted && (
+              <motion.g
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <circle cx="18" cy="6" r="3.5" fill="#A38194" stroke="white" strokeWidth="2"/>
+                <motion.path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2.5"
+                  d="m16.5 6 1 1 2-2"
+                  stroke="white"
+                  initial={{ pathLength: 0 }}
+                  animate={{ pathLength: 1 }}
+                  transition={{ duration: 0.4, delay: 0.6 }}
+                />
+              </motion.g>
+            )}
+            {isCurrent && !isCompleted && (
+              <motion.g
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <circle cx="18" cy="6" r="2" stroke="currentColor" strokeWidth="1.5" opacity="0.6"/>
+              </motion.g>
+            )}
+          </motion.svg>
+        );
+      
       default:
         return null;
     }
@@ -96,30 +246,37 @@ const OrderTracking = ({ orderData }) => {
       transition={{ duration: 0.5 }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h3 className="text-xl font-semibold text-gray-900">Order Tracking</h3>
-          <p className="text-sm text-gray-600">Order #{order.order_number}</p>
+          <h3 className="text-2xl font-bold text-gray-900">Order Tracking</h3>
+          <p className="text-sm text-gray-600 mt-1">Order #{order.order_number}</p>
         </div>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-6">
           {order.tracking_number && (
             <div className="text-right">
-              <p className="text-sm text-gray-600">Tracking Number</p>
-              <p className="font-mono text-sm font-medium">{order.tracking_number}</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wide">Tracking Number</p>
+              <p className="font-mono text-sm font-semibold text-gray-900">{order.tracking_number}</p>
               {order.carrier_tracking_url && (
-                <a href={order.carrier_tracking_url} target="_blank" rel="noopener noreferrer"
-                   className="text-xs text-blue-600 hover:text-blue-800 underline">
+                <motion.a 
+                  href={order.carrier_tracking_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-600 hover:text-blue-800 underline font-medium"
+                  whileHover={{ scale: 1.05 }}
+                >
                   Track with {order.carrier}
-                </a>
+                </motion.a>
               )}
             </div>
           )}
           <motion.button
             onClick={refreshOrderStatus}
             disabled={isRefreshing}
-            className="p-2 text-gray-400 hover:text-gray-600 focus:outline-none"
+            className="p-3 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
             animate={isRefreshing ? { rotate: 360 } : {}}
             transition={{ duration: 1, repeat: isRefreshing ? Infinity : 0, ease: "linear" }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -128,67 +285,135 @@ const OrderTracking = ({ orderData }) => {
         </div>
       </div>
 
-      {/* Progress Bar */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-700">Progress</span>
-          <span className="text-sm text-gray-600">{order.tracking_percentage}% Complete</span>
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <motion.div 
-            className="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full"
-            initial={{ width: 0 }}
-            animate={{ width: `${order.tracking_percentage}%` }}
-            transition={{ duration: 1, ease: "easeOut" }}
-          />
-        </div>
-      </div>
+      {/* Horizontal 4-Step Progress Tracker */}
+      <div className="relative mb-8">
+        {/* Progress Background Line */}
+        <div className="absolute top-6 left-8 right-8 h-1 bg-gray-200 rounded-full"></div>
+        
+        {/* Dynamic Progress Line */}
+        <motion.div 
+          className="absolute top-6 left-8 h-1 bg-gradient-to-r from-primary via-secondary to-mauve-plum rounded-full"
+          initial={{ width: "0%" }}
+          animate={{ 
+            width: `${Math.max(0, ((order.tracking_percentage / 100) * 100) - 6)}%` 
+          }}
+          transition={{ 
+            duration: 1.2, 
+            ease: "easeOut",
+            delay: 0.3 
+          }}
+          key={animationTrigger} // Retrigger animation on status change
+        />
 
-      {/* Tracking Stages */}
-      <div className="space-y-4">
-        {order.tracking_stages?.map((stage, index) => (
-          <motion.div 
-            key={stage.key}
-            className="flex items-start space-x-4"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-          >
-            {/* Icon */}
-            <div className="flex-shrink-0">
+        {/* Step Indicators */}
+        <div className="relative flex justify-between">
+          {TRACKING_STEPS.map((step, index) => {
+            const isCompleted = order.status && step.status.includes(order.status);
+            const isCurrent = !isCompleted && 
+              (index === 0 || TRACKING_STEPS[index - 1].status.includes(order.status));
+            
+            const stepTimestamp = order.tracking_stages?.find(s => s.key === step.id)?.timestamp;
+
+            return (
               <motion.div 
-                className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  stage.completed ? 'bg-green-500' : 'bg-gray-300'
-                }`}
-                animate={stage.completed ? { scale: [1, 1.1, 1] } : {}}
-                transition={{ duration: 0.3 }}
+                key={step.id}
+                className="flex flex-col items-center"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 + 0.2 }}
               >
-                {getStageIcon(stage.icon, stage.completed)}
-              </motion.div>
-            </div>
+                {/* Step Circle with Icon */}
+                <motion.div 
+                  className={`
+                    relative z-10 w-12 h-12 rounded-full flex items-center justify-center border-4 transition-colors
+                    ${isCompleted 
+                      ? 'bg-mauve-plum border-mauve-plum shadow-lg shadow-mauve-plum/25' 
+                      : isCurrent 
+                      ? 'bg-primary border-primary shadow-lg shadow-primary/25'
+                      : 'bg-white border-gray-300'
+                    }
+                  `}
+                  animate={isCurrent ? { 
+                    boxShadow: ["0 0 0 0 rgba(156, 107, 104, 0.4)", "0 0 0 10px rgba(156, 107, 104, 0)", "0 0 0 0 rgba(156, 107, 104, 0.4)"]
+                  } : {}}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <StepIcon 
+                    stepId={step.id} 
+                    isCompleted={isCompleted} 
+                    isCurrent={isCurrent}
+                  />
+                  
+                  {/* Completion Checkmark Overlay */}
+                  {isCompleted && (
+                    <motion.div 
+                      className="absolute inset-0 flex items-center justify-center"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.3, delay: 0.4 }}
+                    >
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <motion.path
+                          strokeLinecap="round" 
+                          strokeLinejoin="round" 
+                          strokeWidth="3"
+                          d="M5 13l4 4L19 7"
+                          initial={{ pathLength: 0 }}
+                          animate={{ pathLength: 1 }}
+                          transition={{ duration: 0.5, delay: 0.5 }}
+                        />
+                      </svg>
+                    </motion.div>
+                  )}
+                </motion.div>
 
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <p className={`text-sm font-medium ${
-                  stage.completed ? 'text-gray-900' : 'text-gray-500'
-                }`}>
-                  {stage.title}
-                </p>
-                {stage.timestamp && (
-                  <p className="text-xs text-gray-500">
-                    {formatDate(stage.timestamp)}
+                {/* Step Labels */}
+                <div className="mt-4 text-center max-w-[120px]">
+                  <motion.h4 
+                    className={`text-sm font-semibold ${
+                      isCompleted ? 'text-green-600' : isCurrent ? 'text-blue-600' : 'text-gray-500'
+                    }`}
+                    animate={isCurrent ? { scale: [1, 1.05, 1] } : {}}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    {step.title}
+                  </motion.h4>
+                  <p className={`text-xs mt-1 ${
+                    isCompleted ? 'text-gray-700' : isCurrent ? 'text-gray-600' : 'text-gray-400'
+                  }`}>
+                    {step.description}
                   </p>
-                )}
-              </div>
-              <p className={`text-sm ${
-                stage.completed ? 'text-gray-600' : 'text-gray-400'
-              }`}>
-                {stage.description}
-              </p>
-            </div>
-          </motion.div>
-        ))}
+                  
+                  {/* Timestamp */}
+                  {stepTimestamp && (
+                    <motion.p 
+                      className="text-xs text-gray-500 mt-1 font-mono"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.8 }}
+                    >
+                      {formatDate(stepTimestamp)}
+                    </motion.p>
+                  )}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Progress Percentage Display */}
+        <motion.div 
+          className="flex justify-center mt-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+        >
+          <div className="bg-gray-50 px-4 py-2 rounded-full border">
+            <span className="text-sm font-medium text-gray-700">
+              {order.tracking_percentage}% Complete
+            </span>
+          </div>
+        </motion.div>
       </div>
 
       {/* LumaPrints Status Details */}

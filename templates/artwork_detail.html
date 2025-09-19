@@ -11,9 +11,23 @@
 <!-- Critical image preload with URL validation -->
 {% with main_img_url=cached_main_image|default:artwork.image_url %}
 {% if main_img_url and 'supabase.co' in main_img_url %}
-<link rel="preload" as="image" href="{{ main_img_url }}" crossorigin="anonymous">
+<link rel="preload" as="image" href="{{ main_img_url }}" fetchpriority="high">
 {% endif %}
 {% endwith %}
+
+<!-- Preload frame images for instant switching -->
+{% if frame_images.frame1.gallery and frame_images.frame1.gallery != None %}
+<link rel="preload" as="image" href="{{ frame_images.frame1.gallery }}">
+{% endif %}
+{% if frame_images.frame2.gallery and frame_images.frame2.gallery != None %}
+<link rel="preload" as="image" href="{{ frame_images.frame2.gallery }}">
+{% endif %}
+{% if frame_images.frame3.gallery and frame_images.frame3.gallery != None %}
+<link rel="preload" as="image" href="{{ frame_images.frame3.gallery }}">
+{% endif %}
+{% if frame_images.frame4.gallery and frame_images.frame4.gallery != None %}
+<link rel="preload" as="image" href="{{ frame_images.frame4.gallery }}">
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -33,7 +47,8 @@
                             <img src="{{ cached_main_image|default:artwork.image_url }}" 
                                  alt="{{ artwork.title }} - Main View" 
                                  class="artwork-image w-full h-full object-cover"
-                                 loading="eager">
+                                 loading="eager"
+                                 fetchpriority="high">
                         </button>
                         
                         <!-- Frame thumbnails -->
@@ -113,7 +128,8 @@
                                  alt="{{ artwork.alt_text|default:artwork.title }}" 
                                  class="artwork-image w-full h-auto object-cover"
                                  id="main-artwork-image"
-                                 loading="eager">
+                                 loading="eager"
+                                 fetchpriority="high">
                             
                             <!-- Wishlist Button (hover only) -->
                             <button onclick="window.toggleWishlist('{{ artwork.id }}')" 
@@ -170,7 +186,7 @@
                 <!-- Artwork Details -->
                 <div class="space-y-4 mb-8">
                     {% if artwork.type == 'original' %}
-                        <!-- Original artwork details -->
+                        <!-- Original artwork details - 2 columns, 2 rows -->
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <span class="text-caption font-medium text-secondary">Medium</span>
@@ -180,41 +196,39 @@
                                 <span class="text-caption font-medium text-secondary">Dimensions</span>
                                 <p class="text-primary">{{ artwork.dimensions_display }}</p>
                             </div>
-                        </div>
-                        
-                        {% if artwork.category %}
+                            {% if artwork.category %}
                             <div>
                                 <span class="text-caption font-medium text-secondary">Category</span>
                                 <p class="text-primary">{{ artwork.category.name }}</p>
                             </div>
-                        {% endif %}
-                        
-                        {% if artwork.year_created %}
+                            {% endif %}
+                            {% if artwork.year_created %}
                             <div>
                                 <span class="text-caption font-medium text-secondary">Year Created</span>
                                 <p class="text-primary">{{ artwork.year_created }}</p>
                             </div>
-                        {% endif %}
+                            {% endif %}
+                        </div>
                     {% elif artwork.type == 'print' %}
-                        <!-- Print artwork details (minimal) -->
-                        <div>
-                            <span class="text-sm font-medium text-neutral-500">Medium</span>
-                            <p class="text-primary">{{ artwork.get_medium_display }} Print</p>
-                        </div>
-                        
-                        {% if artwork.category %}
+                        <!-- Print artwork details - 3 columns, 1 row -->
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <span class="text-caption font-medium text-secondary">Medium</span>
+                                <p class="text-primary">{{ artwork.get_medium_display }} Print</p>
+                            </div>
+                            {% if artwork.category %}
                             <div>
                                 <span class="text-caption font-medium text-secondary">Category</span>
                                 <p class="text-primary">{{ artwork.category.name }}</p>
                             </div>
-                        {% endif %}
-                        
-                        {% if artwork.year_created %}
+                            {% endif %}
+                            {% if artwork.year_created %}
                             <div>
                                 <span class="text-caption font-medium text-secondary">Year Created</span>
                                 <p class="text-primary">{{ artwork.year_created }}</p>
                             </div>
-                        {% endif %}
+                            {% endif %}
+                        </div>
                     {% endif %}
                 </div>
                 
@@ -510,7 +524,7 @@
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {% for related in related_artworks %}
                     <div class="artwork-card reveal-on-scroll">
-                        <a href="{% url 'artwork_detail' slug=related.slug %}" class="block">
+                        <a href="{{ related.get_absolute_url }}" class="block">
                             <div class="relative overflow-hidden">
                                 <img src="{{ related.thumbnail_url }}" 
                                      alt="{{ related.alt_text|default:related.title }}" 
@@ -547,13 +561,52 @@
 
 {% block extra_js %}
 <script>
-// Image gallery navigation
+// Image gallery navigation with loading states
 function changeMainImage(src, imageType) {
     if (!src || src === 'None') return;
     
-    document.getElementById('main-artwork-image').src = src;
+    const mainImage = document.getElementById('main-artwork-image');
+    const imageContainer = mainImage.parentElement;
     
-    // Update active thumbnail
+    // Add loading state
+    imageContainer.style.position = 'relative';
+    const loadingSpinner = document.createElement('div');
+    loadingSpinner.className = 'absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10';
+    loadingSpinner.innerHTML = '<div class="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>';
+    imageContainer.appendChild(loadingSpinner);
+    
+    // Preload image to check if it's already cached
+    const tempImage = new Image();
+    tempImage.onload = function() {
+        // Image loaded, update immediately
+        mainImage.src = src;
+        loadingSpinner.remove();
+        
+        // Update active thumbnail
+        updateActiveThumbnail(imageType);
+    };
+    
+    tempImage.onerror = function() {
+        // Failed to load, remove loading state and keep current image
+        loadingSpinner.remove();
+        console.warn('Failed to load frame image:', src);
+        
+        // Show a brief error message to user
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded text-sm z-20';
+        errorMsg.textContent = 'Image temporarily unavailable';
+        imageContainer.appendChild(errorMsg);
+        
+        // Remove error message after 3 seconds
+        setTimeout(() => errorMsg.remove(), 3000);
+    };
+    
+    // Start loading
+    tempImage.src = src;
+}
+
+// Helper function to update active thumbnail
+function updateActiveThumbnail(imageType) {
     const thumbnails = document.querySelectorAll('.image-thumbnail');
     thumbnails.forEach(thumb => {
         thumb.classList.remove('border-primary', 'shadow-lg');
@@ -720,9 +773,25 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Main image initialized:', mainImage.src.substring(0, 50) + '...');
     }
     
+    // Aggressively preload frame images for instant switching
+    preloadFrameImages();
+    
     // Load cart state
     loadCartCount();
 });
+
+// Preload frame images function
+function preloadFrameImages() {
+    const frameButtons = document.querySelectorAll('.image-thumbnail[data-image^="frame"]');
+    frameButtons.forEach(button => {
+        const img = button.querySelector('img');
+        if (img && img.src && img.src !== '') {
+            // Create preload image object
+            const preloadImg = new Image();
+            preloadImg.src = img.src;
+        }
+    });
+}
 
 // Shopping cart state management
 let cartState = {

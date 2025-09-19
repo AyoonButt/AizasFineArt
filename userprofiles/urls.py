@@ -1,12 +1,13 @@
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from . import views
+from . import profile_views
 
 app_name = 'userprofiles'
 
 urlpatterns = [
     # Authentication URLs
-    path('register/', views.UserRegistrationView.as_view(), name='register'),
+    # path('register/', views.UserRegistrationView.as_view(), name='register'),
     path('login/', views.CustomLoginView.as_view(), name='login'),
     path('logout/', views.CustomLogoutView.as_view(), name='logout'),
     path('password-reset/', 
@@ -23,16 +24,29 @@ urlpatterns = [
          name='password_reset_complete'),
     
     # Profile Management
-    path('profile/', views.ProfileDetailView.as_view(), name='profile'),
+    path('profile/', profile_views.profile_dashboard, name='profile_dashboard'),
     path('profile/<int:user_id>/', views.PublicProfileView.as_view(), name='public_profile'),
-    path('profile/edit/', views.ProfileEditView.as_view(), name='profile_edit'),
+    path('profile/edit/', profile_views.edit_personal_info, name='edit_personal_info'),
     path('profile/preferences/', views.ProfilePreferencesView.as_view(), name='profile_preferences'),
     path('profile/privacy/', views.PrivacySettingsView.as_view(), name='privacy_settings'),
     
+    # Payment Methods Management
+    path('profile/payment-methods/', profile_views.manage_payment_methods, name='manage_payment_methods'),
+    path('profile/payment-methods/add/', profile_views.add_payment_method, name='add_payment_method'),
+    path('profile/payment-methods/delete/<str:payment_method_id>/', profile_views.delete_payment_method, name='delete_payment_method'),
+    
+    # Address Management
+    path('profile/addresses/', profile_views.manage_addresses, name='manage_addresses'),
+    
+    # Billing Portal
+    path('profile/billing-portal/', profile_views.billing_portal, name='billing_portal'),
+    
     # Account Management
-    path('account/', views.AccountSettingsView.as_view(), name='account_settings'),
+    path('account/', profile_views.account_settings, name='account_settings'),
     path('account/password/', views.PasswordChangeView.as_view(), name='password_change'),
-    path('account/deactivate/', views.AccountDeactivateView.as_view(), name='account_deactivate'),
+    path('account/delete/', profile_views.delete_account_confirm, name='delete_account_confirm'),
+    path('account/delete/confirm/', profile_views.delete_account, name='delete_account'),
+    path('account/sync-stripe/', profile_views.sync_stripe_data, name='sync_stripe_data'),
     
     # Dashboard
     path('dashboard/', views.UserDashboardView.as_view(), name='dashboard'),

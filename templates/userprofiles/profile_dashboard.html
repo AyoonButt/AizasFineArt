@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Aiza's Fine Art{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-neutral-50 min-h-screen">
+    <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+            <!-- Profile Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-h1 font-playfair font-semibold text-neutral-800 mb-2">My Profile</h1>
+                <p class="text-body-lg text-neutral-600">Manage your account settings and preferences</p>
+            </div>
+
+            <!-- Main Profile Layout -->
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Profile Navigation Sidebar -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-6 sticky top-24">
+                        <div class="text-center mb-6">
+                            <div class="w-20 h-20 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-2xl font-semibold mx-auto mb-3">
+                                {{ user.first_name.0|default:user.username.0|upper }}
+                            </div>
+                            <h3 class="font-playfair font-semibold text-neutral-800">{{ profile.display_name }}</h3>
+                            <p class="text-sm text-neutral-600">{{ user.email }}</p>
+                        </div>
+
+                        <nav class="space-y-2">
+                            <a href="{% url 'userprofiles:profile_dashboard' %}" class="flex items-center px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 border border-primary-200 rounded-lg">
+                                <svg class="w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                </svg>
+                                Dashboard
+                            </a>
+                            <a href="{% url 'userprofiles:edit_personal_info' %}" class="flex items-center px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 rounded-lg transition-colors">
+                                <svg class="w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+                                </svg>
+                                Personal Info
+                            </a>
+                            <a href="{% url 'userprofiles:manage_payment_methods' %}" class="flex items-center px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 rounded-lg transition-colors">
+                                <svg class="w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                </svg>
+                                Payment Methods
+                            </a>
+                            <a href="{% url 'userprofiles:manage_addresses' %}" class="flex items-center px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 rounded-lg transition-colors">
+                                <svg class="w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                </svg>
+                                Addresses
+                            </a>
+                            <a href="{% url 'userprofiles:account_settings' %}" class="flex items-center px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 rounded-lg transition-colors">
+                                <svg class="w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                                </svg>
+                                Settings
+                            </a>
+                            {% if stripe_customer %}
+                            <a href="{% url 'userprofiles:billing_portal' %}" class="flex items-center px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 rounded-lg transition-colors">
+                                <svg class="w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                </svg>
+                                Billing Portal
+                            </a>
+                            {% endif %}
+                        </nav>
+
+                        <hr class="my-6">
+
+                        <a href="{% url 'userprofiles:delete_account_confirm' %}" class="flex items-center px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                            <svg class="w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"/>
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                            </svg>
+                            Delete Account
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Main Dashboard Content -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Account Overview -->
+                    <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+                        <h2 class="text-lg font-playfair font-semibold text-neutral-800 mb-4">Account Overview</h2>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="text-sm font-medium text-neutral-700 mb-2">Personal Information</h3>
+                                <div class="space-y-1 text-sm">
+                                    <div><span class="text-neutral-500">Name:</span> {{ user.get_full_name|default:"Not set" }}</div>
+                                    <div><span class="text-neutral-500">Email:</span> {{ user.email }}</div>
+                                    <div><span class="text-neutral-500">Phone:</span> {{ profile.phone|default:"Not set" }}</div>
+                                </div>
+                                <a href="{% url 'userprofiles:edit_personal_info' %}" class="inline-flex items-center text-sm text-primary-600 hover:text-primary-700 mt-2">
+                                    Edit
+                                    <svg class="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                                    </svg>
+                                </a>
+                            </div>
+
+                            <div>
+                                <h3 class="text-sm font-medium text-neutral-700 mb-2">Billing Information</h3>
+                                <div class="space-y-1 text-sm">
+                                    {% if has_saved_payment_info %}
+                                    <div><span class="text-neutral-500">Payment Methods:</span> {{ payment_methods|length }} saved</div>
+                                    <div><span class="text-neutral-500">Address:</span> 
+                                        {% if profile.address_line_1 %}
+                                            {{ profile.city }}, {{ profile.state }}
+                                        {% else %}
+                                            Not set
+                                        {% endif %}
+                                    </div>
+                                    {% else %}
+                                    <div class="text-neutral-500">No saved payment information</div>
+                                    {% endif %}
+                                </div>
+                                <a href="{% url 'userprofiles:manage_payment_methods' %}" class="inline-flex items-center text-sm text-primary-600 hover:text-primary-700 mt-2">
+                                    Manage
+                                    <svg class="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Orders -->
+                    <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-playfair font-semibold text-neutral-800">Recent Orders</h2>
+                            <a href="{% url 'orders:history' %}" class="text-sm text-primary-600 hover:text-primary-700">View All</a>
+                        </div>
+                        
+                        {% if recent_orders %}
+                        <div class="space-y-4">
+                            {% for order in recent_orders %}
+                            <div class="flex items-center justify-between p-4 border border-neutral-200 rounded-lg">
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-neutral-800">Order #{{ order.order_number }}</div>
+                                        <div class="text-sm text-neutral-600">{{ order.created_at|date:"M d, Y" }} • {{ order.items.count }} item{{ order.items.count|pluralize }}</div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-medium text-neutral-800">${{ order.total }}</div>
+                                    <div class="text-sm">
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                            {% if order.status == 'confirmed' %}bg-green-100 text-green-800
+                                            {% elif order.status == 'processing' %}bg-blue-100 text-blue-800
+                                            {% elif order.status == 'shipped' %}bg-purple-100 text-purple-800
+                                            {% elif order.status == 'delivered' %}bg-green-100 text-green-800
+                                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center py-8">
+                            <svg class="w-12 h-12 text-neutral-300 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                            </svg>
+                            <p class="text-neutral-500 mb-2">No orders yet</p>
+                            <a href="{% url 'shop' %}" class="text-primary-600 hover:text-primary-700 text-sm">Start shopping</a>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-xl shadow-sm border border-neutral-200 p-6">
+                        <h2 class="text-lg font-playfair font-semibold text-neutral-800 mb-4">Quick Actions</h2>
+                        
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <a href="{% url 'userprofiles:manage_payment_methods' %}" class="flex items-center p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors">
+                                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mr-3">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-neutral-800">Add Payment Method</div>
+                                    <div class="text-sm text-neutral-600">Save a card for faster checkout</div>
+                                </div>
+                            </a>
+
+                            <a href="{% url 'userprofiles:manage_addresses' %}" class="flex items-center p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors">
+                                <div class="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mr-3">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-neutral-800">Update Address</div>
+                                    <div class="text-sm text-neutral-600">Manage shipping addresses</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

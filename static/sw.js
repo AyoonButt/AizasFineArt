@@ -259,6 +259,26 @@ self.addEventListener('message', event => {
             clearExpiredCache()
         );
     }
+    
+    if (event.data && event.data.type === 'WARM_CACHE') {
+        event.waitUntil(
+            warmCacheFromAPI().then(result => {
+                if (event.ports && event.ports[0]) {
+                    event.ports[0].postMessage(result);
+                }
+            })
+        );
+    }
+    
+    if (event.data && event.data.type === 'CACHE_STATS') {
+        event.waitUntil(
+            getCacheStats().then(stats => {
+                if (event.ports && event.ports[0]) {
+                    event.ports[0].postMessage(stats);
+                }
+            })
+        );
+    }
 });
 
 // Preload images
@@ -297,5 +317,117 @@ async function clearExpiredCache() {
                 await cache.delete(request);
             }
         }
+    }
+}
+
+// Warm cache by fetching featured artwork images from API
+async function warmCacheFromAPI() {
+    try {
+        // Fetch featured artworks from API
+        const response = await fetch('/api/artworks/?is_featured=true&limit=5', {
+            mode: 'cors',
+            credentials: 'same-origin'
+        });
+        
+        if (!response.ok) {
+            throw new Error(`API request failed: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const imageUrls = [];
+        
+        // Extract image URLs from artwork data
+        if (data.results && Array.isArray(data.results)) {
+            data.results.forEach(artwork => {
+                if (artwork.image_url) {
+                    imageUrls.push(artwork.image_url);
+                }
+                if (artwork.thumbnail_url) {
+                    imageUrls.push(artwork.thumbnail_url);
+                }
+            });
+        }
+        
+        // Preload the images
+        if (imageUrls.length > 0) {
+            await preloadImages(imageUrls);
+            return {
+                success: true,
+                message: `Warmed cache for ${imageUrls.length} images`,
+                count: imageUrls.length
+            };
+        } else {
+            return {
+                success: true,
+                message: 'No images found to cache',
+                count: 0
+            };
+        }
+        
+    } catch (error) {
+        console.error('Cache warming failed:', error);
+        return {
+            success: false,
+            message: error.message,
+            count: 0
+        };
+    }
+}
+
+// Get cache statistics
+async function getCacheStats() {
+    try {
+        const stats = {
+            caches: {},
+            totalSize: 0,
+            totalEntries: 0,
+            lastUpdated: new Date().toISOString()
+        };
+        
+        const cacheNames = await caches.keys();
+        
+        for (const cacheName of cacheNames) {
+            const cache = await caches.open(cacheName);
+            const keys = await cache.keys();
+            
+            let cacheSize = 0;
+            let expiredCount = 0;
+            
+            for (const request of keys) {
+                const response = await cache.match(request);
+                if (response) {
+                    // Estimate size (not exact, but gives an idea)
+                    const clone = response.clone();
+                    const buffer = await clone.arrayBuffer();
+                    cacheSize += buffer.byteLength;
+                    
+                    // Check if expired
+                    if (isExpired(response, 30 * 24 * 60 * 60 * 1000)) {
+                        expiredCount++;
+                    }
+                }
+            }
+            
+            stats.caches[cacheName] = {
+                entries: keys.length,
+                sizeBytes: cacheSize,
+                sizeMB: Math.round(cacheSize / 1024 / 1024 * 100) / 100,
+                expiredEntries: expiredCount
+            };
+            
+            stats.totalSize += cacheSize;
+            stats.totalEntries += keys.length;
+        }
+        
+        stats.totalSizeMB = Math.round(stats.totalSize / 1024 / 1024 * 100) / 100;
+        
+        return stats;
+        
+    } catch (error) {
+        console.error('Failed to get cache stats:', error);
+        return {
+            error: error.message,
+            lastUpdated: new Date().toISOString()
+        };
     }
 }

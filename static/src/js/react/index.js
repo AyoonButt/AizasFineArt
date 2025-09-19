@@ -4,13 +4,9 @@ import { MotionConfig } from 'framer-motion';
 
 // Import main components
 import GalleryGrid from '@components/Gallery/GalleryGrid';
-import { ShopGrid, ArtworkCardShop } from '@components/Gallery';
-import ArtworkImageViewer from '@components/Gallery/ArtworkImageViewer';
-import FeaturedSlider from './components/Gallery/FeaturedSlider.jsx';
-import OrderTracking from './components/Orders/OrderTracking.jsx';
-import ContactForm from '@components/Forms/ContactForm';
-import NewsletterForm from '@components/Forms/NewsletterForm';
-import CommissionForm from '@components/Forms/CommissionForm';
+import { ShopGrid, ArtworkCardShop, ArtworkImageViewer, FeaturedSlider } from '@components/Gallery';
+import { OrderTracking } from '@components/Orders';
+import { ContactForm, NewsletterForm, CommissionForm } from '@components/Forms';
 import Navbar from '@components/Navigation/Navbar';
 import { ArtworkForm, ArtworkImageManager } from '@components/Artwork';
 
